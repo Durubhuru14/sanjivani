@@ -1,0 +1,43 @@
+import { cn } from "@/lib/utils";
+
+export function LogoMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      className={cn("h-7 w-7", className)}
+      role="img"
+      aria-label="Sanjivani"
+    >
+      <circle cx="32" cy="32" r="29" fill="#E8F5E9" />
+      <circle cx="32" cy="32" r="29" fill="none" stroke="#2E7D32" strokeWidth="2.5" />
+      <path
+        d="M 40.5 22.5 C 40.5 16.5 36 13 30.5 13 C 24.5 13 20.5 16.5 20.5 21.5 C 20.5 27.5 25.5 29.5 31.5 31.5 C 37.5 33.5 42.5 36 42.5 42 C 42.5 47.5 38 51 31.5 51 C 25.5 51 21.5 48 20.5 43.5"
+        fill="none"
+        stroke="#2E7D32"
+        strokeWidth="7.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M 38.5 21.5 C 41 11.5 48.5 6.5 54.5 8 C 55 15 49.5 21 41 22.5 C 39.5 22.5 38.2 22.3 38.5 21.5 Z"
+        fill="#66BB6A"
+      />
+      <circle cx="23.5" cy="44.5" r="2.4" fill="#66BB6A" />
+    </svg>
+  );
+}
+
+export function Logo({ className, compact = false }: { className?: string; compact?: boolean }) {
+  return (
+    <span className={cn("inline-flex items-center gap-2.5", className)}>
+      <LogoMark className={compact ? "h-7 w-7" : "h-8 w-8"} />
+      <span
+        className={cn(
+          "font-bold tracking-tight text-primary",
+          compact ? "text-lg" : "text-xl"
+        )}
+      >
+        Sanjivani
+      </span>
+    </span>
+  );
+}
