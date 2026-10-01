@@ -1,20 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { supabaseEnvConfigured } from "@/lib/supabase/configured";
 import { SuspenseSignOutButton } from "./sign-out-button";
-import { SetupNotice } from "@/components/SetupNotice";
 import { ShieldAlert } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
 
 export default async function SuspendedPage() {
-  if (!supabaseEnvConfigured()) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-4 py-16">
-        <SetupNotice />
-      </div>
-    );
-  }
   const supabase = await createClient();
   const {
     data: { user },

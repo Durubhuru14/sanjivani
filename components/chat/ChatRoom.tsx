@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Send } from "lucide-react";
-import { createClient, supabaseConfigured } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
+import { demoActive } from "@/lib/demo/flag";
 import { messageSchema } from "@/lib/validation";
 import type { Message, Profile } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -38,7 +39,6 @@ export function ChatRoom({
   const { toast } = useToast();
 
   const load = useCallback(async () => {
-    if (!supabaseConfigured) return;
     const supabase = createClient();
     const { data, error: err } = await supabase
       .from("messages")
@@ -54,8 +54,13 @@ export function ChatRoom({
   }, [roomId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch resolves after the effect body returns
     void load();
-    if (!supabaseConfigured) return;
+    if (demoActive) {
+      // no realtime in demo mode — poll for new messages instead
+      const id = setInterval(() => void load(), 4000);
+      return () => clearInterval(id);
+    }
     const supabase = createClient();
     const channel = supabase
       .channel(`room:${roomId}`)
@@ -128,7 +133,7 @@ export function ChatRoom({
   }, [messages]);
 
   return (
-    <div className={cn("flex h-[calc(100vh-19rem)] min-h-96 flex-col rounded-xl border bg-card shadow-soft", className)}>
+    <div className={cn("flex h-[calc(100vh-19rem)] min-h-96 flex-col rounded-md border bg-card", className)}>
       <div className="flex items-center justify-between border-b px-4 py-3">
         <h2 className="truncate font-semibold">{roomName}</h2>
         <span className="shrink-0 text-xs text-muted-foreground">{messages.length} messages</span>
@@ -169,7 +174,7 @@ export function ChatRoom({
                 ) : null}
                 <div
                   className={cn(
-                    "max-w-[75%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed shadow-sm",
+                    "max-w-[75%] rounded-md px-3.5 py-2 text-sm leading-relaxed",
                     mine
                       ? "rounded-br-md bg-primary text-primary-foreground"
                       : "rounded-bl-md bg-muted text-foreground"
