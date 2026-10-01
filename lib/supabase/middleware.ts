@@ -1,32 +1,23 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { demoActive } from "@/lib/demo/flag";
+import { updateDemoSession } from "@/lib/demo/middleware";
+import {
+  ROLE_HOME,
+  PROTECTED_PREFIXES,
+  ROLE_EXCEPTIONS,
+} from "@/lib/supabase/middleware-roles";
 
-export const ROLE_HOME: Record<string, string> = {
-  admin: "/admin",
-  ngo: "/ngo",
-  staff: "/staff",
-  volunteer: "/volunteer",
-};
-
-const PROTECTED_PREFIXES: Array<{ prefix: string; role: string }> = [
-  { prefix: "/admin", role: "admin" },
-  { prefix: "/ngo", role: "ngo" },
-  { prefix: "/staff", role: "staff" },
-  { prefix: "/volunteer", role: "volunteer" },
-];
-
-// The staff invite claim page is reachable by logged-in users of other roles
-// (e.g. a volunteer whose email was invited) — spec §5 "accept-invite".
-const ROLE_EXCEPTIONS: Record<string, string[]> = {
-  volunteer: ["/staff/accept-invite"],
-  ngo: ["/staff/accept-invite"],
-  admin: ["/staff/accept-invite"],
-};
+export { ROLE_HOME };
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  // Not configured (e.g. first run before .env.local exists) — serve pages as-is.
+  // Demo mode (no Supabase env) — run the same guards against the seeded store.
+  if (demoActive) {
+    return updateDemoSession(request);
+  }
+
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return response;
   }
@@ -121,7 +112,12 @@ export async function updateSession(request: NextRequest) {
       .select("verification_status")
       .eq("profile_id", user.id)
       .single();
-    if (ngo && ngo.verification_status !== "approved" && !path.startsWith("/ngo/profile")) {
+    if (
+      ngo &&
+      ngo.verification_status !== "approved" &&
+      path !== "/ngo" &&
+      !path.startsWith("/ngo/profile")
+    ) {
       return NextResponse.redirect(new URL("/ngo", request.url));
     }
   }
