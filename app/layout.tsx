@@ -3,12 +3,31 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-const sans = localFont({
+/**
+ * Neo Kinpaku type system (DESIGN.md §4):
+ * - Display: Alumni Sans — hairline 100 for the hero, 300 for section heads
+ * - Body/UI: Albert Sans — humanist, quiet, carries everything under 1.2rem
+ * - Mono: system stack for eyebrows and tracked labels
+ * All faces are bundled locally (woff2) — zero network dependency.
+ */
+const display = localFont({
   src: [
-    { path: "./fonts/Carlito-Regular.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/Carlito-Bold.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/AlumniSans-100.woff2", weight: "100", style: "normal" },
+    { path: "./fonts/AlumniSans-300.woff2", weight: "300", style: "normal" },
+    { path: "./fonts/AlumniSans-400.woff2", weight: "400", style: "normal" },
   ],
-  variable: "--font-sans",
+  variable: "--font-display",
+  display: "swap",
+});
+
+const body = localFont({
+  src: [
+    { path: "./fonts/AlbertSans-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/AlbertSans-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/AlbertSans-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/AlbertSans-700.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-body",
   display: "swap",
 });
 
@@ -41,7 +60,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${sans.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
+        className={`${display.variable} ${body.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
         {children}
         <Toaster />

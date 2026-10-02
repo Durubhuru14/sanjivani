@@ -6,8 +6,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", Consolas, monospace;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -29,75 +30,127 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
+  /* named kinpaku tokens for direct use */
+  --color-champagne: oklch(91% 0 0);
+  --color-patina: oklch(70% 0.12 188);
+  --color-patina-deep: oklch(49% 0.08 188);
+  --color-kinpaku: oklch(84% 0.19 80.46);
+  --color-kinpaku-pale: oklch(86% 0.07 84);
+  --color-kinpaku-rich: oklch(77% 0.13 82);
+  --color-vermilion: oklch(58% 0.15 35);
+  --color-lacquer-deep: oklch(4% 0.004 95);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
-  --shadow-soft: 0 1px 2px rgb(46 125 50 / 0.06), 0 4px 16px rgb(46 125 50 / 0.08);
-  --shadow-lift: 0 2px 4px rgb(46 125 50 / 0.08), 0 12px 32px rgb(46 125 50 / 0.12);
+  /* kinpaku shadows — neutral, never colored glow except tiny live dots */
+  --shadow-soft: 0 1px 2px oklch(2% 0.004 95 / 0.5), 0 8px 24px oklch(2% 0.004 95 / 0.35);
+  --shadow-lift: 0 18px 48px oklch(2% 0.004 95 / 0.4);
 }
 
 :root {
-  /* Sanjivani identity — warm green, clean, minimal (spec §3) */
-  --radius: 0.75rem;
-  --background: #fdfdfb;
-  --foreground: #1b211c;
-  --card: #ffffff;
-  --card-foreground: #1b211c;
-  --popover: #ffffff;
-  --popover-foreground: #1b211c;
-  --primary: #2e7d32;
-  --primary-foreground: #f6faf6;
-  --secondary: #e8f5e9;
-  --secondary-foreground: #1b5e20;
-  --muted: #f1f6f2;
-  --muted-foreground: #5b6b60;
-  --accent: #e8f5e9;
-  --accent-foreground: #2e7d32;
-  --destructive: #c62828;
-  --destructive-foreground: #fff5f5;
-  --border: #e2e9e4;
-  --input: #d4ddd6;
-  --ring: #2e7d32;
-  --chart-1: #2e7d32;
-  --chart-2: #66bb6a;
-  --chart-3: #43a047;
-  --chart-4: #a5d6a7;
-  --chart-5: #1b5e20;
-}
+  /* ------------------------------------------------------------------
+     Impeccable — "Neo Kinpaku" design system (DESIGN.md)
+     Kinpaku gold + verdigris patina on dark warm-black lacquer.
+     One theme: dark. Surfaces are mineral, never pure black/white.
+  ------------------------------------------------------------------ */
+  --radius: 0.25rem;
 
-.dark {
-  --background: #14201a;
-  --foreground: #e9f2ec;
-  --card: #1a2921;
-  --card-foreground: #e9f2ec;
-  --popover: #1a2921;
-  --popover-foreground: #e9f2ec;
-  --primary: #66bb6a;
-  --primary-foreground: #0d1710;
-  --secondary: #24382c;
-  --secondary-foreground: #c8e6c9;
-  --muted: #223328;
-  --muted-foreground: #9db3a5;
-  --accent: #24382c;
-  --accent-foreground: #a5d6a7;
-  --destructive: #ef5350;
-  --destructive-foreground: #1b0f0f;
-  --border: #2c4034;
-  --input: #32493a;
-  --ring: #66bb6a;
+  /* surfaces */
+  --background: oklch(7% 0.006 95); /* lacquer black — page ground */
+  --foreground: oklch(88% 0 0); /* text-warm */
+  --card: oklch(11% 0.006 95); /* raised lacquer */
+  --card-foreground: oklch(88% 0 0);
+  --popover: oklch(11% 0.006 95);
+  --popover-foreground: oklch(88% 0 0);
+  --muted: oklch(15% 0.008 95); /* graphite */
+  --muted-foreground: oklch(72% 0 0); /* text-muted */
+  --accent: oklch(19% 0.008 95); /* graphite-2 */
+  --accent-foreground: oklch(91% 0 0); /* champagne */
+
+  /* brand anchors */
+  --primary: oklch(84% 0.19 80.46); /* kinpaku gold */
+  --primary-foreground: oklch(14% 0.018 95); /* dark ink */
+  --secondary: oklch(70% 0.12 188); /* verdigris patina */
+  --secondary-foreground: oklch(14% 0.018 95);
+
+  /* lines and state */
+  --border: oklch(78% 0 0 / 0.16); /* hairline */
+  --input: oklch(78% 0 0 / 0.24);
+  --ring: oklch(70% 0.12 188); /* patina focus outline */
+  --destructive: oklch(58% 0.15 35); /* vermilion warning */
+  --destructive-foreground: oklch(97% 0.01 35);
+
+  --chart-1: oklch(84% 0.19 80.46);
+  --chart-2: oklch(70% 0.12 188);
+  --chart-3: oklch(77% 0.13 82);
+  --chart-4: oklch(49% 0.08 188);
+  --chart-5: oklch(61% 0.085 78);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    color-scheme: dark;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "kern";
+    /* faint mineral grain + calibration grid on the page ground */
+    background-image:
+      linear-gradient(oklch(78% 0 0 / 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(78% 0 0 / 0.045) 1px, transparent 1px);
+    background-size: 56px 56px, 56px 56px;
   }
   ::selection {
-    background: #a5d6a7;
-    color: #1b5e20;
+    background: oklch(84% 0.19 80.46 / 0.85);
+    color: oklch(14% 0.018 95);
+  }
+  /* Dark type needs air (DESIGN.md) */
+  p,
+  li {
+    line-height: 1.7;
+  }
+}
+
+@layer utilities {
+  /* mono tracked label — eyebrows, meta markers (DESIGN.md) */
+  .eyebrow {
+    @apply font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-muted-foreground;
+  }
+  /* kinpaku gold seam — functional brand divider (hero / footer edges) */
+  .gold-seam {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(78% 0.12 82 / 0.65) 18%,
+      oklch(84% 0.19 80.46) 50%,
+      oklch(78% 0.12 82 / 0.65) 82%,
+      transparent
+    );
+    height: 1px;
+  }
+  /* verdigris edge for the final brand signature in the footer */
+  .patina-edge {
+    background: linear-gradient(90deg, transparent, oklch(70% 0.12 188 / 0.55), transparent);
+    height: 1px;
+  }
+  /* a lacquer panel with a hairline frame and inset light */
+  .lacquer-panel {
+    background: linear-gradient(180deg, oklch(13% 0.006 95), oklch(11% 0.006 95));
+    border: 1px solid oklch(78% 0 0 / 0.16);
+    box-shadow: inset 0 1px 0 oklch(91% 0 0 / 0.04);
+  }
+  /* tiny gold tick used as a list marker / calibration mark */
+  .gold-tick {
+    @apply inline-block h-3 w-px shrink-0 align-middle;
+    background: oklch(84% 0.19 80.46 / 0.8);
+  }
+  /* scrollbars — quiet, mineral */
+  .quiet-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(30% 0.008 95) transparent;
   }
 }
