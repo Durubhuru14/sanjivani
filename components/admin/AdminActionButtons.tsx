@@ -2,7 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, ShieldBan, ShieldCheck, X } from "lucide-react";
+import {
+  CalendarCheck,
+  Check,
+  Loader2,
+  ShieldBan,
+  ShieldCheck,
+  Users,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -16,11 +25,20 @@ async function callAdminApi(path: string, body: Record<string, unknown>) {
   return res.json();
 }
 
+/** Icons chosen by key — Lucide components cannot cross the RSC boundary. */
+const ACTION_ICONS: Record<string, LucideIcon> = {
+  check: Check,
+  users: Users,
+  x: X,
+  "shield-ban": ShieldBan,
+  "shield-check": ShieldCheck,
+};
+
 export function AdminActionButton({
   path,
   profileId,
   label,
-  icon: Icon = Check,
+  icon = "check",
   variant = "outline",
   confirmText,
   successTitle,
@@ -28,11 +46,12 @@ export function AdminActionButton({
   path: string;
   profileId: string;
   label: string;
-  icon?: typeof Check;
+  icon?: keyof typeof ACTION_ICONS;
   variant?: "default" | "outline" | "ghost" | "destructive";
   confirmText?: string;
   successTitle: string;
 }) {
+  const Icon = ACTION_ICONS[icon] ?? Check;
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -67,15 +86,15 @@ export function ReportStatusButton({
   reportId,
   status,
   label,
-  icon: Icon,
   className,
 }: {
   reportId: string;
   status: "reviewed" | "dismissed";
   label: string;
-  icon: typeof Check;
   className?: string;
 }) {
+  // icons are chosen here — Lucide components cannot be passed from Server Components
+  const Icon = status === "reviewed" ? CalendarCheck : Users;
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -129,7 +148,7 @@ export function SuspendToggle({
       path="/api/admin/unsuspend"
       profileId={profileId}
       label="Unsuspend"
-      icon={ShieldCheck}
+      icon="shield-check"
       successTitle={`${name} can sign in again — their data was preserved.`}
     />
   ) : (
@@ -137,7 +156,7 @@ export function SuspendToggle({
       path="/api/admin/suspend"
       profileId={profileId}
       label="Suspend"
-      icon={ShieldBan}
+      icon="shield-ban"
       variant="destructive"
       confirmText={`Suspend ${name}? They will be signed out and blocked from all writes. Nothing is deleted.`}
       successTitle={`${name} has been suspended.`}

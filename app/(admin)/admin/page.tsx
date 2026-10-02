@@ -119,7 +119,7 @@ export default async function AdminDashboardPage() {
                     path="/api/admin/reject-ngo"
                     profileId={n.profile_id}
                     label="Reject"
-                    icon={Users}
+                    icon="users"
                     variant="ghost"
                     confirmText={`Reject ${n.org_name}? They can still edit their profile.`}
                     successTitle={`${n.org_name} was rejected.`}
@@ -166,7 +166,7 @@ export default async function AdminDashboardPage() {
                     path="/api/admin/reject-volunteer"
                     profileId={v.profile_id}
                     label="Reject"
-                    icon={Users}
+                    icon="users"
                     variant="ghost"
                     successTitle="Volunteer verification was rejected."
                   />
@@ -213,13 +213,11 @@ export default async function AdminDashboardPage() {
                           reportId={r.id}
                           status="reviewed"
                           label="Mark reviewed"
-                          icon={CalendarCheck}
                         />
                         <ReportStatusButton
                           reportId={r.id}
                           status="dismissed"
                           label="Dismiss"
-                          icon={Users}
                           className="text-muted-foreground"
                         />
                       </div>
