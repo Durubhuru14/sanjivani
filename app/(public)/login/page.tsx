@@ -4,7 +4,8 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, LogIn } from "lucide-react";
-import { createClient, supabaseConfigured } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
+import { demoActive } from "@/lib/demo/flag";
 import { loginSchema } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LogoMark } from "@/components/Logo";
 import { useToast } from "@/hooks/use-toast";
+
+const DEMO_ACCOUNTS = [
+  { email: "admin@sanjivani.test", label: "Platform admin" },
+  { email: "greenearth@sanjivani.test", label: "NGO · Green Earth" },
+  { email: "brightfutures@sanjivani.test", label: "NGO · Bright Futures" },
+  { email: "newhope@sanjivani.test", label: "NGO · pending review" },
+  { email: "meera@sanjivani.test", label: "Staff · Green Earth" },
+  { email: "priya@sanjivani.test", label: "Volunteer · verified" },
+  { email: "aisha@sanjivani.test", label: "Volunteer · pending" },
+  { email: "tarun@sanjivani.test", label: "Volunteer · suspended" },
+];
 
 function LoginForm() {
   const router = useRouter();
@@ -42,13 +54,6 @@ function LoginForm() {
       return;
     }
 
-    if (!supabaseConfigured) {
-      setFormError(
-        "Supabase is not configured yet — copy .env.example to .env.local and add your project keys (see README)."
-      );
-      return;
-    }
-
     setBusy(true);
     try {
       const supabase = createClient();
@@ -73,11 +78,20 @@ function LoginForm() {
     }
   }
 
+  function fillDemo(accountEmail: string) {
+    setEmail(accountEmail);
+    setPassword("Passw0rd!");
+    setFormError(null);
+    setFieldErrors({});
+  }
+
   return (
-    <Card className="w-full max-w-md border-border/80 shadow-lift">
+    <Card className="w-full max-w-md border-border bg-card shadow-lift">
       <CardHeader className="items-center text-center">
-        <LogoMark className="mx-auto mb-2 h-14 w-14" />
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
+        <LogoMark className="mx-auto mb-1 h-12 w-12" />
+        <CardTitle className="font-display text-3xl font-light tracking-normal text-champagne">
+          Welcome back
+        </CardTitle>
         <CardDescription>Log in to your Sanjivani account</CardDescription>
       </CardHeader>
       <CardContent>
@@ -136,9 +150,37 @@ function LoginForm() {
             {busy ? "Logging in…" : "Log in"}
           </Button>
         </form>
+
+        {demoActive ? (
+          <div className="mt-6 rounded-md border border-kinpaku/25 bg-kinpaku/5 p-4">
+            <p className="flex items-center gap-2 font-mono text-[0.625rem] font-medium uppercase tracking-[0.16em] text-kinpaku">
+              <span className="h-1.5 w-1.5 rounded-full bg-kinpaku" aria-hidden />
+              Demo mode · seeded data · no Supabase needed
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              Click an account to fill the form. Every account uses the password{" "}
+              <code className="rounded-sm bg-muted px-1.5 py-0.5 font-mono text-[0.6875rem] text-champagne">Passw0rd!</code>
+            </p>
+            <div className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              {DEMO_ACCOUNTS.map((a) => (
+                <button
+                  key={a.email}
+                  type="button"
+                  onClick={() => fillDemo(a.email)}
+                  className="truncate rounded-sm border border-border/70 bg-card px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-kinpaku/40 hover:text-foreground"
+                >
+                  <span className="text-champagne">{a.label}</span>
+                  <span className="mx-1.5 text-kinpaku/60">·</span>
+                  {a.email}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New to Sanjivani?{" "}
-          <Link href="/signup" className="font-semibold text-primary hover:underline">
+          <Link href="/signup" className="font-medium text-kinpaku hover:underline">
             Create an account
           </Link>
         </p>
@@ -149,7 +191,8 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center justify-center px-4 py-12 sm:py-20">
+    <div className="relative flex items-center justify-center px-4 py-12 sm:py-20">
+      <div className="gold-seam absolute inset-x-0 top-0" aria-hidden />
       <Suspense fallback={null}>
         <LoginForm />
       </Suspense>
