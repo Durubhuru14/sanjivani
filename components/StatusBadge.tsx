@@ -11,12 +11,12 @@ export function StatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+        "inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.08em]",
         statusTone(status),
         className
       )}
     >
-      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" aria-hidden />
+      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" aria-hidden />
       {humanize(status)}
     </span>
   );

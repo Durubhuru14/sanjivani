@@ -36,29 +36,29 @@ export function formatTime(value: string | null | undefined): string {
   return `${hh}:${mm}`;
 }
 
-/** Tailwind tone classes for status chips. */
+/** Tailwind tone classes for status chips (Neo Kinpaku: patina = positive, gold = pending, vermilion = warning). */
 export const STATUS_TONES: Record<string, string> = {
-  upcoming: "bg-amber-50 text-amber-800 border-amber-200",
-  ongoing: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  completed: "bg-slate-100 text-slate-700 border-slate-200",
-  cancelled: "bg-rose-50 text-rose-800 border-rose-200",
-  pending: "bg-amber-50 text-amber-800 border-amber-200",
-  approved: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  rejected: "bg-rose-50 text-rose-800 border-rose-200",
-  accepted: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  declined: "bg-rose-50 text-rose-800 border-rose-200",
-  invited: "bg-amber-50 text-amber-800 border-amber-200",
-  active: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  open: "bg-amber-50 text-amber-800 border-amber-200",
-  reviewed: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  dismissed: "bg-slate-100 text-slate-700 border-slate-200",
-  paid: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  public: "bg-sky-50 text-sky-800 border-sky-200",
-  invite: "bg-violet-50 text-violet-800 border-violet-200",
+  upcoming: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
+  ongoing: "bg-patina/12 text-patina border-patina/35",
+  completed: "bg-muted text-champagne/90 border-border",
+  cancelled: "bg-vermilion/12 text-vermilion border-vermilion/35",
+  pending: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
+  approved: "bg-patina/12 text-patina border-patina/35",
+  rejected: "bg-vermilion/12 text-vermilion border-vermilion/35",
+  accepted: "bg-patina/12 text-patina border-patina/35",
+  declined: "bg-vermilion/12 text-vermilion border-vermilion/35",
+  invited: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
+  active: "bg-patina/12 text-patina border-patina/35",
+  open: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
+  reviewed: "bg-patina/12 text-patina border-patina/35",
+  dismissed: "bg-muted text-champagne/90 border-border",
+  paid: "bg-patina/12 text-patina border-patina/35",
+  public: "bg-muted text-champagne/90 border-border",
+  invite: "bg-patina/12 text-patina-deep border-patina/30",
 };
 
 export function statusTone(status: string | null | undefined): string {
-  return STATUS_TONES[status ?? ""] ?? "bg-slate-100 text-slate-700 border-slate-200";
+  return STATUS_TONES[status ?? ""] ?? "bg-muted text-champagne/90 border-border";
 }
 
 export function humanize(status: string | null | undefined): string {

@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 
+/** Bento-style stat tile: mono label rule, display number, patina accent. */
 export function StatCard({
   label,
   value,
@@ -16,16 +17,14 @@ export function StatCard({
   className?: string;
 }) {
   return (
-    <Card className={cn("border-border/80 shadow-soft", className)}>
-      <CardContent className="flex items-center gap-4 p-5">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Icon className="h-5 w-5" aria-hidden />
-        </span>
-        <div className="min-w-0">
-          <p className="text-2xl font-bold leading-tight text-foreground">{value}</p>
-          <p className="truncate text-sm text-muted-foreground">{label}</p>
-          {hint ? <p className="truncate text-xs text-muted-foreground/80">{hint}</p> : null}
+    <Card className={cn("border-border bg-card", className)}>
+      <CardContent className="p-5">
+        <div className="flex items-center justify-between gap-3 border-b border-border/70 pb-3">
+          <p className="eyebrow truncate">{label}</p>
+          <Icon className="h-4 w-4 shrink-0 text-patina" aria-hidden />
         </div>
+        <p className="mt-3 font-display text-3xl font-normal leading-none text-champagne">{value}</p>
+        {hint ? <p className="mt-1.5 truncate text-xs text-muted-foreground">{hint}</p> : null}
       </CardContent>
     </Card>
   );

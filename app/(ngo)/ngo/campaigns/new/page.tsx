@@ -25,10 +25,10 @@ export default async function NewCampaignPage() {
       </div>
 
       {ngo && ngo.verification_status !== "approved" ? (
-        <Card className="border-amber-200 bg-amber-50">
+        <Card className="border-kinpaku/30 bg-kinpaku/5">
           <CardHeader>
-            <CardTitle className="text-amber-900">Approval pending</CardTitle>
-            <CardDescription className="text-amber-800">
+            <CardTitle className="text-kinpaku">Approval pending</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Your organisation must be verified before campaigns can be created.
             </CardDescription>
           </CardHeader>

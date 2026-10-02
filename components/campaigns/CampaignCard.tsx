@@ -42,7 +42,7 @@ export function CampaignCard({
           />
         ) : (
           <div
-            className="flex h-36 w-full items-center justify-center bg-gradient-to-br from-primary/15 via-primary/5 to-accent"
+            className="flex h-36 w-full items-center justify-center bg-lacquer-deep/60"
             aria-hidden
           >
             <span className="text-4xl font-black tracking-tighter text-primary/25">

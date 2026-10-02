@@ -121,11 +121,11 @@ export default async function VolunteerCampaignDetailPage({
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       {/* Hero */}
-      <div className="overflow-hidden rounded-2xl border bg-card shadow-soft">
+      <div className="overflow-hidden rounded-md border bg-card">
         {campaign.image_url ? (
           <img src={campaign.image_url} alt={campaign.title} className="h-48 w-full object-cover sm:h-64" />
         ) : (
-          <div className="flex h-32 w-full items-center justify-center bg-gradient-to-br from-primary/15 via-primary/5 to-accent sm:h-44" aria-hidden>
+          <div className="flex h-32 w-full items-center justify-center bg-lacquer-deep/60 sm:h-44" aria-hidden>
             <span className="text-5xl font-black tracking-tighter text-primary/25">
               {campaign.title.slice(0, 2).toUpperCase()}
             </span>

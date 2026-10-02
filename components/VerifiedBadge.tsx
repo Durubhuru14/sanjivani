@@ -23,7 +23,7 @@ export function VerifiedBadge({
         <TooltipTrigger asChild>
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-xs font-semibold text-emerald-700",
+              "inline-flex items-center gap-1 rounded-sm border border-patina/35 bg-patina/12 px-2 py-0.5 text-xs font-medium text-patina",
               className
             )}
             aria-label={label}

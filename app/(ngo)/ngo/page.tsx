@@ -40,7 +40,7 @@ export default async function NgoDashboardPage() {
       <div className="mx-auto max-w-xl">
         <Card className="text-center shadow-soft">
           <CardHeader className="items-center">
-            <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+            <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-sm border border-kinpaku/30 bg-kinpaku/10 text-kinpaku">
               <Clock className="h-7 w-7" aria-hidden />
             </span>
             <CardTitle className="text-2xl">
