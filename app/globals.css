@@ -30,62 +30,98 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
-  /* named kinpaku tokens for direct use */
-  --color-champagne: oklch(91% 0 0);
-  --color-patina: oklch(70% 0.12 188);
-  --color-patina-deep: oklch(49% 0.08 188);
-  --color-kinpaku: oklch(84% 0.19 80.46);
-  --color-kinpaku-pale: oklch(86% 0.07 84);
-  --color-kinpaku-rich: oklch(77% 0.13 82);
-  --color-vermilion: oklch(58% 0.15 35);
-  --color-lacquer-deep: oklch(4% 0.004 95);
+  /* Sanjivani brand ramp (spec §3) — semantic names for direct use */
+  --color-leaf: var(--primary);
+  --color-leaf-bright: var(--primary-bright);
+  --color-leaf-deep: var(--primary-deep);
+  --color-tint: var(--tint);
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
-  /* kinpaku shadows — neutral, never colored glow except tiny live dots */
-  --shadow-soft: 0 1px 2px oklch(2% 0.004 95 / 0.5), 0 8px 24px oklch(2% 0.004 95 / 0.35);
-  --shadow-lift: 0 18px 48px oklch(2% 0.004 95 / 0.4);
+  /* soft, warm shadows (spec §3) — never colored glow */
+  --shadow-soft: 0 1px 2px rgb(16 40 24 / 0.06), 0 8px 24px rgb(16 40 24 / 0.08);
+  --shadow-lift: 0 2px 6px rgb(16 40 24 / 0.08), 0 18px 44px rgb(16 40 24 / 0.14);
 }
 
+/* ------------------------------------------------------------------
+   Sanjivani design system (Sanjivani_Spec.md §3)
+   Warm green #2E7D32 + #E8F5E9 tint, clean, minimal, card-based,
+   rounded-xl, soft shadows, generous whitespace, welcoming.
+   Light is the default; .dark swaps to a deep garden-night ground.
+   Patterns are quiet botanical geometry — growth rings, leaf dots,
+   hairline grids — rendered from CSS vars so both themes agree.
+------------------------------------------------------------------- */
 :root {
-  /* ------------------------------------------------------------------
-     Impeccable — "Neo Kinpaku" design system (DESIGN.md)
-     Kinpaku gold + verdigris patina on dark warm-black lacquer.
-     One theme: dark. Surfaces are mineral, never pure black/white.
-  ------------------------------------------------------------------ */
-  --radius: 0.25rem;
+  --radius: 0.75rem;
 
   /* surfaces */
-  --background: oklch(7% 0.006 95); /* lacquer black — page ground */
-  --foreground: oklch(88% 0 0); /* text-warm */
-  --card: oklch(11% 0.006 95); /* raised lacquer */
-  --card-foreground: oklch(88% 0 0);
-  --popover: oklch(11% 0.006 95);
-  --popover-foreground: oklch(88% 0 0);
-  --muted: oklch(15% 0.008 95); /* graphite */
-  --muted-foreground: oklch(72% 0 0); /* text-muted */
-  --accent: oklch(19% 0.008 95); /* graphite-2 */
-  --accent-foreground: oklch(91% 0 0); /* champagne */
+  --background: #f4f8f4;
+  --foreground: #17251b;
+  --card: #ffffff;
+  --card-foreground: #17251b;
+  --popover: #ffffff;
+  --popover-foreground: #17251b;
+  --muted: #edf3ed;
+  --muted-foreground: #5a6e5f;
+  --accent: #e8f5e9; /* spec surface tint */
+  --accent-foreground: #1b5e20;
 
-  /* brand anchors */
-  --primary: oklch(84% 0.19 80.46); /* kinpaku gold */
-  --primary-foreground: oklch(14% 0.018 95); /* dark ink */
-  --secondary: oklch(70% 0.12 188); /* verdigris patina */
-  --secondary-foreground: oklch(14% 0.018 95);
+  /* brand */
+  --primary: #2e7d32; /* spec accent green */
+  --primary-bright: #66bb6a; /* spec lighter tint accent */
+  --primary-deep: #1b5e20;
+  --primary-foreground: #ffffff;
+  --tint: #e8f5e9;
+  --secondary: #e8f5e9;
+  --secondary-foreground: #1b5e20;
 
   /* lines and state */
-  --border: oklch(78% 0 0 / 0.16); /* hairline */
-  --input: oklch(78% 0 0 / 0.24);
-  --ring: oklch(70% 0.12 188); /* patina focus outline */
-  --destructive: oklch(58% 0.15 35); /* vermilion warning */
-  --destructive-foreground: oklch(97% 0.01 35);
+  --border: #d9e5db;
+  --input: #c8d8cc;
+  --ring: #2e7d32;
+  --destructive: #c62828;
+  --destructive-foreground: #ffffff;
 
-  --chart-1: oklch(84% 0.19 80.46);
-  --chart-2: oklch(70% 0.12 188);
-  --chart-3: oklch(77% 0.13 82);
-  --chart-4: oklch(49% 0.08 188);
-  --chart-5: oklch(61% 0.085 78);
+  --chart-1: #2e7d32;
+  --chart-2: #66bb6a;
+  --chart-3: #a5d6a7;
+  --chart-4: #43a047;
+  --chart-5: #1b5e20;
+}
+
+.dark {
+  /* garden night — deep green-black, never pure black */
+  --background: #0e1712;
+  --foreground: #e6efe8;
+  --card: #17231c;
+  --card-foreground: #e6efe8;
+  --popover: #17231c;
+  --popover-foreground: #e6efe8;
+  --muted: #1d2b23;
+  --muted-foreground: #a2b5a8;
+  --accent: #203227;
+  --accent-foreground: #cbe7d0;
+
+  --primary: #66bb6a; /* brightened for contrast on dark ground */
+  --primary-bright: #a5d6a7;
+  --primary-deep: #2e7d32;
+  --primary-foreground: #0a1a0d;
+  --tint: #203227;
+  --secondary: #203227;
+  --secondary-foreground: #cbe7d0;
+
+  --border: #273a2e;
+  --input: #31463a;
+  --ring: #66bb6a;
+  --destructive: #e57373;
+  --destructive-foreground: #2a0f0f;
+
+  --chart-1: #66bb6a;
+  --chart-2: #a5d6a7;
+  --chart-3: #43a047;
+  --chart-4: #2e7d32;
+  --chart-5: #c8e6c9;
 }
 
 @layer base {
@@ -93,22 +129,18 @@
     @apply border-border outline-ring/50;
   }
   html {
+    color-scheme: light;
+  }
+  html.dark {
     color-scheme: dark;
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "kern";
-    /* faint mineral grain + calibration grid on the page ground */
-    background-image:
-      linear-gradient(oklch(78% 0 0 / 0.045) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(78% 0 0 / 0.045) 1px, transparent 1px);
-    background-size: 56px 56px, 56px 56px;
   }
   ::selection {
-    background: oklch(84% 0.19 80.46 / 0.85);
-    color: oklch(14% 0.018 95);
+    background: color-mix(in oklab, var(--primary) 28%, transparent);
   }
-  /* Dark type needs air (DESIGN.md) */
   p,
   li {
     line-height: 1.7;
@@ -116,41 +148,138 @@
 }
 
 @layer utilities {
-  /* mono tracked label — eyebrows, meta markers (DESIGN.md) */
+  /* mono tracked label — eyebrows, meta markers */
   .eyebrow {
     @apply font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-muted-foreground;
   }
-  /* kinpaku gold seam — functional brand divider (hero / footer edges) */
-  .gold-seam {
+
+  /* ---- Patterns (botanical, quiet, var-driven) ------------------- */
+
+  /* fine hairline grid — hero ground, section bands */
+  .pattern-grid {
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 44px 44px;
+    opacity: 0.35;
+  }
+
+  /* leaf-dot lattice — subtle polka texture for panels/badges */
+  .pattern-dots {
+    background-image: radial-gradient(color-mix(in oklab, var(--primary) 26%, transparent) 1.25px, transparent 1.25px);
+    background-size: 14px 14px;
+  }
+
+  /* growth rings — concentric arcs, the botanical signature */
+  .pattern-rings {
+    background-image: repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0,
+      transparent 34px,
+      color-mix(in oklab, var(--primary) 12%, transparent) 34px,
+      color-mix(in oklab, var(--primary) 12%, transparent) 35px
+    );
+  }
+
+  /* soft green wash — layered radial tint for the hero */
+  .pattern-wash {
+    background-image:
+      radial-gradient(60% 50% at 18% 12%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 70%),
+      radial-gradient(48% 42% at 88% 4%, color-mix(in oklab, var(--primary-bright) 18%, transparent), transparent 70%),
+      radial-gradient(70% 60% at 50% 110%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 75%);
+  }
+
+  /* seedling rows — diagonal leaf ticks for narrow strips */
+  .pattern-seedling {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent 0,
+      transparent 10px,
+      color-mix(in oklab, var(--primary) 14%, transparent) 10px,
+      color-mix(in oklab, var(--primary) 14%, transparent) 11px
+    );
+  }
+
+  /* ---- Brand furniture ------------------------------------------- */
+
+  /* green seam — functional divider (hero edges, footers) */
+  .seam {
+    height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      oklch(78% 0.12 82 / 0.65) 18%,
-      oklch(84% 0.19 80.46) 50%,
-      oklch(78% 0.12 82 / 0.65) 82%,
+      color-mix(in oklab, var(--primary) 55%, transparent) 18%,
+      var(--primary) 50%,
+      color-mix(in oklab, var(--primary) 55%, transparent) 82%,
       transparent
     );
-    height: 1px;
   }
-  /* verdigris edge for the final brand signature in the footer */
-  .patina-edge {
-    background: linear-gradient(90deg, transparent, oklch(70% 0.12 188 / 0.55), transparent);
-    height: 1px;
+
+  /* raised card panel — hairline frame + soft warm shadow */
+  .panel-raised {
+    background: var(--card);
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgb(16 40 24 / 0.05), 0 10px 30px rgb(16 40 24 / 0.07);
   }
-  /* a lacquer panel with a hairline frame and inset light */
-  .lacquer-panel {
-    background: linear-gradient(180deg, oklch(13% 0.006 95), oklch(11% 0.006 95));
-    border: 1px solid oklch(78% 0 0 / 0.16);
-    box-shadow: inset 0 1px 0 oklch(91% 0 0 / 0.04);
+
+  /* deep tinted panel — section bands, sidebars, chat rails */
+  .panel-tinted {
+    background: var(--tint);
+    border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
   }
-  /* tiny gold tick used as a list marker / calibration mark */
-  .gold-tick {
+
+  /* small leaf tick used as a list marker */
+  .leaf-tick {
     @apply inline-block h-3 w-px shrink-0 align-middle;
-    background: oklch(84% 0.19 80.46 / 0.8);
+    background: color-mix(in oklab, var(--primary) 70%, transparent);
   }
-  /* scrollbars — quiet, mineral */
+
+  /* stat gradient text for big numbers */
+  .text-grow {
+    background: linear-gradient(120deg, var(--primary-deep), var(--primary) 45%, var(--primary-bright));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* gentle float for hero furniture */
+  .animate-rise {
+    animation: rise 7s ease-in-out infinite;
+  }
+  .animate-rise-slow {
+    animation: rise 10s ease-in-out infinite;
+  }
+  @keyframes rise {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* scrollbars — quiet */
   .quiet-scroll {
     scrollbar-width: thin;
-    scrollbar-color: oklch(30% 0.008 95) transparent;
+    scrollbar-color: var(--input) transparent;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-rise-slow {
+    animation: none;
+  }
+}
+
+/* dark mode: patterns recede further so panels stay the focus */
+html.dark .pattern-grid {
+  opacity: 0.18;
+}
+html.dark .pattern-seedling {
+  opacity: 0.25;
+}
+html.dark .pattern-rings {
+  opacity: 0.4;
 }
