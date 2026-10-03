@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 /**
- * Neo Kinpaku type system (DESIGN.md §4):
- * - Display: Alumni Sans — hairline 100 for the hero, 300 for section heads
- * - Body/UI: Albert Sans — humanist, quiet, carries everything under 1.2rem
+ * Sanjivani type system:
+ * - Display: Alumni Sans (geometric, calm) for hero and section heads
+ * - Body/UI: Albert Sans (humanist, friendly for non-technical staff)
  * - Mono: system stack for eyebrows and tracked labels
  * All faces are bundled locally (woff2) — zero network dependency.
  */
@@ -42,6 +42,7 @@ export const metadata: Metadata = {
   applicationName: "Sanjivani",
   icons: {
     icon: [{ url: "/logo.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/sanjivani-icon.png" }],
   },
   openGraph: {
     title: "Sanjivani",
@@ -52,6 +53,20 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F4F8F4" },
+    { media: "(prefers-color-scheme: dark)", color: "#0E1712" },
+  ],
+};
+
+/**
+ * Dark/light bootstrap (Sanjivani_Spec.md §3) — runs before hydration so
+ * the first paint already carries the right theme. Stored `theme` key
+ * wins; otherwise the system preference decides.
+ */
+const themeBootstrap = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;if(d)document.documentElement.classList.add("dark");}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,6 +74,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
       <body
         className={`${display.variable} ${body.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
