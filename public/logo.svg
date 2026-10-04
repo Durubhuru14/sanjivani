@@ -1,14 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sanjivani mark">
-  <!-- Kinpaku carved tile: gold square split by a diagonal slash, patina nodes -->
-  <defs>
-    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#E7CE9D"/>
-      <stop offset="0.5" stop-color="#FFBA00"/>
-      <stop offset="1" stop-color="#DDAB46"/>
-    </linearGradient>
-  </defs>
-  <rect x="4" y="4" width="56" height="56" rx="6" fill="url(#gold)"/>
-  <path d="M 34 4 L 64 34 L 64 40 L 40 64 L 34 64 L 4 34 L 4 28 Z" fill="#0B0B0A" opacity="0.92"/>
-  <circle cx="47" cy="17" r="3.4" fill="#0FB6AC"/>
-  <circle cx="17" cy="47" r="3.4" fill="#0FB6AC"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sanjivani">
+  <!-- Sanjivani leaf-S: two layered leaves sweeping into an "S".
+       Deep leaf = the NGO arm, bright leaf = the volunteer arm —
+       together they form one continuous growth path. (spec §3)
+       Full-detail cut for large renderings (README, hero, share). -->
+  <g>
+    <!-- upper leaf (deep green) -->
+    <path
+      d="M 31 34 C 20 33 13 27 13 19 C 13 10 21 4 31 5 C 39 6 46 10 48 17 C 44 13 38 11 32 12 C 24 13 20 17 20 22 C 20 27 25 31 31 34 Z"
+      fill="#2E7D32"
+    />
+    <!-- lower leaf (bright green, layered over the upper at the crossing) -->
+    <path
+      d="M 31 34 C 20 33 13 27 13 19 C 13 10 21 4 31 5 C 39 6 46 10 48 17 C 44 13 38 11 32 12 C 24 13 20 17 20 22 C 20 27 25 31 31 34 Z"
+      fill="#66BB6A"
+      transform="rotate(180 32 32)"
+    />
+    <!-- leaf midrib veins — leaf texture at large sizes -->
+    <path
+      d="M 45 13 C 37 8 27 7.5 19.5 12.5"
+      fill="none"
+      stroke="#E8F5E9"
+      stroke-width="2"
+      stroke-linecap="round"
+      opacity="0.6"
+    />
+    <path
+      d="M 45 13 C 37 8 27 7.5 19.5 12.5"
+      fill="none"
+      stroke="#E8F5E9"
+      stroke-width="2"
+      stroke-linecap="round"
+      opacity="0.6"
+      transform="rotate(180 32 32)"
+    />
+  </g>
 </svg>
