@@ -151,11 +151,12 @@ export default function SignupPage() {
     ) : null;
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 py-12 sm:py-16">
+    <div className="relative mx-auto w-full max-w-2xl px-4 py-12 sm:py-16">
+      <div className="pattern-dots pointer-events-none fixed inset-0 -z-10 opacity-[0.16]" aria-hidden />
       <Card className="border-border/80 shadow-lift">
         <CardHeader className="items-center text-center">
-          <LogoMark className="mx-auto mb-2 h-14 w-14" />
-          <CardTitle className="font-display text-3xl font-light tracking-normal text-champagne">Create your account</CardTitle>
+          <LogoMark detailed className="mx-auto mb-2 h-14 w-14" />
+          <CardTitle className="font-display text-3xl font-medium tracking-wide text-foreground">Create your account</CardTitle>
           <CardDescription>Choose how you want to use Sanjivani</CardDescription>
         </CardHeader>
         <CardContent>
@@ -186,12 +187,12 @@ export default function SignupPage() {
                 className={cn(
                   "rounded-xl border-2 p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   role === card.value
-                    ? "border-kinpaku/60 bg-kinpaku/5"
+                    ? "border-leaf/55 bg-tint/70"
                     : "border-border bg-card hover:border-primary/40"
                 )}
               >
                 <card.icon
-                  className={cn("h-5 w-5", role === card.value ? "text-kinpaku" : "text-muted-foreground")}
+                  className={cn("h-5 w-5", role === card.value ? "text-leaf" : "text-muted-foreground")}
                   aria-hidden
                 />
                 <p className="mt-2 text-sm font-semibold">{card.title}</p>
@@ -340,7 +341,7 @@ export default function SignupPage() {
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-kinpaku hover:underline">
+            <Link href="/login" className="font-medium text-leaf hover:underline">
               Log in
             </Link>
           </p>

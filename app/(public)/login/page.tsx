@@ -88,8 +88,8 @@ function LoginForm() {
   return (
     <Card className="w-full max-w-md border-border bg-card shadow-lift">
       <CardHeader className="items-center text-center">
-        <LogoMark className="mx-auto mb-1 h-12 w-12" />
-        <CardTitle className="font-display text-3xl font-light tracking-normal text-champagne">
+        <LogoMark detailed className="mx-auto mb-1 h-14 w-14" />
+        <CardTitle className="font-display text-3xl font-medium tracking-wide text-foreground">
           Welcome back
         </CardTitle>
         <CardDescription>Log in to your Sanjivani account</CardDescription>
@@ -152,14 +152,14 @@ function LoginForm() {
         </form>
 
         {demoActive ? (
-          <div className="mt-6 rounded-md border border-kinpaku/25 bg-kinpaku/5 p-4">
-            <p className="flex items-center gap-2 font-mono text-[0.625rem] font-medium uppercase tracking-[0.16em] text-kinpaku">
-              <span className="h-1.5 w-1.5 rounded-full bg-kinpaku" aria-hidden />
+          <div className="panel-tinted mt-6 rounded-lg p-4">
+            <p className="flex items-center gap-2 font-mono text-[0.625rem] font-medium uppercase tracking-[0.16em] text-leaf">
+              <span className="h-1.5 w-1.5 rounded-full bg-leaf" aria-hidden />
               Demo mode · seeded data · no Supabase needed
             </p>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               Click an account to fill the form. Every account uses the password{" "}
-              <code className="rounded-sm bg-muted px-1.5 py-0.5 font-mono text-[0.6875rem] text-champagne">Passw0rd!</code>
+              <code className="rounded-sm bg-card px-1.5 py-0.5 font-mono text-[0.6875rem] text-foreground">Passw0rd!</code>
             </p>
             <div className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
               {DEMO_ACCOUNTS.map((a) => (
@@ -167,10 +167,10 @@ function LoginForm() {
                   key={a.email}
                   type="button"
                   onClick={() => fillDemo(a.email)}
-                  className="truncate rounded-sm border border-border/70 bg-card px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-kinpaku/40 hover:text-foreground"
+                  className="truncate rounded-md border border-border/70 bg-card px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-leaf/50 hover:text-foreground"
                 >
-                  <span className="text-champagne">{a.label}</span>
-                  <span className="mx-1.5 text-kinpaku/60">·</span>
+                  <span className="font-medium text-foreground">{a.label}</span>
+                  <span className="mx-1.5 text-leaf/60">·</span>
                   {a.email}
                 </button>
               ))}
@@ -180,7 +180,7 @@ function LoginForm() {
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New to Sanjivani?{" "}
-          <Link href="/signup" className="font-medium text-kinpaku hover:underline">
+          <Link href="/signup" className="font-medium text-leaf hover:underline">
             Create an account
           </Link>
         </p>
@@ -191,11 +191,46 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="relative flex items-center justify-center px-4 py-12 sm:py-20">
-      <div className="gold-seam absolute inset-x-0 top-0" aria-hidden />
-      <Suspense fallback={null}>
-        <LoginForm />
-      </Suspense>
+    <div className="relative grid min-h-[calc(100vh-4rem)] overflow-hidden lg:grid-cols-[1.05fr_1fr]">
+      {/* Brand panel — botanical patterns, quiet motion, proof bullets */}
+      <div className="relative hidden overflow-hidden border-r border-border lg:block">
+        <div className="pattern-wash pointer-events-none absolute inset-0" aria-hidden />
+        <div className="pattern-rings pointer-events-none absolute -left-40 -bottom-44 h-[520px] w-[520px] opacity-50" aria-hidden />
+        <div className="pattern-dots pointer-events-none absolute inset-0 opacity-20" aria-hidden />
+        <div className="relative mx-auto flex h-full max-w-lg flex-col justify-center px-10 py-16">
+          <LogoMark detailed className="h-12 w-12" />
+          <h2 className="mt-6 font-display text-4xl font-normal leading-[1.08] text-foreground">
+            One platform for every campaign, team, and rupee
+          </h2>
+          <p className="mt-4 leading-relaxed text-muted-foreground">
+            Replace the spreadsheets, WhatsApp groups, and paper notices with a single ledger
+            your whole team can trust.
+          </p>
+          <ul className="mt-8 space-y-4">
+            {[
+              { title: "Campaigns & teams", text: "Applications, rosters, and hours in one place." },
+              { title: "Scoped chat rooms", text: "Pick who joins each conversation — nothing leaks." },
+              { title: "Fund ledger + CSV export", text: "Allocations, payments, and clean summaries." },
+            ].map((item) => (
+              <li key={item.title} className="flex gap-3">
+                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-leaf" aria-hidden />
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{item.title}</p>
+                  <p className="text-sm text-muted-foreground">{item.text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Form panel */}
+      <div className="relative flex items-center justify-center px-4 py-12 sm:py-16">
+        <div className="pattern-grid pointer-events-none absolute inset-0" aria-hidden />
+        <Suspense fallback={null}>
+          <LoginForm />
+        </Suspense>
+      </div>
     </div>
   );
 }
