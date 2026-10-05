@@ -1,16 +1,17 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createDemoBrowserClient } from "@/lib/demo/client";
-import { demoActive } from "@/lib/demo/flag";
+import { demoActive, supabaseConfigured } from "@/lib/demo/flag";
 
 /**
  * Browser client.
- * Real Supabase when env is configured; otherwise the in-memory demo client
- * (queries transport through POST /api/demo so every browser shares the
- * server-side seeded store). The demo client is cast to the SupabaseClient
- * contract — it implements the surface the app uses.
+ * Real Supabase when env is configured; in demo mode (`npm run demo`,
+ * NEXT_PUBLIC_DEMO_MODE=1) the in-memory seeded client (queries transport
+ * through POST /api/demo so every browser shares the server-side store).
+ * The demo client is cast to the SupabaseClient contract — it implements
+ * the surface the app uses.
  */
-export const supabaseConfigured = !demoActive;
+export { supabaseConfigured };
 
 export function createClient(): SupabaseClient {
   if (demoActive) {

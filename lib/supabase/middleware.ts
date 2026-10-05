@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { demoActive } from "@/lib/demo/flag";
+import { demoActive, setupRequired } from "@/lib/demo/flag";
 import { updateDemoSession } from "@/lib/demo/middleware";
 import {
   ROLE_HOME,
@@ -13,12 +13,18 @@ export { ROLE_HOME };
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  // Demo mode (no Supabase env) — run the same guards against the seeded store.
+  // Demo mode is a separate, opt-in runtime (NEXT_PUBLIC_DEMO_MODE=1) —
+  // run the same guards against the seeded store.
   if (demoActive) {
     return updateDemoSession(request);
   }
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  // Neither demo nor a real backend — send everything to the setup screen.
+  if (setupRequired) {
+    const path = request.nextUrl.pathname;
+    if (path !== "/setup") {
+      return NextResponse.redirect(new URL("/setup", request.url));
+    }
     return response;
   }
 
