@@ -123,7 +123,7 @@ export function RatingForm({
                   className={cn(
                     "h-7 w-7 transition-transform hover:scale-110",
                     (hover || score) >= value
-                      ? "fill-kinpaku text-kinpaku"
+                      ? "fill-leaf text-leaf"
                       : "fill-muted text-muted"
                   )}
                   aria-hidden
@@ -160,7 +160,7 @@ function Stars({ score }: { score: number }) {
           key={value}
           className={cn(
             "h-5 w-5",
-            value <= score ? "fill-kinpaku text-kinpaku" : "fill-muted text-muted"
+            value <= score ? "fill-leaf text-leaf" : "fill-muted text-muted"
           )}
           aria-hidden
         />

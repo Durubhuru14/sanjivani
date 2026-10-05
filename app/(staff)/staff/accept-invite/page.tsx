@@ -54,7 +54,7 @@ export default async function AcceptInvitePage() {
       <div className="mx-auto max-w-lg">
         <Card className="text-center shadow-soft">
           <CardHeader className="items-center">
-            <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-sm border border-patina/35 bg-patina/12 text-patina">
+            <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-lg border border-leaf/35 bg-tint text-leaf">
               <UserCheck className="h-7 w-7" aria-hidden />
             </span>
             <CardTitle className="text-2xl">You are already staff</CardTitle>

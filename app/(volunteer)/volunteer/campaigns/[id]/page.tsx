@@ -125,7 +125,7 @@ export default async function VolunteerCampaignDetailPage({
         {campaign.image_url ? (
           <img src={campaign.image_url} alt={campaign.title} className="h-48 w-full object-cover sm:h-64" />
         ) : (
-          <div className="flex h-32 w-full items-center justify-center bg-lacquer-deep/60 sm:h-44" aria-hidden>
+          <div className="flex h-32 w-full items-center justify-center bg-tint/70 sm:h-44" aria-hidden>
             <span className="text-5xl font-black tracking-tighter text-primary/25">
               {campaign.title.slice(0, 2).toUpperCase()}
             </span>

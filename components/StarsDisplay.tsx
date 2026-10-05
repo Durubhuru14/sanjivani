@@ -22,7 +22,7 @@ export function StarsDisplay({
           key={i}
           className={cn(
             dim,
-            i <= rounded ? "fill-kinpaku text-kinpaku" : "fill-muted text-muted"
+            i <= rounded ? "fill-leaf text-leaf" : "fill-muted text-muted"
           )}
           aria-hidden
         />
