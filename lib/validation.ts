@@ -66,7 +66,7 @@ export const campaignSchema = z
       .min(0, "Budget must be zero or more")
       .optional()
       .or(z.literal("").transform(() => 0)),
-    image_url: z.string().trim().max(500).optional().or(z.literal("")),
+    image_url: z.string().trim().max(1_500_000).optional().or(z.literal("")),
   })
   .refine(
     (data) =>
@@ -173,13 +173,13 @@ export const hoursSchema = z.object({
 export const profileUpdateSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
   location: z.string().trim().max(100).optional().or(z.literal("")),
-  avatar_url: z.string().trim().max(500).optional().or(z.literal("")),
+  avatar_url: z.string().trim().max(1_500_000).optional().or(z.literal("")),
 });
 
 export const ngoProfileUpdateSchema = profileUpdateSchema.extend({
   org_name: z.string().trim().min(1, "Organisation name is required").max(120),
   registration_number: z.string().trim().min(1, "Registration number is required").max(60),
-  logo_url: z.string().trim().max(500).optional().or(z.literal("")),
+  logo_url: z.string().trim().max(1_500_000).optional().or(z.literal("")),
 });
 
 export const volunteerProfileUpdateSchema = profileUpdateSchema.extend({
