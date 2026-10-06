@@ -21,7 +21,7 @@ export default async function BrowsePage({
   let query = supabase
     .from("campaigns")
     .select(
-      "*, ngo:ngos!campaigns_ngo_id_fkey(profile_id, org_name, verification_status, avg_rating)"
+      "*, ngo:ngos!campaigns_ngo_id_fkey(profile_id, org_name, verification_status, avg_rating, logo_url)"
     )
     .eq("type", "public")
     .neq("status", "cancelled")

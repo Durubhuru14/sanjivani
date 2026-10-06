@@ -8,9 +8,9 @@ import { messageSchema } from "@/lib/validation";
 import type { Message, Profile } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import { cn } from "@/lib/utils";
-import { formatTime, initials } from "@/lib/format";
+import { formatTime } from "@/lib/format";
 import { useToast } from "@/hooks/use-toast";
 
 /**
@@ -159,14 +159,7 @@ export function ChatRoom({
                 className={cn("flex items-end gap-2", mine ? "justify-end" : "justify-start")}
               >
                 {!mine && !compact ? (
-                  <Avatar className="h-7 w-7 border">
-                    {sender.avatar_url ? (
-                      <AvatarImage src={sender.avatar_url} alt={sender.name ?? "avatar"} />
-                    ) : null}
-                    <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">
-                      {initials(sender.name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar name={sender.name} src={sender.avatar_url} className="h-7 w-7 text-[10px]" />
                 ) : null}
                 {!mine && !compact ? <div className="w-14 shrink-0" aria-hidden /> : null}
                 {!mine && compact ? (

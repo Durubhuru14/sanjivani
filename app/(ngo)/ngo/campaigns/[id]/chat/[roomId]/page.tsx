@@ -43,11 +43,11 @@ export default async function NgoRoomPage({
   const [{ data: membersData }, { data: teamsData }] = await Promise.all([
     supabase
       .from("chat_room_members")
-      .select("user_id, profile:profiles!chat_room_members_user_id_fkey(id, name)")
+      .select("user_id, profile:profiles!chat_room_members_user_id_fkey(id, name, avatar_url)")
       .eq("room_id", roomId),
     supabase
       .from("teams")
-      .select("*, team_members(*, profile:profiles!team_members_user_id_fkey(id, name))")
+      .select("*, team_members(*, profile:profiles!team_members_user_id_fkey(id, name, avatar_url))")
       .eq("campaign_id", id),
   ]);
 

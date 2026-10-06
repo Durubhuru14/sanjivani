@@ -7,6 +7,7 @@ import { Check, Loader2, X } from "lucide-react";
 import { decideApplication } from "@/app/(ngo)/ngo/actions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useToast } from "@/hooks/use-toast";
 import type { Application } from "@/lib/types";
 
@@ -49,6 +50,7 @@ export function ApplicationsPanel({ applications }: { applications: Application[
     <ul className="divide-y rounded-xl border">
       {applications.map((app) => (
         <li key={app.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+          <UserAvatar name={app.volunteer?.name} src={app.volunteer?.avatar_url} className="h-9 w-9 text-xs" />
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{app.volunteer?.name ?? "Volunteer"}</p>
             <div className="mt-1 flex flex-wrap gap-1.5">

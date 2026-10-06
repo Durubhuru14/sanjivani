@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useToast } from "@/hooks/use-toast";
 import type { TeamMember } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -133,6 +134,7 @@ export function CreateRoomDialog({
                           setSelected((s) => ({ ...s, [m.user_id]: v === true }))
                         }
                       />
+                      <UserAvatar name={m.profile?.name} src={m.profile?.avatar_url} className="h-7 w-7 text-[10px]" />
                       <span className="flex-1 text-sm font-medium">
                         {m.profile?.name ?? "Member"}
                       </span>

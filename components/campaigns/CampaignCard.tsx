@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StarsDisplay } from "@/components/StarsDisplay";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { UserAvatar } from "@/components/UserAvatar";
 import { formatDate } from "@/lib/format";
 import { budgetProgress, formatMoney, type BudgetState } from "@/lib/funds";
 import { Progress } from "@/components/ui/progress";
@@ -42,7 +43,7 @@ export function CampaignCard({
           />
         ) : (
           <div
-            className="flex h-36 w-full items-center justify-center bg-lacquer-deep/60"
+            className="flex h-36 w-full items-center justify-center bg-tint/70"
             aria-hidden
           >
             <span className="text-4xl font-black tracking-tighter text-primary/25">
@@ -64,6 +65,7 @@ export function CampaignCard({
           </h3>
           {ngo ? (
             <div className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+              <UserAvatar name={ngo.org_name} src={ngo.logo_url} className="h-5 w-5 text-[9px]" />
               <span className="font-medium text-foreground/80">{ngo.org_name}</span>
               {ngo.verification_status === "approved" ? <VerifiedBadge verified className="scale-90" /> : null}
               {Number(ngo.avg_rating) > 0 ? (

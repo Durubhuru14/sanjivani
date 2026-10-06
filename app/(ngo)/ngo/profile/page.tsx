@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { NgoProfileForm } from "./profile-form";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StarsDisplay } from "@/components/StarsDisplay";
+import { UserAvatar } from "@/components/UserAvatar";
 import type { Rating } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +23,7 @@ export default async function NgoProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, location")
+    .select("name, location, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -37,11 +38,19 @@ export default async function NgoProfilePage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Organisation profile</h1>
-        <p className="mt-1 text-muted-foreground">
-          This is what volunteers see about your organisation.
-        </p>
+      <div className="flex flex-wrap items-center gap-4">
+        <UserAvatar
+          name={ngo?.org_name ?? profile?.name}
+          src={ngo?.logo_url ?? profile?.avatar_url}
+          className="h-16 w-16 rounded-lg text-lg"
+          rounded="lg"
+        />
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Organisation profile</h1>
+          <p className="mt-1 text-muted-foreground">
+            This is what volunteers see about your organisation.
+          </p>
+        </div>
       </div>
 
       <Card className="shadow-soft">

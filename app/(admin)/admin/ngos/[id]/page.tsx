@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StarsDisplay } from "@/components/StarsDisplay";
 import { EmptyState } from "@/components/EmptyState";
+import { UserAvatar } from "@/components/UserAvatar";
 import {
   AdminActionButton,
   SuspendToggle,
@@ -63,16 +64,24 @@ export default async function AdminNgoDetailPage({
       </Link>
 
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="mb-2 flex items-center gap-2">
-            <StatusBadge status={ngo.verification_status} />
-            {ngo.profile?.suspended ? <StatusBadge status="cancelled" /> : null}
+        <div className="flex items-start gap-4">
+          <UserAvatar
+            name={ngo.org_name}
+            src={ngo.logo_url}
+            className="h-14 w-14 rounded-lg text-base"
+            rounded="lg"
+          />
+          <div>
+            <div className="mb-2 flex items-center gap-2">
+              <StatusBadge status={ngo.verification_status} />
+              {ngo.profile?.suspended ? <StatusBadge status="cancelled" /> : null}
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight">{ngo.org_name}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Registration {ngo.registration_number ?? "—"} · joined{" "}
+              {formatDate(ngo.profile?.created_at)} · {ngo.profile?.location ?? "location not set"}
+            </p>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">{ngo.org_name}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Registration {ngo.registration_number ?? "—"} · joined{" "}
-            {formatDate(ngo.profile?.created_at)} · {ngo.profile?.location ?? "location not set"}
-          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <AdminActionButton

@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { UserAvatar } from "@/components/UserAvatar";
 import { useToast } from "@/hooks/use-toast";
 import type { TeamMember } from "@/lib/types";
 
@@ -28,7 +29,7 @@ export function RoomMembersManager({
 }: {
   roomId: string;
   campaignId: string;
-  members: Array<{ user_id: string; profile?: { name: string | null } }>;
+  members: Array<{ user_id: string; profile?: { name: string | null; avatar_url?: string | null } }>;
   teamMembers: TeamMember[];
 }) {
   const [open, setOpen] = useState(false);
@@ -93,6 +94,7 @@ export function RoomMembersManager({
                   key={m.user_id}
                   className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-muted"
                 >
+                  <UserAvatar name={m.profile?.name} src={m.profile?.avatar_url} className="h-7 w-7 text-[10px]" />
                   {isMember ? (
                     <>
                       <Checkbox

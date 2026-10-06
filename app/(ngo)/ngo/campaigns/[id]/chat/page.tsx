@@ -37,7 +37,7 @@ export default async function CampaignChatPage({
       .order("created_at", { ascending: false }),
     supabase
       .from("teams")
-      .select("*, team_members(*, profile:profiles!team_members_user_id_fkey(id, name))")
+      .select("*, team_members(*, profile:profiles!team_members_user_id_fkey(id, name, avatar_url))")
       .eq("campaign_id", id),
   ]);
 

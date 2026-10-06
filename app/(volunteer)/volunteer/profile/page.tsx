@@ -6,6 +6,7 @@ import { StarsDisplay } from "@/components/StarsDisplay";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
+import { UserAvatar } from "@/components/UserAvatar";
 import { VolunteerProfileForm } from "./profile-form";
 import { formatDate } from "@/lib/format";
 import type { Profile, Rating, Volunteer } from "@/lib/types";
@@ -73,15 +74,23 @@ export default async function VolunteerProfilePage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-bold tracking-tight">My profile & history</h1>
-        {vol?.verification_status === "approved" ? (
-          <VerifiedBadge verified />
-        ) : vol?.verification_status === "pending" ? (
-          <StatusBadge status="pending" />
-        ) : (
-          <StatusBadge status="rejected" />
-        )}
+      <div className="flex flex-wrap items-center gap-4">
+        <UserAvatar name={profile?.name} src={profile?.avatar_url} className="h-16 w-16 rounded-lg text-lg" rounded="lg" />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight">My profile & history</h1>
+            {vol?.verification_status === "approved" ? (
+              <VerifiedBadge verified />
+            ) : vol?.verification_status === "pending" ? (
+              <StatusBadge status="pending" />
+            ) : (
+              <StatusBadge status="rejected" />
+            )}
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {profile?.name} · {profile?.location || "location not set"}
+          </p>
+        </div>
       </div>
       <p className="-mt-3 text-sm text-muted-foreground">
         This is the portable record you carry across NGOs — campaigns, hours, and ratings.

@@ -12,8 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { initials } from "@/lib/format";
+import { UserAvatar } from "@/components/UserAvatar";
 import type { Profile } from "@/lib/types";
 
 export function UserMenu({ profile }: { profile: Profile }) {
@@ -30,14 +29,7 @@ export function UserMenu({ profile }: { profile: Profile }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-10 gap-2.5 px-2" aria-label="Account menu">
-          <Avatar className="h-8 w-8 border border-border">
-            {profile.avatar_url ? (
-              <AvatarImage src={profile.avatar_url} alt={profile.name ?? "avatar"} />
-            ) : null}
-            <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
-              {initials(profile.name)}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar name={profile.name} src={profile.avatar_url} className="h-8 w-8 text-xs" />
           <span className="hidden max-w-32 truncate text-sm font-medium sm:block">
             {profile.name ?? profile.id.slice(0, 8)}
           </span>
