@@ -141,3 +141,6 @@ tsconfig.tsbuildinfo
 .history-stage/
 scripts/build-history.py
 scripts/verify-*.sh
+
+# local build tooling
+scripts/revise-history.py
