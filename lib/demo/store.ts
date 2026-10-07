@@ -90,23 +90,23 @@ function seed(): DemoStore {
 
   const tables: Record<string, Row[]> = {
     profiles: [
-      { id: u.admin, role: "admin", name: "Platform Admin", location: "Pune", avatar_url: null, suspended: false, created_at: iso(160) },
-      { id: u.greenearth, role: "ngo", name: "Green Earth Foundation", location: "Pune", avatar_url: null, suspended: false, created_at: iso(150) },
-      { id: u.brightfutures, role: "ngo", name: "Bright Futures Trust", location: "Mumbai", avatar_url: null, suspended: false, created_at: iso(140) },
-      { id: u.newhope, role: "ngo", name: "New Hope Collective", location: "Nashik", avatar_url: null, suspended: false, created_at: iso(5) },
-      { id: u.meera, role: "staff", name: "Meera Deshpande", location: "Pune", avatar_url: null, suspended: false, created_at: iso(120) },
-      { id: u.arvind, role: "staff", name: "Arvind Kulkarni", location: "Mumbai", avatar_url: null, suspended: false, created_at: iso(110) },
-      { id: u.priya, role: "volunteer", name: "Priya Sharma", location: "Pune", avatar_url: null, suspended: false, created_at: iso(130) },
-      { id: u.rahul, role: "volunteer", name: "Rahul Patil", location: "Pune", avatar_url: null, suspended: false, created_at: iso(100) },
-      { id: u.aisha, role: "volunteer", name: "Aisha Khan", location: "Mumbai", avatar_url: null, suspended: false, created_at: iso(40) },
-      { id: u.vikram, role: "volunteer", name: "Vikram Joshi", location: "Pune", avatar_url: null, suspended: false, created_at: iso(90) },
-      { id: u.sneha, role: "volunteer", name: "Sneha Iyer", location: "Nashik", avatar_url: null, suspended: false, created_at: iso(80) },
-      { id: u.tarun, role: "volunteer", name: "Tarun Mehta", location: "Pune", avatar_url: null, suspended: true, created_at: iso(70) },
+      { id: u.admin, role: "admin", name: "Platform Admin", location: "Pune", avatar_url: "/demo/avatar-platform-admin.svg", suspended: false, created_at: iso(160) },
+      { id: u.greenearth, role: "ngo", name: "Green Earth Foundation", location: "Pune", avatar_url: "/demo/avatar-green-earth-foundation.svg", suspended: false, created_at: iso(150) },
+      { id: u.brightfutures, role: "ngo", name: "Bright Futures Trust", location: "Mumbai", avatar_url: "/demo/avatar-bright-futures-trust.svg", suspended: false, created_at: iso(140) },
+      { id: u.newhope, role: "ngo", name: "New Hope Collective", location: "Nashik", avatar_url: "/demo/avatar-new-hope-collective.svg", suspended: false, created_at: iso(5) },
+      { id: u.meera, role: "staff", name: "Meera Deshpande", location: "Pune", avatar_url: "/demo/avatar-meera-deshpande.svg", suspended: false, created_at: iso(120) },
+      { id: u.arvind, role: "staff", name: "Arvind Kulkarni", location: "Mumbai", avatar_url: "/demo/avatar-arvind-kulkarni.svg", suspended: false, created_at: iso(110) },
+      { id: u.priya, role: "volunteer", name: "Priya Sharma", location: "Pune", avatar_url: "/demo/avatar-priya-sharma.svg", suspended: false, created_at: iso(130) },
+      { id: u.rahul, role: "volunteer", name: "Rahul Patil", location: "Pune", avatar_url: "/demo/avatar-rahul-patil.svg", suspended: false, created_at: iso(100) },
+      { id: u.aisha, role: "volunteer", name: "Aisha Khan", location: "Mumbai", avatar_url: "/demo/avatar-aisha-khan.svg", suspended: false, created_at: iso(40) },
+      { id: u.vikram, role: "volunteer", name: "Vikram Joshi", location: "Pune", avatar_url: "/demo/avatar-vikram-joshi.svg", suspended: false, created_at: iso(90) },
+      { id: u.sneha, role: "volunteer", name: "Sneha Iyer", location: "Nashik", avatar_url: "/demo/avatar-sneha-iyer.svg", suspended: false, created_at: iso(80) },
+      { id: u.tarun, role: "volunteer", name: "Tarun Mehta", location: "Pune", avatar_url: "/demo/avatar-tarun-mehta.svg", suspended: true, created_at: iso(70) },
     ],
     ngos: [
-      { profile_id: u.greenearth, org_name: "Green Earth Foundation", registration_number: "GE-2019-114", verification_status: "approved", logo_url: null, avg_rating: 4.5, created_at: iso(148) },
-      { profile_id: u.brightfutures, org_name: "Bright Futures Trust", registration_number: "BF-2017-052", verification_status: "approved", logo_url: null, avg_rating: 4.3, created_at: iso(138) },
-      { profile_id: u.newhope, org_name: "New Hope Collective", registration_number: "NH-2026-003", verification_status: "pending", logo_url: null, avg_rating: 0, created_at: iso(5) },
+      { profile_id: u.greenearth, org_name: "Green Earth Foundation", registration_number: "GE-2019-114", verification_status: "approved", logo_url: "/demo/logo-green-earth.svg", avg_rating: 4.5, created_at: iso(148) },
+      { profile_id: u.brightfutures, org_name: "Bright Futures Trust", registration_number: "BF-2017-052", verification_status: "approved", logo_url: "/demo/logo-bright-futures.svg", avg_rating: 4.3, created_at: iso(138) },
+      { profile_id: u.newhope, org_name: "New Hope Collective", registration_number: "NH-2026-003", verification_status: "pending", logo_url: "/demo/logo-new-hope.svg", avg_rating: 0, created_at: iso(5) },
     ],
     volunteers: [
       { profile_id: u.priya, skills: ["Teaching", "First Aid", "Event Coordination"], interests: ["Education", "Environment"], availability: "Weekends", verification_status: "approved", avg_rating: 5, created_at: iso(130) },
@@ -130,7 +130,7 @@ function seed(): DemoStore {
         objectives:
           "Clear 3 km of riverbank; segregate and weigh collected waste; run 2 awareness sessions with schools; document before/after conditions.",
         location: "Mula Riverbank, Pune", start_date: dateIn(14), end_date: dateIn(21),
-        type: "public", status: "upcoming", total_budget: 20000, remaining_budget: 20000, image_url: null, created_at: iso(7),
+        type: "public", status: "upcoming", total_budget: 20000, remaining_budget: 20000, image_url: "/demo/campaign-river.svg", created_at: iso(7),
       },
       {
         id: c.tutoring, ngo_id: u.brightfutures, title: "After-School Tutoring Program",
@@ -139,7 +139,7 @@ function seed(): DemoStore {
         objectives:
           "Reach 60 students weekly; maintain 80% attendance; train 4 new volunteer tutors; publish a monthly progress report for parents.",
         location: "Dharavi Community Centre, Mumbai", start_date: dateIn(-30), end_date: dateIn(30),
-        type: "public", status: "ongoing", total_budget: 50000, remaining_budget: 46500, image_url: null, created_at: iso(45),
+        type: "public", status: "ongoing", total_budget: 50000, remaining_budget: 46500, image_url: "/demo/campaign-tutoring.svg", created_at: iso(45),
       },
       {
         id: c.plantation, ngo_id: u.greenearth, title: "Tree Plantation Marathon",
@@ -148,7 +148,7 @@ function seed(): DemoStore {
         objectives:
           "Plant 1,000 saplings; achieve 85% survival at 3 months; assign a care buddy to every 25 saplings.",
         location: "Ring Road Green Belt, Pune", start_date: dateIn(-90), end_date: dateIn(-20),
-        type: "public", status: "completed", total_budget: 30000, remaining_budget: 30000, image_url: null, created_at: iso(95),
+        type: "public", status: "completed", total_budget: 30000, remaining_budget: 30000, image_url: "/demo/campaign-trees.svg", created_at: iso(95),
       },
       {
         id: c.shelter, ngo_id: u.brightfutures, title: "Winter Shelter Support",
@@ -157,7 +157,7 @@ function seed(): DemoStore {
         objectives:
           "Staff 2 shelters nightly for 6 weeks; serve 1 meal per guest per night; conduct weekly health checks.",
         location: "Byculla & Dadar Shelters, Mumbai", start_date: dateIn(21), end_date: dateIn(77),
-        type: "invite", status: "upcoming", total_budget: 40000, remaining_budget: 40000, image_url: null, created_at: iso(4),
+        type: "invite", status: "upcoming", total_budget: 40000, remaining_budget: 40000, image_url: "/demo/campaign-health.svg", created_at: iso(4),
       },
     ],
     applications: [

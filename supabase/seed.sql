@@ -30,26 +30,26 @@ where u.email like '%@sanjivani.test'
 on conflict (id) do nothing;
 
 -- ============ profiles ============
-insert into public.profiles (id, role, name, location, suspended, created_at) values
-  ('a0000000-0000-4000-8000-000000000001', 'admin',     'Platform Admin',  'Pune',       false, now() - interval '160 days'),
-  ('a0000000-0000-4000-8000-000000000002', 'ngo',       'Green Earth Foundation', 'Pune', false, now() - interval '150 days'),
-  ('a0000000-0000-4000-8000-000000000003', 'ngo',       'Bright Futures Trust', 'Mumbai', false, now() - interval '140 days'),
-  ('a0000000-0000-4000-8000-000000000004', 'ngo',       'New Hope Collective', 'Nashik',  false, now() - interval '5 days'),
-  ('a0000000-0000-4000-8000-000000000005', 'staff',     'Meera Deshpande', 'Pune',      false, now() - interval '120 days'),
-  ('a0000000-0000-4000-8000-000000000006', 'staff',     'Arvind Kulkarni', 'Mumbai',    false, now() - interval '110 days'),
-  ('a0000000-0000-4000-8000-000000000007', 'volunteer', 'Priya Sharma',    'Pune',      false, now() - interval '130 days'),
-  ('a0000000-0000-4000-8000-000000000008', 'volunteer', 'Rahul Patil',     'Pune',      false, now() - interval '100 days'),
-  ('a0000000-0000-4000-8000-000000000009', 'volunteer', 'Aisha Khan',      'Mumbai',    false, now() - interval '40 days'),
-  ('a0000000-0000-4000-8000-00000000000a', 'volunteer', 'Vikram Joshi',    'Pune',      false, now() - interval '90 days'),
-  ('a0000000-0000-4000-8000-00000000000b', 'volunteer', 'Sneha Iyer',      'Nashik',    false, now() - interval '80 days'),
-  ('a0000000-0000-4000-8000-00000000000c', 'volunteer', 'Tarun Mehta',     'Pune',      true,  now() - interval '70 days')
+insert into public.profiles (id, role, name, location, avatar_url, suspended, created_at) values
+  ('a0000000-0000-4000-8000-000000000001', 'admin',     'Platform Admin',  'Pune',       '/demo/avatar-platform-admin.svg',        false, now() - interval '160 days'),
+  ('a0000000-0000-4000-8000-000000000002', 'ngo',       'Green Earth Foundation', 'Pune', '/demo/avatar-green-earth-foundation.svg', false, now() - interval '150 days'),
+  ('a0000000-0000-4000-8000-000000000003', 'ngo',       'Bright Futures Trust', 'Mumbai', '/demo/avatar-bright-futures-trust.svg', false, now() - interval '140 days'),
+  ('a0000000-0000-4000-8000-000000000004', 'ngo',       'New Hope Collective', 'Nashik',  '/demo/avatar-new-hope-collective.svg',  false, now() - interval '5 days'),
+  ('a0000000-0000-4000-8000-000000000005', 'staff',     'Meera Deshpande', 'Pune',      '/demo/avatar-meera-deshpande.svg',       false, now() - interval '120 days'),
+  ('a0000000-0000-4000-8000-000000000006', 'staff',     'Arvind Kulkarni', 'Mumbai',    '/demo/avatar-arvind-kulkarni.svg',       false, now() - interval '110 days'),
+  ('a0000000-0000-4000-8000-000000000007', 'volunteer', 'Priya Sharma',    'Pune',      '/demo/avatar-priya-sharma.svg',          false, now() - interval '130 days'),
+  ('a0000000-0000-4000-8000-000000000008', 'volunteer', 'Rahul Patil',     'Pune',      '/demo/avatar-rahul-patil.svg',           false, now() - interval '100 days'),
+  ('a0000000-0000-4000-8000-000000000009', 'volunteer', 'Aisha Khan',      'Mumbai',    '/demo/avatar-aisha-khan.svg',            false, now() - interval '40 days'),
+  ('a0000000-0000-4000-8000-00000000000a', 'volunteer', 'Vikram Joshi',    'Pune',      '/demo/avatar-vikram-joshi.svg',          false, now() - interval '90 days'),
+  ('a0000000-0000-4000-8000-00000000000b', 'volunteer', 'Sneha Iyer',      'Nashik',    '/demo/avatar-sneha-iyer.svg',            false, now() - interval '80 days'),
+  ('a0000000-0000-4000-8000-00000000000c', 'volunteer', 'Tarun Mehta',     'Pune',      '/demo/avatar-tarun-mehta.svg',           true,  now() - interval '70 days')
 on conflict (id) do nothing;
 
 -- ============ ngos ============
-insert into public.ngos (profile_id, org_name, registration_number, verification_status, created_at) values
-  ('a0000000-0000-4000-8000-000000000002', 'Green Earth Foundation', 'GE-2019-114', 'approved', now() - interval '148 days'),
-  ('a0000000-0000-4000-8000-000000000003', 'Bright Futures Trust',  'BF-2017-052', 'approved', now() - interval '138 days'),
-  ('a0000000-0000-4000-8000-000000000004', 'New Hope Collective',   'NH-2026-003', 'pending',  now() - interval '5 days')
+insert into public.ngos (profile_id, org_name, registration_number, verification_status, logo_url, created_at) values
+  ('a0000000-0000-4000-8000-000000000002', 'Green Earth Foundation', 'GE-2019-114', 'approved', '/demo/logo-green-earth.svg',    now() - interval '148 days'),
+  ('a0000000-0000-4000-8000-000000000003', 'Bright Futures Trust',  'BF-2017-052', 'approved', '/demo/logo-bright-futures.svg', now() - interval '138 days'),
+  ('a0000000-0000-4000-8000-000000000004', 'New Hope Collective',   'NH-2026-003', 'pending',  '/demo/logo-new-hope.svg',      now() - interval '5 days')
 on conflict (profile_id) do nothing;
 
 -- ============ volunteers ============
@@ -70,27 +70,27 @@ insert into public.ngo_staff (ngo_id, profile_id, invited_email, invited_name, s
   ('a0000000-0000-4000-8000-000000000003', null, 'deepak@sanjivani.test',  'Deepak Naik',    'invited', now() - interval '2 days');
 
 -- ============ campaigns ============
-insert into public.campaigns (id, ngo_id, title, description, objectives, location, start_date, end_date, type, status, total_budget, created_at) values
+insert into public.campaigns (id, ngo_id, title, description, objectives, location, start_date, end_date, type, status, total_budget, image_url, created_at) values
   ('c0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002',
    'River Clean-Up Drive',
    'A community drive to remove plastic and solid waste from the Mula riverbank, followed by a segregation and awareness session with local schools.',
    'Clear 3 km of riverbank; segregate and weigh collected waste; run 2 awareness sessions with schools; document before/after conditions.',
-   'Mula Riverbank, Pune', current_date + 14, current_date + 21, 'public', 'upcoming', 20000, now() - interval '7 days'),
+   'Mula Riverbank, Pune', current_date + 14, current_date + 21, 'public', 'upcoming', 20000, '/demo/campaign-river.svg', now() - interval '7 days'),
   ('c0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000003',
    'After-School Tutoring Program',
    'Ongoing evening tutoring for 60 students from low-income families, covering maths, reading and computer basics, run in two batches.',
    'Reach 60 students weekly; maintain 80% attendance; train 4 new volunteer tutors; publish a monthly progress report for parents.',
-   'Dharavi Community Centre, Mumbai', current_date - 30, current_date + 30, 'public', 'ongoing', 50000, now() - interval '45 days'),
+   'Dharavi Community Centre, Mumbai', current_date - 30, current_date + 30, 'public', 'ongoing', 50000, '/demo/campaign-tutoring.svg', now() - interval '45 days'),
   ('c0000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000002',
    'Tree Plantation Marathon',
    'A one-day marathon planting 1,000 native saplings along the city ring road with 40 volunteers, followed by a 3-month care rota.',
    'Plant 1,000 saplings; achieve 85% survival at 3 months; assign a care buddy to every 25 saplings.',
-   'Ring Road Green Belt, Pune', current_date - 90, current_date - 20, 'public', 'completed', 30000, now() - interval '95 days'),
+   'Ring Road Green Belt, Pune', current_date - 90, current_date - 20, 'public', 'completed', 30000, '/demo/campaign-trees.svg', now() - interval '95 days'),
   ('c0000000-0000-4000-8000-000000000004', 'a0000000-0000-4000-8000-000000000003',
    'Winter Shelter Support',
    'Invite-only campaign for trusted volunteers to run night shelters: bedding, hot meals and health checks for 80 homeless residents.',
    'Staff 2 shelters nightly for 6 weeks; serve 1 meal per guest per night; conduct weekly health checks.',
-   'Byculla & Dadar Shelters, Mumbai', current_date + 21, current_date + 77, 'invite', 'upcoming', 40000, now() - interval '4 days')
+   'Byculla & Dadar Shelters, Mumbai', current_date + 21, current_date + 77, 'invite', 'upcoming', 40000, '/demo/campaign-health.svg', now() - interval '4 days')
 on conflict (id) do nothing;
 
 -- ============ applications ============
