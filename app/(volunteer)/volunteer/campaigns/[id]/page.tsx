@@ -38,12 +38,14 @@ export default async function VolunteerCampaignDetailPage({
   const { data: campaignRow } = await supabase
     .from("campaigns")
     .select(
-      "*, ngo:ngos!campaigns_ngo_id_fkey(profile_id, org_name, verification_status, avg_rating, logo_url, registration_number)"
+      "*, ngo:ngos!campaigns_ngo_id_fkey(profile_id, org_name, verification_status, avg_rating, logo_url, registration_number, profile:profiles!ngos_profile_id_fkey(suspended))"
     )
     .eq("id", id)
     .limit(1)
     .maybeSingle();
-  const campaign = campaignRow as Campaign | null;
+  const campaign = campaignRow as
+    | (Campaign & { ngo?: { verification_status?: string; profile?: { suspended?: boolean } | null } })
+    | null;
   if (!campaign) notFound();
 
   const [appRes, inviteRes, teamRes, fundsRes, ratingsToMeRes, myRatingRes] = await Promise.all([
@@ -103,6 +105,12 @@ export default async function VolunteerCampaignDetailPage({
   const myFunds = (fundsRes.data ?? []) as unknown as FundAllocation[];
   const myRatingFromNgo = ratingsToMeRes.data as Rating | null;
   const myRatingToNgo = myRatingRes.data as Rating | null;
+
+  // A suspended NGO's operation is taken down from public view — only people
+  // already on the team keep access to their own history on it.
+  const ownerTakenDown =
+    campaign.ngo?.verification_status !== "approved" || Boolean(campaign.ngo?.profile?.suspended);
+  if (ownerTakenDown && !onTeam) notFound();
 
   const joinable =
     (campaign.status === "upcoming" || campaign.status === "ongoing") && campaign.type === "public";

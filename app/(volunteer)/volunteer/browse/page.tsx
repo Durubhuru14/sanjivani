@@ -21,7 +21,7 @@ export default async function BrowsePage({
   let query = supabase
     .from("campaigns")
     .select(
-      "*, ngo:ngos!campaigns_ngo_id_fkey(profile_id, org_name, verification_status, avg_rating, logo_url)"
+      "*, ngo:ngos!campaigns_ngo_id_fkey(profile_id, org_name, verification_status, avg_rating, logo_url, profile:profiles!ngos_profile_id_fkey(suspended))"
     )
     .eq("type", "public")
     .neq("status", "cancelled")
@@ -32,10 +32,15 @@ export default async function BrowsePage({
   }
 
   const { data } = await query;
-  let campaigns = (data ?? []) as Campaign[];
+  let campaigns = (data ?? []) as Array<
+    Campaign & { ngo?: { profile?: { suspended?: boolean } | null } }
+  >;
 
-  // Approved NGOs only (extra guard beyond RLS for tidy listing)
-  campaigns = campaigns.filter((c) => c.ngo?.verification_status === "approved");
+  // Approved NGOs only, and a suspended NGO's operation is taken down from
+  // public view until the admin unsuspends them (extra guard beyond RLS)
+  campaigns = campaigns.filter(
+    (c) => c.ngo?.verification_status === "approved" && !c.ngo?.profile?.suspended
+  );
 
   if (q?.trim()) {
     const needle = q.trim().toLowerCase();
