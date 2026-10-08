@@ -255,10 +255,23 @@ with a dynamic, patterned layout:
   Seeded accounts, NGOs, and campaigns ship with pictures (`public/demo/`), and every
   form can upload them (Supabase Storage live, browser-resized data URLs in demo).
 - **Loading skeletons** (`loading.tsx`) on all four role dashboards (spec §11).
+- **Motion restraint pass**: hero leaves thinned to five softer silhouettes, the closing
+  brand mark no longer floats (scroll-reveal entrance only), leaving the proof panel's
+  gentle 7 s float as the single continuous motion in the hero — entrances stay under
+  0.6 s and background patterns drift at 64–90 s (imperceptible).
 - Dependencies pruned/updated: framer-motion removed (unused), all packages at their
   latest stable majors (Next 16.4, React 19.3, Tailwind 4.3, Radix latest, lucide 1.x).
+- Dependency hygiene: jsdom pinned to 29 (Node 20.19+/22.13+ engines), eslint upgraded
+  to 10 (no deprecation), `@playwright/test` + `@types/react`/`-dom`/`-node` declared
+  explicitly, `test:e2e`/`db:reset` scripts wired, and both lockfiles (npm + bun)
+  committed with an engine-check script (`scripts/check-engines.mjs`).
 
 ## 8. Known limitations
+
+- Dependency health: production deps audit clean (`npm audit --omit=dev` → 0). One
+  dev-only advisory (GHSA-vfj7-8cjw-p6xm, `braces` via the `eslint-config-next` lint
+  chain) currently has no patched release anywhere — it is lint tooling only, never
+  shipped to production; see README "Requirements & dependency health" for details.
 
 - **No real payments** — fund tracking is a ledger (amounts + pending/paid), no gateway.
 - **No email/SMS notifications** — in-app only (deliberate, per the spec's out-of-scope list).

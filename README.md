@@ -54,6 +54,35 @@ Demo-mode notes:
 - Add real Supabase env vars and run without the demo flag — the demo layer stays out of
   the way entirely.
 
+## Requirements & dependency health
+
+**Node.js 20.19+ (22.13+ recommended).** The lockfiles ship with the repo —
+`package-lock.json` for npm, `bun.lock` for bun — and pin a tree that installs
+with **zero engine warnings** on Node 22 and 24. To confirm your Node version is
+compatible before installing:
+
+```bash
+node scripts/check-engines.mjs        # checks every package against your Node
+```
+
+**Security posture:**
+
+- Production dependencies audit clean — `npm audit --omit=dev` → **0 vulnerabilities**.
+- `npm audit` (with dev tooling) reports one advisory in the lint chain
+  (`eslint-config-next → @next/eslint-plugin-next → fast-glob → micromatch → braces`,
+  [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)). No patched
+  release of `braces` exists for it yet — it affects *every* project using
+  `eslint-config-next` right now. It is **dev-tooling only** (linting, never shipped to
+  the production build), and the attack path requires adversarial glob patterns inside
+  your own first-party lint config. The suggested `npm audit fix --force` "fix"
+  downgrades `eslint-config-next` to v14, which breaks Next 16 linting — don't apply it.
+  Re-run `npm audit` after a future `braces`/`eslint-config-next` patch lands and this
+  finding will clear on its own.
+- All other audit findings were resolved (`npm audit fix`, non-breaking) and the fixed
+  versions are locked in `package-lock.json`.
+- eslint 10 + jsdom 29 are pinned to versions whose Node engine ranges cover
+  Node 20.19 / 22.13 / 24+ — no more `EBADENGINE` warnings on install.
+
 ## Tech stack
 
 | Layer | Technology |
