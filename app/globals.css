@@ -259,6 +259,215 @@
     }
   }
 
+  /* ---- Motion system (SaaS-grade, calm) -------------------------- */
+  /* Entrances run once on paint; pair with .stagger-* for sequencing. */
+
+  .animate-fade-up {
+    animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out both;
+  }
+  .animate-scale-in {
+    animation: scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .stagger-1 { animation-delay: 0.07s; }
+  .stagger-2 { animation-delay: 0.14s; }
+  .stagger-3 { animation-delay: 0.21s; }
+  .stagger-4 { animation-delay: 0.28s; }
+  .stagger-5 { animation-delay: 0.35s; }
+  .stagger-6 { animation-delay: 0.42s; }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* scroll-reveal (components/Reveal.tsx drives [data-reveal]) */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* living ground — patterns drift almost imperceptibly */
+  .pattern-drift {
+    animation: drift 64s linear infinite;
+  }
+  .pattern-drift-rings {
+    animation: drift-rings 90s linear infinite;
+  }
+  @keyframes drift {
+    from { background-position: 0 0; }
+    to { background-position: 44px 44px; }
+  }
+  @keyframes drift-rings {
+    from { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.06); }
+    to { transform: rotate(360deg) scale(1); }
+  }
+
+  /* live-status dot — breathing ring */
+  .animate-pulse-dot {
+    position: relative;
+  }
+  .animate-pulse-dot::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 9999px;
+    border: 1.5px solid currentColor;
+    opacity: 0.9;
+    animation: pulse-ring 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.9;
+    }
+    70%,
+    100% {
+      transform: scale(1.7);
+      opacity: 0;
+    }
+  }
+
+  /* chat bubble pop-in */
+  .animate-msg-in {
+    animation: msg-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes msg-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* floating leaves — decorative hero layer (components/FallingLeaves) */
+  .animate-leaf {
+    animation-name: leaf-fall;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    will-change: transform;
+  }
+  @keyframes leaf-fall {
+    0% {
+      transform: translate3d(0, -4%, 0) rotate(0deg);
+      opacity: 0;
+    }
+    8% {
+      opacity: var(--leaf-opacity, 0.5);
+    }
+    50% {
+      transform: translate3d(22px, 48%, 0) rotate(160deg);
+    }
+    92% {
+      opacity: var(--leaf-opacity, 0.5);
+    }
+    100% {
+      transform: translate3d(-12px, 102%, 0) rotate(320deg);
+      opacity: 0;
+    }
+  }
+
+  /* logo/NGO marquee band */
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+  }
+  .marquee-mask:hover .marquee-track,
+  .marquee-mask:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* card micro-interaction — lift + hairline tint + sheen sweep */
+  .interactive {
+    position: relative;
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.25s ease;
+  }
+  .interactive:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+    box-shadow: var(--shadow-lift);
+  }
+  .interactive::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      115deg,
+      transparent 30%,
+      color-mix(in oklab, var(--primary-bright) 16%, transparent) 48%,
+      transparent 64%
+    );
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease;
+  }
+  .interactive:hover::before {
+    opacity: 1;
+  }
+
+  /* button press feedback */
+  .press {
+    transition: transform 0.12s ease;
+  }
+  .press:active {
+    transform: scale(0.975);
+  }
+
+  /* arrow nudge inside grouped CTAs */
+  .group-cta .group-cta-arrow {
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group-cta:hover .group-cta-arrow {
+    transform: translateX(3px);
+  }
+
   /* scrollbars — quiet */
   .quiet-scroll {
     scrollbar-width: thin;
@@ -268,8 +477,32 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-rise,
-  .animate-rise-slow {
-    animation: none;
+  .animate-rise-slow,
+  .pattern-drift,
+  .pattern-drift-rings,
+  .animate-leaf,
+  .marquee-track,
+  .animate-msg-in,
+  .animate-pulse-dot::after {
+    animation: none !important;
+  }
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-scale-in {
+    animation-duration: 0.01s !important;
+    animation-delay: 0s !important;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .interactive,
+  .interactive:hover,
+  .press:active,
+  .group-cta .group-cta-arrow {
+    transition: none;
+    transform: none;
   }
 }
 
