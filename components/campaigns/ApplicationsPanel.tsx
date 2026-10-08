@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Inbox, Loader2, X } from "lucide-react";
 import { decideApplication } from "@/app/(ngo)/ngo/actions";
+import { runServerAction } from "@/lib/client-action";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/EmptyState";
@@ -32,7 +33,7 @@ export function ApplicationsPanel({ applications }: { applications: Application[
   function decide(app: Application, decision: "accepted" | "rejected") {
     setBusyId(app.id);
     startTransition(async () => {
-      const res = await decideApplication(app.id, decision);
+      const res = await runServerAction(() => decideApplication(app.id, decision));
       setBusyId(null);
       if (!res.ok) {
         toast({ title: "Could not update application", description: res.error });

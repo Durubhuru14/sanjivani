@@ -32,8 +32,24 @@ async function guardContext(request: NextRequest, uid: string): Promise<GuardCon
   }
 }
 
+/**
+ * Next.js server-action POSTs (fetch with the `next-action` header) must
+ * never receive a middleware redirect: a 307 mangles the action protocol
+ * and the client throws an opaque "invalid server request" error instead
+ * of navigating. Every server action enforces its own auth via its
+ * requireXClient() guard (which redirects *inside* the action, handled
+ * gracefully by the action protocol), so action POSTs simply pass through.
+ */
+function isServerAction(request: NextRequest): boolean {
+  return request.method === "POST" && request.headers.has("next-action");
+}
+
 export async function updateDemoSession(request: NextRequest): Promise<NextResponse> {
   let response = NextResponse.next({ request });
+
+  if (isServerAction(request)) {
+    return response;
+  }
 
   const path = request.nextUrl.pathname;
   const isAuthPage = path === "/login" || path === "/signup";

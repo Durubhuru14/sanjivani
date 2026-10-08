@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
   campaignSchema,
+  campaignStatusSchema,
   hoursSchema,
   ngoProfileUpdateSchema,
   ratingSchema,
@@ -24,6 +25,22 @@ async function requireNgoClient() {
     redirect(ROLE_HOME[profile?.role as string] ?? "/login");
   }
   return { supabase, userId: user.id };
+}
+
+/** Campaign/team/fund/rating writes additionally require an APPROVED NGO —
+ * the same rule the RLS `campaigns_insert` policy enforces in live mode
+ * (spec §6). Pending NGOs can still use the dashboard + profile. */
+async function requireApprovedNgoClient() {
+  const ctx = await requireNgoClient();
+  const { data: ngo } = await ctx.supabase
+    .from("ngos")
+    .select("verification_status")
+    .eq("profile_id", ctx.userId)
+    .single();
+  if (!ngo || ngo.verification_status !== "approved") {
+    redirect("/ngo");
+  }
+  return ctx;
 }
 
 function toDb(values: CampaignFormValues) {
@@ -55,7 +72,7 @@ function toDb(values: CampaignFormValues) {
 /* ================= campaigns ================= */
 
 export async function createCampaign(values: CampaignFormValues) {
-  const { supabase, userId } = await requireNgoClient();
+  const { supabase, userId } = await requireApprovedNgoClient();
   const { error, data } = toDb(values);
   if (error || !data) return { ok: false, error: error ?? "Invalid data" };
 
@@ -71,7 +88,7 @@ export async function createCampaign(values: CampaignFormValues) {
 }
 
 export async function updateCampaign(id: string, values: CampaignFormValues) {
-  const { supabase } = await requireNgoClient();
+  const { supabase } = await requireApprovedNgoClient();
   const { error, data } = toDb(values);
   if (error || !data) return { ok: false, error: error ?? "Invalid data" };
 
@@ -83,8 +100,15 @@ export async function updateCampaign(id: string, values: CampaignFormValues) {
 }
 
 export async function setCampaignStatus(id: string, status: string) {
-  const { supabase } = await requireNgoClient();
-  const { error } = await supabase.from("campaigns").update({ status }).eq("id", id);
+  const { supabase } = await requireApprovedNgoClient();
+  const parsed = campaignStatusSchema.safeParse({ status });
+  if (!parsed.success) {
+    return { ok: false, error: "That campaign status is not recognised." };
+  }
+  const { error } = await supabase
+    .from("campaigns")
+    .update({ status: parsed.data.status })
+    .eq("id", id);
   if (error) return { ok: false, error: friendlyDbError(error).message };
   revalidatePath(`/ngo/campaigns/${id}`);
   revalidatePath("/ngo/campaigns");
@@ -92,7 +116,7 @@ export async function setCampaignStatus(id: string, status: string) {
 }
 
 export async function deleteCampaign(id: string) {
-  const { supabase } = await requireNgoClient();
+  const { supabase } = await requireApprovedNgoClient();
   const { error } = await supabase.from("campaigns").delete().eq("id", id);
   if (error) return { ok: false, error: friendlyDbError(error).message };
   revalidatePath("/ngo/campaigns");
@@ -102,7 +126,7 @@ export async function deleteCampaign(id: string) {
 /* ================= applications ================= */
 
 export async function decideApplication(applicationId: string, decision: "accepted" | "rejected") {
-  const { supabase } = await requireNgoClient();
+  const { supabase } = await requireApprovedNgoClient();
   const { error } = await supabase
     .from("applications")
     .update({ status: decision })
@@ -115,7 +139,7 @@ export async function decideApplication(applicationId: string, decision: "accept
 /* ================= teams ================= */
 
 export async function createTeam(campaignId: string, name: string) {
-  const { supabase } = await requireNgoClient();
+  const { supabase } = await requireApprovedNgoClient();
   if (!name.trim() || name.trim().length > 80) {
     return { ok: false, error: "Team name is required (max 80 characters)." };
   }
@@ -128,7 +152,7 @@ export async function createTeam(campaignId: string, name: string) {
 }
 
 export async function removeTeam(campaignId: string, teamId: string) {
-  const { supabase } = await requireNgoClient();
+  const { supabase } = await requireApprovedNgoClient();
   const { error } = await supabase.from("teams").delete().eq("id", teamId);
   if (error) return { ok: false, error: friendlyDbError(error).message };
   revalidatePath(`/ngo/campaigns/${campaignId}`);
@@ -141,7 +165,7 @@ export async function addTeamMember(
   userId: string,
   memberType: "staff" | "volunteer"
 ) {
-  const { supabase } = await requireNgoClient();
+  const { supabase } = await requireApprovedNgoClient();
   const { error } = await supabase
     .from("team_members")
     .insert({ team_id: teamId, user_id: userId, member_type: memberType });
@@ -151,7 +175,7 @@ export async function addTeamMember(
 }
 
 export async function removeTeamMember(campaignId: string, memberId: string) {
-  const { supabase } = await requireNgoClient();
+  const { supabase } = await requireApprovedNgoClient();
   const { error } = await supabase.from("team_members").delete().eq("id", memberId);
   if (error) return { ok: false, error: friendlyDbError(error).message };
   revalidatePath(`/ngo/campaigns/${campaignId}`);
@@ -159,7 +183,7 @@ export async function removeTeamMember(campaignId: string, memberId: string) {
 }
 
 export async function logHours(campaignId: string, memberId: string, hours: number) {
-  const { supabase } = await requireNgoClient();
+  const { supabase } = await requireApprovedNgoClient();
   const parsed = hoursSchema.safeParse({ hours });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
   const { error } = await supabase
@@ -179,7 +203,7 @@ export async function rateVolunteer(
   score: number,
   comment: string
 ) {
-  const { supabase, userId } = await requireNgoClient();
+  const { supabase, userId } = await requireApprovedNgoClient();
   const parsed = ratingSchema.safeParse({ score, comment });
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
   const { error } = await supabase.from("ratings").insert({

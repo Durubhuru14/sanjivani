@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, UserCheck } from "lucide-react";
 import { claimStaffInvite } from "@/app/(volunteer)/volunteer/actions";
+import { runServerAction } from "@/lib/client-action";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,7 +19,7 @@ export function ClaimInviteButton() {
     setBusy(true);
     setError(null);
     startTransition(async () => {
-      const res = await claimStaffInvite();
+      const res = await runServerAction(() => claimStaffInvite());
       setBusy(false);
       if (!res.ok) {
         setError(res.error ?? "Could not claim the invite.");

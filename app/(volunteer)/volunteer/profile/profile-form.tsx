@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Save } from "lucide-react";
 import { updateVolunteerProfile } from "@/app/(volunteer)/volunteer/actions";
+import { runServerAction } from "@/lib/client-action";
 import { ImageUpload } from "@/components/ImageUpload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,14 +46,14 @@ export function VolunteerProfileForm({
     setFormError(null);
     setBusy(true);
     startTransition(async () => {
-      const res = await updateVolunteerProfile({
+      const res = await runServerAction(() => updateVolunteerProfile({
         name: values.name,
         location: values.location,
         skills: split(values.skills),
         interests: split(values.interests),
         availability: values.availability,
         avatarUrl: values.avatarUrl,
-      });
+      }));
       setBusy(false);
       if (!res.ok) {
         setFormError(res.error ?? "Something went wrong.");

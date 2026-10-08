@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Save } from "lucide-react";
 import { updateNgoProfile } from "@/app/(ngo)/ngo/actions";
+import { runServerAction } from "@/lib/client-action";
 import { ImageUpload } from "@/components/ImageUpload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,7 +38,7 @@ export function NgoProfileForm({
     setFormError(null);
     setBusy(true);
     startTransition(async () => {
-      const res = await updateNgoProfile(values);
+      const res = await runServerAction(() => updateNgoProfile(values));
       setBusy(false);
       if (!res.ok) {
         setFormError(res.error ?? "Something went wrong.");

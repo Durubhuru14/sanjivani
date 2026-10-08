@@ -18,6 +18,8 @@ async function requireUserClient() {
   if (!user) redirect("/login");
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
   if (!profile) redirect("/login?error=incomplete");
+  // suspension blocks every write (same rule as the RLS not_suspended() policies)
+  if (profile.suspended) redirect("/suspended");
   return { supabase, userId: user.id, profile };
 }
 

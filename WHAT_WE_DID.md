@@ -105,7 +105,8 @@ Checklist against the spec (§ = Sanjivani_Spec.md section):
       eligibility, formatting/CSV helpers, RatingForm component, and demo-engine
       business-rule guards + notification coverage (22 tests mirroring the
       Postgres triggers)
-- [x] Playwright E2E specs for all 10 critical flows (§19) — all green against
+- [x] Playwright E2E specs for all 10 critical flows (§19) + 3 server-action
+  resilience regressions (stale session / role swap / suspension) — all green against
       the demo server (`NEXT_PUBLIC_DEMO_MODE=1 npm run dev` + `npm run test:e2e`)
 - [x] Supabase Storage bucket + policies (images ≤ 2 MB, image types only, own folder)
 
@@ -359,6 +360,55 @@ dark mode, and 390 px mobile) with fixes applied against one written contract:
   data-dependent by design, intentional semantic colouring, or full-page-screenshot
   artefacts of the scroll-reveal animation — each remaining claim was checked and
   disproven in the DOM).
+
+### Reliability & production QA pass (ship round)
+
+A senior-QA sweep of **every button on every page as every role** (7 sessions:
+admin, 2 approved NGOs, pending NGO, staff, 2 volunteers — 48+ routes, dialogs
+opened, confirms accepted, suspend clicks paired with undo) hunting for the
+"invalid server request" class of failure reported on the campaign status
+buttons. Findings and fixes:
+
+- **Server actions never redirect at the middleware** (root cause of the reported
+  bug). `proxy.ts` runs for action POSTs too, and a 307 redirect mangles the
+  action protocol — the browser throws an opaque "invalid server request /
+  unexpected response" error and the button dies silently. This hit any stale
+  tab: expired session, user signed in as another role in a second tab, or the
+  account getting suspended mid-browse. Both session middlewares (demo + live)
+  now detect `Next-Action` POSTs and pass them through un-redirected; every
+  action's own `requireXClient()` guard handles auth by redirecting *inside*
+  the action, which the browser follows cleanly to `/login`, the role home, or
+  `/suspended`.
+- **Action guards now mirror the RLS rules** (defense in depth): volunteer
+  actions reject suspended users; NGO campaign/team/fund/rating writes require
+  an approved NGO (`requireApprovedNgoClient` — pending NGOs keep the dashboard
+  + profile); `setCampaignStatus` validates the status enum.
+- **No silent dead buttons**: every client-side server-action call goes through
+  `lib/client-action.ts` (`runServerAction`), which converts transport failures
+  (network drop, stale action manifest, unexpected 500) into a friendly
+  `{ ok: false }` result so the existing toast branches always fire. A global
+  `unhandledrejection` safety net (`components/RejectionSafetyNet.tsx`,
+  rate-limited) catches anything a future component might miss.
+- **Complete friendly-error map**: `friendlyDbError` learned every trigger/demo
+  engine code (NGO_SUSPENDED, FUND_TARGET_IMMUTABLE, INVITE_TARGET_IMMUTABLE,
+  RATING_SCORE_RANGE, ROOM_NOT_FOUND, …), so users see sentences, never codes.
+- **Consistent invite acceptance**: the respond route rolls the invite back to
+  pending if the companion application insert fails, so an invite can never end
+  up "accepted" without the team-eligibility it implies.
+- **Demo production launcher fixed**: `scripts/demo.mjs build` now copies
+  `.next/static` + `public` into the standalone output (exactly like
+  `npm run build`) and `start` boots the standalone server — previously the
+  demo build emitted a standalone bundle that served 404s for every static
+  asset (no CSS/JS → no hydration → blank login form).
+- **Why testing missed it**: every e2e spec clicked with a fresh, valid session
+  immediately after page load; the broken path needs a *stale* tab. New spec
+  `tests/e2e/11-server-action-resilience.spec.ts` locks in all three scenarios
+  (expired cookie, role swap, mid-session suspension).
+- **Verification**: `tsc` clean, ESLint clean, 84/84 unit tests, **13/13 e2e
+  specs** (10 flows + 3 new), the full click-sweep green on dev AND on the
+  compiled standalone production build (both stale-session repros clean on
+  prod), and a VLM sanity pass over post-fix screenshots of all key pages
+  (desktop + mobile): CLEAN, zero visual regressions.
 
 ## 8. Known limitations
 

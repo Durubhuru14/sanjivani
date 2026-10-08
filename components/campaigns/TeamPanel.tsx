@@ -10,6 +10,7 @@ import {
   removeTeam,
   removeTeamMember,
 } from "@/app/(ngo)/ngo/actions";
+import { runServerAction } from "@/lib/client-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -61,7 +62,7 @@ export function TeamPanel({
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, successTitle: string) {
     setBusy(true);
     startTransition(async () => {
-      const res = await fn();
+      const res = await runServerAction(fn);
       setBusy(false);
       if (!res.ok) {
         toast({ title: "Something went wrong", description: res.error });

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { RejectionSafetyNet } from "@/components/RejectionSafetyNet";
 
 /**
  * Sanjivani type system:
@@ -82,6 +83,7 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
+        <RejectionSafetyNet />
       </body>
     </html>
   );

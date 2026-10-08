@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Loader2, Send } from "lucide-react";
 import { applyToCampaign } from "@/app/(volunteer)/volunteer/actions";
+import { runServerAction } from "@/lib/client-action";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,7 +17,7 @@ export function ApplyButton({ campaignId }: { campaignId: string }) {
   function apply() {
     setBusy(true);
     startTransition(async () => {
-      const res = await applyToCampaign(campaignId);
+      const res = await runServerAction(() => applyToCampaign(campaignId));
       setBusy(false);
       if (!res.ok) {
         toast({ title: "Could not apply", description: res.error });

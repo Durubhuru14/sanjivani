@@ -10,6 +10,20 @@ import {
 
 export { ROLE_HOME };
 
+/**
+ * Next.js server-action POSTs (fetch with the `next-action` header) must
+ * never receive a middleware redirect: a 307 mangles the action protocol
+ * and the client throws an opaque "invalid server request" error instead
+ * of navigating. Every server action enforces its own auth via its
+ * requireXClient() guard (which redirects *inside* the action, handled
+ * gracefully by the action protocol), so for action POSTs we still run the
+ * session refresh below (cookies stay fresh) but every guard below returns
+ * `response` instead of redirecting.
+ */
+function isServerAction(request: NextRequest): boolean {
+  return request.method === "POST" && request.headers.has("next-action");
+}
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -52,12 +66,15 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Server-action POSTs pass through un-redirected (see isServerAction).
+  const skipRedirect = isServerAction(request);
+
   const path = request.nextUrl.pathname;
   const isAuthPage = path === "/login" || path === "/signup";
   const isPublicPage = path === "/" || isAuthPage;
 
   if (!user) {
-    if (!isPublicPage) {
+    if (!isPublicPage && !skipRedirect) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("redirect", path);
@@ -75,6 +92,7 @@ export async function updateSession(request: NextRequest) {
   // Authenticated but no profile row (interrupted signup) — sign out cleanly.
   if (!profile) {
     await supabase.auth.signOut();
+    if (skipRedirect) return response;
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("error", "incomplete");
@@ -85,7 +103,7 @@ export async function updateSession(request: NextRequest) {
 
   // Suspension is enforced on every request (spec §6 / §10).
   if (profile.suspended) {
-    if (path !== "/suspended") {
+    if (path !== "/suspended" && !skipRedirect) {
       const url = request.nextUrl.clone();
       url.pathname = "/suspended";
       return NextResponse.redirect(url);
@@ -93,12 +111,12 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
   if (path === "/suspended") {
-    return NextResponse.redirect(home);
+    return skipRedirect ? response : NextResponse.redirect(home);
   }
 
   // Logged-in users never see the landing / auth pages.
   if (isPublicPage) {
-    return NextResponse.redirect(home);
+    return skipRedirect ? response : NextResponse.redirect(home);
   }
 
   // Role-prefix guards.
@@ -106,7 +124,7 @@ export async function updateSession(request: NextRequest) {
   if (guard && profile.role !== guard.role) {
     const exceptions = ROLE_EXCEPTIONS[profile.role] ?? [];
     if (!exceptions.some((p) => path.startsWith(p))) {
-      return NextResponse.redirect(new URL(home, request.url));
+      return skipRedirect ? response : NextResponse.redirect(new URL(home, request.url));
     }
   }
 
@@ -124,7 +142,9 @@ export async function updateSession(request: NextRequest) {
       path !== "/ngo" &&
       !path.startsWith("/ngo/profile")
     ) {
-      return NextResponse.redirect(new URL("/ngo", request.url));
+      return skipRedirect
+        ? response
+        : NextResponse.redirect(new URL("/ngo", request.url));
     }
   }
 

@@ -180,7 +180,7 @@ The admin dashboard is a full control room, not just a verification queue:
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript strict check |
 | `npm test` | Vitest unit + component tests |
-| `npm run test:e2e` | Playwright E2E — all 10 critical flows; runs against the demo server (`NEXT_PUBLIC_DEMO_MODE=1 npm run dev`) or a reset local Supabase |
+| `npm run test:e2e` | Playwright E2E — 13 specs (10 critical flows + server-action resilience); runs against the demo server (`NEXT_PUBLIC_DEMO_MODE=1 npm run dev`) or a reset local Supabase |
 | `npm run db:reset` | Apply migrations + re-seed (local Supabase) |
 
 ## Dark & light mode
@@ -243,7 +243,7 @@ sanjivani/
 │   └── seed.sql             # Demo dataset
 ├── proxy.ts                 # Next 16 request guards (renamed middleware.ts)
 ├── tests/unit/              # Vitest specs
-└── tests/e2e/               # Playwright specs (10 critical flows)
+└── tests/e2e/               # Playwright specs (10 flows + action-resilience regressions)
 ```
 
 ## Deployment (Vercel + Supabase)

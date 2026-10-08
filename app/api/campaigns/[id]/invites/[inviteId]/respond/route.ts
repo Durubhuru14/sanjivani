@@ -57,6 +57,13 @@ export async function POST(
       const friendly = friendlyDbError(appError);
       const conflict = ["DUPLICATE", "DUPLICATE_APPLICATION", "23505"].includes(friendly.code);
       if (!conflict) {
+        // roll the invite back to pending so the state stays consistent
+        // (invite accepted but no team-eligible application) and the
+        // volunteer can retry once the blocker is resolved
+        await supabase
+          .from("campaign_invites")
+          .update({ status: "pending" })
+          .eq("id", inviteId);
         return fail(friendly.message, friendly.code, 400);
       }
       // already applied before — treat as success, the invite is accepted either way

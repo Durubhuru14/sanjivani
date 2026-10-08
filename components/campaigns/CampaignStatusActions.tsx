@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AlertTriangle, Download, Loader2, MessageSquare, PlayCircle, Square, Trash2 } from "lucide-react";
 import { setCampaignStatus, deleteCampaign } from "@/app/(ngo)/ngo/actions";
+import { runServerAction } from "@/lib/client-action";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -47,7 +48,7 @@ export function CampaignStatusActions({ campaign }: { campaign: Campaign }) {
   function runStatus(status: string, expected: string, label: string) {
     setBusy(true);
     startTransition(async () => {
-      const res = await setCampaignStatus(campaign.id, status);
+      const res = await runServerAction(() => setCampaignStatus(campaign.id, status));
       setBusy(false);
       if (!res.ok) {
         toast({ title: "Could not update status", description: res.error });
@@ -62,6 +63,14 @@ export function CampaignStatusActions({ campaign }: { campaign: Campaign }) {
       });
       router.refresh();
     });
+  }
+
+  async function deleteNow() {
+    const res = await runServerAction(() => deleteCampaign(campaign.id));
+    if (!res.ok) {
+      toast({ title: "Could not delete campaign", description: res.error });
+    }
+    // on success the action redirects to /ngo/campaigns
   }
 
   async function exportCsv() {
@@ -201,7 +210,7 @@ export function CampaignStatusActions({ campaign }: { campaign: Campaign }) {
               <AlertDialogCancel>Keep campaign</AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-white hover:bg-destructive/90"
-                onClick={() => void deleteCampaign(campaign.id)}
+                onClick={() => void deleteNow()}
               >
                 Delete permanently
               </AlertDialogAction>
