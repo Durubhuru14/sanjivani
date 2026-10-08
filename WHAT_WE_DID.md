@@ -237,8 +237,18 @@ with a dynamic, patterned layout:
   bright green volunteer arm) forming one continuous growth path, readable at 24px,
   clean at 512px; shipped as `public/logo.svg`, favicon `app/icon.svg`, and a 512px
   app-icon PNG, with midrib-vein detail in large lockups.
-- **Motion**: quiet CSS-only float/rise accents on hero furniture with
-  `prefers-reduced-motion` respected — no animation libraries.
+- **Motion (final pass — SaaS-grade, still zero JS weight)**: staggered fade-up
+  entrances across hero/auth/dashboards, IntersectionObserver scroll reveals, rAF
+  count-up stats, slowly drifting background patterns, a live NGO marquee (real approved
+  orgs from the DB), floating leaf particles on the hero, breathing live-status dots,
+  chat-bubble pop-ins, and hover lift + sheen sweep on cards/CTAs — every effect fully
+  disabled under `prefers-reduced-motion`, no animation libraries.
+- **Account menu**: the avatar badge opens the full profile hub — identity (photo, name,
+  email, role chip), profile & photo settings, per-role workspace shortcuts, the theme
+  switch, and sign out. The navbar drops its Profile link and stays task-focused.
+- **Admin profile page**: `/admin/profile` gives platform admins the same name /
+  location / photo editing as every other role (server action + validation, works in
+  both live and demo modes).
 - **Profile pictures everywhere**: avatars, NGO logos, and campaign images display in
   the navbar, chat bubbles, team rosters, applications, room pickers, campaign cards,
   browse list, and profile/admin pages (shared `UserAvatar` with initials fallback).

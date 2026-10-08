@@ -143,10 +143,24 @@ Aisha), an open volunteer report for the admin queue, and notifications for seve
 
 ## Dark & light mode
 
-The UI ships with both themes (spec §3): the toggle lives in the navbar on every page.
+The UI ships with both themes (spec §3). Inside the app the switch lives in the **avatar
+account menu**; on public pages (landing / login / signup) it is a button in the navbar.
 - Choice is stored under a single `theme` key in `localStorage`.
 - First visit defaults to the system preference (`prefers-color-scheme`).
 - The theme is applied before first paint — no flash of the wrong theme.
+
+## Motion & the account menu
+
+- **Account menu**: clicking your avatar badge opens everything about “me” — profile &
+  photo, workspace shortcuts (campaigns / invites / staff per role), the theme switch,
+  and sign out. The navbar itself stays task-focused.
+- **Motion system**: staggered fade-up entrances, scroll reveals (IntersectionObserver),
+  count-up stats, drifting background patterns, a live NGO marquee on the landing page,
+  chat-bubble pop-ins, and hover lift/sheen on cards. All of it is CSS-driven,
+  fully disabled under `prefers-reduced-motion`, and adds no JavaScript bundle weight
+  beyond two tiny components.
+- **Admin profile**: admins get the same profile page (name, location, photo) as every
+  other role — reachable from the account menu.
 
 ## Image uploads
 
