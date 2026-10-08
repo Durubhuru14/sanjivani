@@ -156,7 +156,7 @@ export function ChatRoom({
             return (
               <div
                 key={message.id}
-                className={cn("flex items-end gap-2", mine ? "justify-end" : "justify-start")}
+                className={cn("animate-msg-in flex items-end gap-2", mine ? "justify-end" : "justify-start")}
               >
                 {!mine && !compact ? (
                   <UserAvatar name={sender.name} src={sender.avatar_url} className="h-7 w-7 text-[10px]" />

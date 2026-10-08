@@ -45,7 +45,7 @@ export default async function AdminDashboardPage() {
         "*, volunteer:volunteer_id(id, name, avatar_url, suspended), reporter:reported_by(id, name, avatar_url), campaign:campaign_id(id, title)"
       )
       .order("created_at", { ascending: false }),
-    supabase.from("profiles").select("id, role, name, email", { count: "exact", head: true }),
+    supabase.from("profiles").select("id", { count: "exact", head: true }),
     supabase.from("campaigns").select("id, status", { count: "exact", head: true }),
     supabase.from("applications").select("id", { count: "exact", head: true }),
   ]);
@@ -66,7 +66,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="animate-fade-up">
         <h1 className="text-3xl font-bold tracking-tight">Admin dashboard</h1>
         <p className="mt-1 text-muted-foreground">
           Verification queue, reports, platform health, and account actions.
@@ -74,14 +74,22 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="NGOs on platform" value={ngos.length} icon={Building2} hint={`${pendingNgos.length} awaiting approval`} />
-        <StatCard label="Volunteers" value={vols.length} icon={HeartHandshake} hint={`${pendingVols.length} awaiting verification`} />
-        <StatCard label="Open reports" value={openReports.length} icon={Flag} />
-        <StatCard label="Suspended accounts" value={suspendedUsers.length} icon={ShieldAlert} />
+        <div className="animate-fade-up stagger-1">
+          <StatCard label="NGOs on platform" value={ngos.length} icon={Building2} hint={`${pendingNgos.length} awaiting approval`} />
+        </div>
+        <div className="animate-fade-up stagger-2">
+          <StatCard label="Volunteers" value={vols.length} icon={HeartHandshake} hint={`${pendingVols.length} awaiting verification`} />
+        </div>
+        <div className="animate-fade-up stagger-3">
+          <StatCard label="Open reports" value={openReports.length} icon={Flag} />
+        </div>
+        <div className="animate-fade-up stagger-4">
+          <StatCard label="Suspended accounts" value={suspendedUsers.length} icon={ShieldAlert} />
+        </div>
       </div>
 
       {/* Pending NGOs */}
-      <Card className="shadow-soft">
+      <Card className="animate-fade-up stagger-2 shadow-soft">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Inbox className="h-5 w-5 text-primary" aria-hidden /> NGOs awaiting approval
@@ -132,7 +140,7 @@ export default async function AdminDashboardPage() {
       </Card>
 
       {/* Pending volunteers */}
-      <Card className="shadow-soft">
+      <Card className="animate-fade-up stagger-3 shadow-soft">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <HeartHandshake className="h-5 w-5 text-primary" aria-hidden /> Volunteers awaiting
@@ -178,7 +186,7 @@ export default async function AdminDashboardPage() {
       </Card>
 
       {/* Reports queue */}
-      <Card className="shadow-soft">
+      <Card className="animate-fade-up stagger-4 shadow-soft">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Flag className="h-5 w-5 text-primary" aria-hidden /> Volunteer reports
@@ -231,7 +239,7 @@ export default async function AdminDashboardPage() {
       </Card>
 
       {/* Suspended accounts */}
-      <Card className="shadow-soft">
+      <Card className="animate-fade-up stagger-5 shadow-soft">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ShieldAlert className="h-5 w-5 text-primary" aria-hidden /> Suspended accounts
@@ -261,7 +269,7 @@ export default async function AdminDashboardPage() {
       </Card>
 
       {/* Platform stats */}
-      <Card className="shadow-soft">
+      <Card className="animate-fade-up stagger-6 shadow-soft">
         <CardHeader>
           <CardTitle>Platform stats</CardTitle>
         </CardHeader>

@@ -77,14 +77,14 @@ export default async function StaffDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="animate-fade-up">
         <h1 className="text-3xl font-bold tracking-tight">Staff dashboard</h1>
         <p className="mt-1 text-muted-foreground">
           Everything your NGO assigned you to — campaigns, teams, and rooms.
         </p>
       </div>
 
-      <Card className="shadow-soft">
+      <Card className="animate-fade-up stagger-1 shadow-soft">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" aria-hidden /> Your organisation

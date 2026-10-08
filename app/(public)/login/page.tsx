@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LogoMark } from "@/components/Logo";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const DEMO_ACCOUNTS = [
   { email: "admin@sanjivani.test", label: "Platform admin" },
@@ -86,7 +87,7 @@ function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md border-border bg-card shadow-lift">
+    <Card className="animate-scale-in w-full max-w-md border-border bg-card shadow-lift">
       <CardHeader className="items-center text-center">
         <LogoMark detailed className="mx-auto mb-1 h-14 w-14" />
         <CardTitle className="font-display text-3xl font-medium tracking-wide text-foreground">
@@ -145,7 +146,7 @@ function LoginForm() {
               <p className="text-sm text-destructive" role="alert">{fieldErrors.password}</p>
             )}
           </div>
-          <Button type="submit" className="w-full gap-2" disabled={busy}>
+          <Button type="submit" className="press w-full gap-2" disabled={busy}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <LogIn className="h-4 w-4" aria-hidden />}
             {busy ? "Logging in…" : "Log in"}
           </Button>
@@ -154,7 +155,7 @@ function LoginForm() {
         {demoActive ? (
           <div className="panel-tinted mt-6 rounded-lg p-4">
             <p className="flex items-center gap-2 font-mono text-[0.625rem] font-medium uppercase tracking-[0.16em] text-leaf">
-              <span className="h-1.5 w-1.5 rounded-full bg-leaf" aria-hidden />
+              <span className="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-current text-leaf" aria-hidden />
               Demo mode · seeded data · no Supabase needed
             </p>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
@@ -167,7 +168,7 @@ function LoginForm() {
                   key={a.email}
                   type="button"
                   onClick={() => fillDemo(a.email)}
-                  className="truncate rounded-md border border-border/70 bg-card px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-leaf/50 hover:text-foreground"
+                  className="press truncate rounded-md border border-border/70 bg-card px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-leaf/50 hover:text-foreground"
                 >
                   <span className="font-medium text-foreground">{a.label}</span>
                   <span className="mx-1.5 text-leaf/60">·</span>
@@ -195,14 +196,14 @@ export default function LoginPage() {
       {/* Brand panel — botanical patterns, quiet motion, proof bullets */}
       <div className="relative hidden overflow-hidden border-r border-border lg:block">
         <div className="pattern-wash pointer-events-none absolute inset-0" aria-hidden />
-        <div className="pattern-rings pointer-events-none absolute -left-40 -bottom-44 h-[520px] w-[520px] opacity-50" aria-hidden />
+        <div className="pattern-rings pattern-drift-rings pointer-events-none absolute -left-40 -bottom-44 h-[520px] w-[520px] opacity-50" aria-hidden />
         <div className="pattern-dots pointer-events-none absolute inset-0 opacity-20" aria-hidden />
         <div className="relative mx-auto flex h-full max-w-lg flex-col justify-center px-10 py-16">
-          <LogoMark detailed className="h-12 w-12" />
-          <h2 className="mt-6 font-display text-4xl font-normal leading-[1.08] text-foreground">
+          <LogoMark detailed className="animate-fade-up h-12 w-12" />
+          <h2 className="animate-fade-up stagger-1 mt-6 font-display text-4xl font-normal leading-[1.08] text-foreground">
             One platform for every campaign, team, and rupee
           </h2>
-          <p className="mt-4 leading-relaxed text-muted-foreground">
+          <p className="animate-fade-up stagger-2 mt-4 leading-relaxed text-muted-foreground">
             Replace the spreadsheets, WhatsApp groups, and paper notices with a single ledger
             your whole team can trust.
           </p>
@@ -211,8 +212,8 @@ export default function LoginPage() {
               { title: "Campaigns & teams", text: "Applications, rosters, and hours in one place." },
               { title: "Scoped chat rooms", text: "Pick who joins each conversation — nothing leaks." },
               { title: "Fund ledger + CSV export", text: "Allocations, payments, and clean summaries." },
-            ].map((item) => (
-              <li key={item.title} className="flex gap-3">
+            ].map((item, i) => (
+              <li key={item.title} className={cn("animate-fade-up flex gap-3", `stagger-${i + 3}`)}>
                 <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-leaf" aria-hidden />
                 <div>
                   <p className="text-sm font-semibold text-foreground">{item.title}</p>
