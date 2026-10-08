@@ -185,7 +185,11 @@ account menu**; on public pages (landing / login / signup) it is a button in the
   and sign out. The navbar itself stays task-focused.
 - **Motion system**: staggered fade-up entrances, scroll reveals (IntersectionObserver),
   count-up stats, drifting background patterns, a live NGO marquee on the landing page,
-  chat-bubble pop-ins, and hover lift/sheen on cards. All of it is CSS-driven,
+  chat-bubble pop-ins, and hover lift/sheen on cards. Entrances finish under 0.6 s and
+  continuous motion is limited to the imperceptible pattern drift, the slow marquee,
+  and the small “live” status dots — the Field Overview card is deliberately static
+  after its entrance (a permanently floating card re-rasterises its text every frame,
+  which reads as flicker). All of it is CSS-driven,
   fully disabled under `prefers-reduced-motion`, and adds no JavaScript bundle weight
   beyond two tiny components.
 - **Admin profile**: admins get the same profile page (name, location, photo) as every
@@ -224,6 +228,7 @@ sanjivani/
 ├── supabase/
 │   ├── migrations/          # Schema, RLS, triggers, realtime, storage
 │   └── seed.sql             # Demo dataset
+├── proxy.ts                 # Next 16 request guards (renamed middleware.ts)
 ├── tests/unit/              # Vitest specs
 └── tests/e2e/               # Playwright specs (10 critical flows)
 ```

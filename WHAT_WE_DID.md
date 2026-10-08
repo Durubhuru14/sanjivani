@@ -27,9 +27,9 @@ Checklist against the spec (§ = Sanjivani_Spec.md section):
 - [x] Email confirmation disabled; signup logs in immediately (§6, documented in README)
 - [x] RLS enabled on **every** table with the §9 policies (incl. suspension checks)
 - [x] Auth: role-aware signup (NGO/Volunteer + staff-invite claim), login, logout,
-      session persistence, `middleware.ts` route guards (§6)
+      session persistence, `proxy.ts` route guards (§6, Next 16's renamed middleware convention)
 - [x] NGO signup → `ngos` row `pending`; campaign creation blocked until approved
-      (UI gate in middleware + RLS insert policy) (§6)
+      (UI gate in the proxy + RLS insert policy) (§6)
 - [x] Admin dashboard: pending NGO queue with approve/reject (§8 routes)
 - [x] Volunteer verification: pending → approved/rejected → verified badge; core
       features usable while pending (§6)
@@ -63,7 +63,7 @@ Checklist against the spec (§ = Sanjivani_Spec.md section):
 - [x] Volunteer auto-history: campaigns joined, hours sum (`volunteer_total_hours`
       RPC), average rating, ratings list
 - [x] Hours logging (`hours_logged`) only after completion, NGO-only (trigger)
-- [x] Suspension: admin suspend/unsuspend; blocked at middleware (redirect to
+- [x] Suspension: admin suspend/unsuspend; blocked at the proxy layer (redirect to
       `/suspended`) and RLS (writes rejected); data preserved
 - [x] CSV export of team + fund summary (§8 POST `/api/export/[campaignId]`)
 - [x] All forms validate client + server with Zod (§12) + DB-level guards
@@ -256,15 +256,20 @@ with a dynamic, patterned layout:
   form can upload them (Supabase Storage live, browser-resized data URLs in demo).
 - **Loading skeletons** (`loading.tsx`) on all four role dashboards (spec §11).
 - **Motion restraint pass**: hero leaves thinned to five softer silhouettes, the closing
-  brand mark no longer floats (scroll-reveal entrance only), leaving the proof panel's
-  gentle 7 s float as the single continuous motion in the hero — entrances stay under
-  0.6 s and background patterns drift at 64–90 s (imperceptible).
+  brand mark no longer floats (scroll-reveal entrance only), and the Field Overview
+  proof card is static after its entrance — a permanently floating card re-rasterises
+  its text every frame, which reads as flicker on Windows subpixel rendering. Continuous
+  motion is now only the imperceptible pattern drift, the slow NGO marquee, and the
+  small “live” status dots; entrances stay under 0.6 s.
 - Dependencies pruned/updated: framer-motion removed (unused), all packages at their
   latest stable majors (Next 16.4, React 19.3, Tailwind 4.3, Radix latest, lucide 1.x).
 - Dependency hygiene: jsdom pinned to 29 (Node 20.19+/22.13+ engines), eslint upgraded
   to 10 (no deprecation), `@playwright/test` + `@types/react`/`-dom`/`-node` declared
   explicitly, `test:e2e`/`db:reset` scripts wired, and both lockfiles (npm + bun)
   committed with an engine-check script (`scripts/check-engines.mjs`).
+- Next 16 conventions: `middleware.ts` migrated to the `proxy.ts` file convention (no
+  deprecation warning) and `turbopack.root` pinned in next.config.ts so stray lockfiles
+  above the project directory can never confuse the dev server.
 
 ## 8. Known limitations
 

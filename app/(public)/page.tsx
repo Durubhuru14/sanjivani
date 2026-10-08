@@ -138,9 +138,12 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          {/* Proof object: the product, quietly floating on the patterned ground */}
+          {/* Proof object: the product, resting on the patterned ground.
+              Deliberately static after its entrance — a continuously floating
+              card forces the text layer to re-rasterise every frame, which
+              reads as flicker (especially on Windows subpixel text). */}
           <div className="animate-scale-in stagger-2 flex justify-center lg:justify-end">
-            <div className="panel-raised animate-rise relative w-full max-w-md rounded-xl p-6 sm:p-8">
+            <div className="panel-raised relative w-full max-w-md rounded-xl p-6 sm:p-8">
               <div className="pattern-dots pointer-events-none absolute inset-0 rounded-xl opacity-30" aria-hidden />
               <div className="relative">
                 <div className="flex items-center justify-between border-b border-border/70 pb-4">

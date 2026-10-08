@@ -242,23 +242,6 @@
     color: transparent;
   }
 
-  /* gentle float for hero furniture */
-  .animate-rise {
-    animation: rise 7s ease-in-out infinite;
-  }
-  .animate-rise-slow {
-    animation: rise 10s ease-in-out infinite;
-  }
-  @keyframes rise {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-8px);
-    }
-  }
-
   /* ---- Motion system (SaaS-grade, calm) -------------------------- */
   /* Entrances run once on paint; pair with .stagger-* for sequencing. */
 
@@ -476,8 +459,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-rise,
-  .animate-rise-slow,
   .pattern-drift,
   .pattern-drift-rings,
   .animate-leaf,
