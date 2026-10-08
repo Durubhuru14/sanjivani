@@ -9,6 +9,7 @@ import type { Profile, Role } from "@/lib/types";
  */
 export async function requireLayoutProfile(role: Role): Promise<{
   profile: Profile;
+  email: string | null;
   supabase: Awaited<ReturnType<typeof createClient>>;
 }> {
   const supabase = await createClient();
@@ -26,5 +27,5 @@ export async function requireLayoutProfile(role: Role): Promise<{
   if ((profile as Profile).suspended) redirect("/suspended");
   if ((profile as Profile).role !== role) redirect(ROLE_HOME[(profile as Profile).role] ?? "/login");
 
-  return { profile: profile as Profile, supabase };
+  return { profile: profile as Profile, email: user.email ?? null, supabase };
 }
