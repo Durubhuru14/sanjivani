@@ -16,6 +16,8 @@ const env = {
   ...process.env,
   NEXT_PUBLIC_DEMO_MODE: "1",
   DEMO_MODE: "1",
+  // keep the demo console clean — no telemetry notice in the log
+  NEXT_TELEMETRY_DISABLED: "1",
 };
 
 const commands = {
