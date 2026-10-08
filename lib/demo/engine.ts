@@ -264,10 +264,199 @@ function campaignTitle(id: unknown): string {
   return String(c?.title ?? "a campaign");
 }
 
+function profileName(id: unknown): string {
+  if (!id) return "Someone";
+  const p = table("profiles").find((r) => r.id === id);
+  return String(p?.name ?? "Someone");
+}
+
+/** All team-member profile ids across every team of a campaign. */
+function campaignMemberIds(campaignId: unknown): string[] {
+  const ids = new Set<string>();
+  for (const t of table("teams")) {
+    if (t.campaign_id !== campaignId) continue;
+    for (const m of table("team_members")) {
+      if (m.team_id === t.id) ids.add(String(m.user_id));
+    }
+  }
+  return [...ids];
+}
+
 function findProfileByEmail(email: string): Row | null {
   const u = getStore().users.find((x) => x.email.toLowerCase() === email.toLowerCase());
   if (!u) return null;
   return table("profiles").find((p) => p.id === u.id) ?? null;
+}
+
+/* ------------------------------------------------------------------
+ * Business-rule guards mirroring the Postgres BEFORE triggers
+ * (00004_triggers.sql) so demo mode rejects the same illegal writes.
+ * ------------------------------------------------------------------ */
+
+function validateCampaignRow(row: Row): Err {
+  if (
+    row.start_date != null && row.end_date != null &&
+    String(row.end_date) < String(row.start_date)
+  ) {
+    return { message: "END_DATE_BEFORE_START", code: "23514" };
+  }
+  const budget = Number(row.total_budget ?? 0);
+  if (row.total_budget != null && (!Number.isFinite(budget) || budget < 0)) {
+    return { message: "BUDGET_NEGATIVE", code: "23514" };
+  }
+  return null;
+}
+
+function campaignOf(id: unknown): Row | null {
+  if (!id) return null;
+  return table("campaigns").find((c) => c.id === id) ?? null;
+}
+
+function isCampaignTeamMember(campaignId: unknown, userId: unknown): boolean {
+  return table("teams").some(
+    (t) =>
+      t.campaign_id === campaignId &&
+      table("team_members").some((m) => m.team_id === t.id && m.user_id === userId)
+  );
+}
+
+/** Guard an insert per table (called before the row is pushed). */
+function violatesInsertRule(t: string, row: Row): Err {
+  if (t === "campaigns") {
+    return validateCampaignRow(row);
+  }
+  if (t === "applications") {
+    const c = campaignOf(row.campaign_id);
+    if (!c) return { message: "campaign not found", code: "23503" };
+    // a suspended NGO's operation is taken down — no new applications flow in
+    const owner = table("profiles").find((p) => p.id === c.ngo_id);
+    if (owner?.suspended) return { message: "NGO_SUSPENDED", code: "42501" };
+    // invite-only campaigns are joined through campaign_invites, not open applications
+    if (c.type === "invite") {
+      const hasAcceptedInvite = table("campaign_invites").some(
+        (ci) =>
+          ci.campaign_id === row.campaign_id &&
+          ci.volunteer_id === row.volunteer_id &&
+          ci.status === "accepted"
+      );
+      if (!hasAcceptedInvite) {
+        return { message: "APPLICATION_REQUIRES_INVITE", code: "23514" };
+      }
+    }
+  }
+  if (t === "team_members") {
+    const team = table("teams").find((x) => x.id === row.team_id);
+    const c = campaignOf(team?.campaign_id);
+    if (!team || !c) return { message: "TEAM_NOT_FOUND", code: "23503" };
+    if (row.member_type === "staff") {
+      const activeStaff = table("ngo_staff").some(
+        (s) => s.ngo_id === c.ngo_id && s.profile_id === row.user_id && s.status === "active"
+      );
+      if (!activeStaff) return { message: "STAFF_MUST_BE_ACTIVE_FOR_NGO", code: "23514" };
+    } else {
+      const accepted =
+        table("applications").some(
+          (a) =>
+            a.campaign_id === c.id && a.volunteer_id === row.user_id && a.status === "accepted"
+        ) ||
+        table("campaign_invites").some(
+          (ci) =>
+            ci.campaign_id === c.id && ci.volunteer_id === row.user_id && ci.status === "accepted"
+        );
+      if (!accepted) return { message: "VOLUNTEER_MUST_BE_ACCEPTED", code: "23514" };
+    }
+  }
+  if (t === "ratings") {
+    if (row.from_user_id === row.to_user_id) {
+      return { message: "NO_SELF_RATING", code: "23514" };
+    }
+    const score = Number(row.score);
+    if (!Number.isInteger(score) || score < 1 || score > 5) {
+      return { message: "RATING_SCORE_RANGE", code: "23514" };
+    }
+    const c = campaignOf(row.campaign_id);
+    if (!c || c.status !== "completed") {
+      return { message: "RATING_REQUIRES_COMPLETED_CAMPAIGN", code: "23514" };
+    }
+    // each side must be on the campaign team or be the campaign's NGO owner
+    // (volunteers rate the NGO and vice versa — neither is a team_members row)
+    const participant = (id: unknown) =>
+      id === c.ngo_id || isCampaignTeamMember(row.campaign_id, id);
+    if (!participant(row.from_user_id) || !participant(row.to_user_id)) {
+      return { message: "RATING_REQUIRES_SHARED_TEAM", code: "23514" };
+    }
+  }
+  return null;
+}
+
+/** Guard an update per table (called before each matched row is mutated). */
+function violatesUpdateRule(t: string, before: Row, values: Row): Err {
+  if (t === "fund_allocations") {
+    if (values.amount != null && Number(values.amount) !== Number(before.amount)) {
+      return { message: "FUND_AMOUNT_IMMUTABLE", code: "23514" };
+    }
+    if (
+      (values.member_id != null && values.member_id !== before.member_id) ||
+      (values.campaign_id != null && values.campaign_id !== before.campaign_id)
+    ) {
+      return { message: "FUND_TARGET_IMMUTABLE", code: "23514" };
+    }
+    if (before.status === "paid" && values.status === "pending") {
+      return { message: "FUND_ALREADY_PAID", code: "23514" };
+    }
+  }
+  if (t === "campaign_invites") {
+    if (
+      (values.campaign_id != null && values.campaign_id !== before.campaign_id) ||
+      (values.volunteer_id != null && values.volunteer_id !== before.volunteer_id) ||
+      (values.invited_by != null && values.invited_by !== before.invited_by)
+    ) {
+      return { message: "INVITE_TARGET_IMMUTABLE", code: "23514" };
+    }
+    if (values.status != null && values.status !== before.status) {
+      if (before.status !== "pending") {
+        return { message: "INVITE_ALREADY_ANSWERED", code: "23514" };
+      }
+      if (values.status !== "accepted" && values.status !== "declined") {
+        return { message: "INVITE_STATUS_INVALID", code: "23514" };
+      }
+    }
+  }
+  if (t === "team_members") {
+    if (
+      (values.team_id != null && values.team_id !== before.team_id) ||
+      (values.user_id != null && values.user_id !== before.user_id) ||
+      (values.member_type != null && values.member_type !== before.member_type)
+    ) {
+      return { message: "TEAM_MEMBER_IMMUTABLE", code: "23514" };
+    }
+    if (values.hours_logged != null && values.hours_logged !== before.hours_logged) {
+      const hours = Number(values.hours_logged);
+      if (!Number.isFinite(hours) || hours < 0) {
+        return { message: "HOURS_NEGATIVE", code: "23514" };
+      }
+      const team = table("teams").find((x) => x.id === before.team_id);
+      const c = campaignOf(team?.campaign_id);
+      if (!c || c.status !== "completed") {
+        return { message: "HOURS_ONLY_AFTER_COMPLETION", code: "23514" };
+      }
+    }
+  }
+  if (t === "campaigns") {
+    const merged = { ...before, ...values };
+    const dateErr = validateCampaignRow(merged);
+    if (dateErr) return dateErr;
+    // total_budget cannot drop below what is already allocated
+    if (values.total_budget != null) {
+      const allocated = table("fund_allocations")
+        .filter((f) => f.campaign_id === before.id)
+        .reduce((s, f) => s + Number(f.amount ?? 0), 0);
+      if (Number(values.total_budget) - allocated < 0) {
+        return { message: "TOTAL_BELOW_ALLOCATED", code: "23514" };
+      }
+    }
+  }
+  return null;
 }
 
 /** Unique partial indexes that the UI depends on for duplicate messages. */
@@ -333,6 +522,33 @@ function afterInsert(t: string, row: Row): void {
     case "campaign_invites":
       notify(row.volunteer_id, "campaign_invite", `You have been invited to join "${campaignTitle(row.campaign_id)}".`);
       break;
+    case "applications": {
+      // new pending application → the campaign's NGO owner wants to know (end-to-end flow)
+      if (row.status === "pending") {
+        const campaign = table("campaigns").find((c) => c.id === row.campaign_id);
+        if (campaign) {
+          notify(
+            campaign.ngo_id,
+            "new_application",
+            `${profileName(row.volunteer_id)} applied to join "${campaignTitle(row.campaign_id)}".`
+          );
+        }
+      }
+      break;
+    }
+    case "volunteer_reports": {
+      // every admin sees new reports in their review queue
+      for (const p of table("profiles")) {
+        if (p.role === "admin") {
+          notify(
+            p.id,
+            "volunteer_report",
+            `A report was filed against ${profileName(row.volunteer_id)} by ${profileName(row.reported_by)}.`
+          );
+        }
+      }
+      break;
+    }
     case "team_members": {
       const team = table("teams").find((x) => x.id === row.team_id);
       notify(row.user_id, "team_assignment", `You have been added to the team for "${campaignTitle(team?.campaign_id)}".`);
@@ -374,6 +590,11 @@ function afterInsert(t: string, row: Row): void {
     }
     case "ratings":
       recomputeAvgRating(row.to_user_id);
+      notify(
+        row.to_user_id,
+        "rating_received",
+        `You received a ${row.score}-star rating on "${campaignTitle(row.campaign_id)}".`
+      );
       break;
     default:
       break;
@@ -383,6 +604,22 @@ function afterInsert(t: string, row: Row): void {
 /** The after-update side effects. */
 function afterUpdate(t: string, before: Row, after: Row): void {
   switch (t) {
+    case "campaigns": {
+      // status lifecycle → every team member learns the campaign moved,
+      // and completion unlocks ratings + hours for them
+      if (before.status !== after.status) {
+        const extra =
+          after.status === "completed"
+            ? " You can now rate your teammates and the NGO."
+            : after.status === "cancelled"
+              ? " No further activity can happen on it."
+              : "";
+        for (const uid of campaignMemberIds(after.id)) {
+          notify(uid, "campaign_status", `"${after.title}" is now ${after.status}.${extra}`);
+        }
+      }
+      break;
+    }
     case "applications":
       if (before.status !== after.status && (after.status === "accepted" || after.status === "rejected")) {
         notify(
@@ -392,8 +629,47 @@ function afterUpdate(t: string, before: Row, after: Row): void {
         );
       }
       break;
-    case "campaign_invites":
-      // invite accepted → the accepting volunteer may need a team row; app handles that itself
+    case "campaign_invites": {
+      // invite answered — the NGO learns about declines; accepts are visible
+      // through the applications row the API route creates
+      if (before.status !== after.status && after.status === "declined") {
+        notify(
+          after.invited_by,
+          "invite_declined",
+          `${profileName(after.volunteer_id)} declined the invite to "${campaignTitle(after.campaign_id)}".`
+        );
+      }
+      break;
+    }
+    case "volunteer_reports":
+      if (before.status !== after.status && (after.status === "reviewed" || after.status === "dismissed")) {
+        notify(
+          after.reported_by,
+          "report_status",
+          `Your report against ${profileName(after.volunteer_id)} was marked ${after.status}.`
+        );
+      }
+      break;
+    case "team_members":
+      if (Number(after.hours_logged ?? 0) !== Number(before.hours_logged ?? 0)) {
+        const team = table("teams").find((x) => x.id === after.team_id);
+        notify(
+          after.user_id,
+          "hours_logged",
+          `${after.hours_logged} hour${Number(after.hours_logged) === 1 ? "" : "s"} were logged for you on "${campaignTitle(team?.campaign_id)}".`
+        );
+      }
+      break;
+    case "profiles":
+      if (before.suspended !== after.suspended) {
+        notify(
+          after.id,
+          after.suspended ? "account_suspended" : "account_unsuspended",
+          after.suspended
+            ? "Your account was suspended by the platform admin. Your data is preserved — contact support if you think this is a mistake."
+            : "Your account was unsuspended — welcome back. All your data is intact."
+        );
+      }
       break;
     case "fund_allocations":
       if (before.status === "pending" && after.status === "paid") {
@@ -514,6 +790,9 @@ function runInsert(t: string, values: Row[], columns?: string, single?: boolean)
     const dup = violatesUnique(t, row);
     if (dup) return err(dup.message, dup.code, 409);
 
+    const rule = violatesInsertRule(t, row);
+    if (rule) return err(rule.message, rule.code, 400);
+
     // budget guard (mirrors validate_fund_amount)
     if (t === "fund_allocations") {
       const c = table("campaigns").find((x) => x.id === row.campaign_id);
@@ -548,6 +827,8 @@ function runUpdate(
   const updated: Row[] = [];
   for (const row of rows) {
     const before = { ...row };
+    const rule = violatesUpdateRule(t, before, values);
+    if (rule) return err(rule.message, rule.code, 400);
     Object.assign(row, values);
     if (t === "campaigns") resyncBudget(row.id);
     afterUpdate(t, before, row);
@@ -570,6 +851,17 @@ function runDelete(t: string, filters: Filter[], columns?: string): PostgrestLik
   }
   if (t === "fund_allocations") {
     for (const r of rows) resyncBudget(r.campaign_id);
+  }
+  if (t === "team_members") {
+    // removal from a team is something the member deserves to know about
+    for (const r of rows) {
+      const team = table("teams").find((x) => x.id === r.team_id);
+      notify(
+        r.user_id,
+        "team_removed",
+        `You were removed from the team for "${campaignTitle(team?.campaign_id)}".`
+      );
+    }
   }
   if (columns) return ok(resolveParsed(rows, t, columns));
   return ok(null);

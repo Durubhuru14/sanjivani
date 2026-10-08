@@ -104,7 +104,7 @@ function seed(): DemoStore {
       { id: u.tarun, role: "volunteer", name: "Tarun Mehta", location: "Pune", avatar_url: "/demo/avatar-tarun-mehta.svg", suspended: true, created_at: iso(70) },
     ],
     ngos: [
-      { profile_id: u.greenearth, org_name: "Green Earth Foundation", registration_number: "GE-2019-114", verification_status: "approved", logo_url: "/demo/logo-green-earth.svg", avg_rating: 4.5, created_at: iso(148) },
+      { profile_id: u.greenearth, org_name: "Green Earth Foundation", registration_number: "GE-2019-114", verification_status: "approved", logo_url: "/demo/logo-green-earth.svg", avg_rating: 4.33, created_at: iso(148) },
       { profile_id: u.brightfutures, org_name: "Bright Futures Trust", registration_number: "BF-2017-052", verification_status: "approved", logo_url: "/demo/logo-bright-futures.svg", avg_rating: 4.3, created_at: iso(138) },
       { profile_id: u.newhope, org_name: "New Hope Collective", registration_number: "NH-2026-003", verification_status: "pending", logo_url: "/demo/logo-new-hope.svg", avg_rating: 0, created_at: iso(5) },
     ],
