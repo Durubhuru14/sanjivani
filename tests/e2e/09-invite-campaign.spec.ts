@@ -18,7 +18,7 @@ test("invite-only campaign joins through an invitation", async ({ page }) => {
   const inviteCard = page.locator("div.rounded-xl", { hasText: "Winter Shelter Support" });
   await expect(inviteCard.getByText("Upcoming")).toBeVisible();
   await inviteCard.getByRole("button", { name: /accept invite/i }).click();
-  await expect(page.getByText(/invitation accepted/i)).toBeVisible();
+  await expect(page.getByText(/invitation accepted/i).first()).toBeVisible();
   await expect(inviteCard).toHaveCount(0); // moved out of pending
 
   // 3. The campaign is now reachable and her application is accepted
@@ -34,7 +34,8 @@ test("invite-only campaign joins through an invitation", async ({ page }) => {
   await page.getByRole("button", { name: /add member/i }).first().click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").click();
-  await dialog.getByRole("option", { name: /aisha khan/i }).click();
+  // Radix portals the option list outside the dialog DOM — scope to the page
+  await page.getByRole("option", { name: /aisha khan/i }).click();
   await dialog.getByRole("button", { name: /add to team/i }).click();
   await expect(page.locator("li", { hasText: "Aisha Khan" }).first()).toBeVisible();
 });

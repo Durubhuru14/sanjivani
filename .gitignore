@@ -59,3 +59,12 @@ db/
 test
 prompt
 local-*
+
+# playwright
+/test-results/
+/playwright/.cache/
+
+# uploaded sources (kept out of the repo)
+/uploaded_code/
+*.tar
+*.zip

@@ -7,6 +7,9 @@ export const NGO = { email: "greenearth@sanjivani.test", password: "Passw0rd!" }
 export const VOLUNTEER = { email: "priya@sanjivani.test", password: "Passw0rd!" };
 
 export async function login(page: import("@playwright/test").Page, creds: { email: string; password: string }) {
+  // a leftover session would redirect /login to that role's dashboard
+  // (spec §5/§6) — always start the switch from a clean cookie jar
+  await page.context().clearCookies();
   await page.goto("/login");
   await page.getByLabel("Email").fill(creds.email);
   await page.getByLabel("Password").fill(creds.password);

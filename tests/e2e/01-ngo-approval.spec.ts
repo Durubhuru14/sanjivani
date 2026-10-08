@@ -1,4 +1,4 @@
-import { expect, test, uniq } from "./helpers";
+import { expect, test, login, uniq } from "./helpers";
 
 /**
  * Spec §19 flow 1:
@@ -22,25 +22,18 @@ test("NGO signup, admin approval, and first campaign", async ({ page }) => {
   await expect(page.getByText(/approval in progress/i)).toBeVisible();
 
   // 3. Admin approves
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("admin@sanjivani.test");
-  await page.getByLabel("Password").fill("Passw0rd!");
-  await page.getByRole("button", { name: /log in/i }).click();
+  await login(page, { email: "admin@sanjivani.test", password: "Passw0rd!" });
   await page.waitForURL("**/admin");
-  const orgRow = page.locator("li", { hasText: `E2E Foundation ${suffix}` });
+  // the pending NGO shows in the approval queue AND the oversight directory
+  const orgRow = page.locator("li", { hasText: `E2E Foundation ${suffix}` }).first();
   await expect(orgRow).toBeVisible();
   await orgRow.getByRole("button", { name: "Approve" }).click();
-  await expect(page.getByText(/approved — they were notified/i)).toBeVisible();
-  await page.getByRole("button", { name: "Account menu" }).click();
-  await page.getByRole("menuitem", { name: /sign out/i }).click();
+  await expect(page.getByText(/approved — they were notified/i).first()).toBeVisible();
 
   // 4. The NGO can now create a campaign
-  await page.goto("/login");
-  await page.getByLabel("Email").fill(`e2e-ngo-${suffix}@sanjivani.test`);
-  await page.getByLabel("Password").fill("Passw0rd!");
-  await page.getByRole("button", { name: /log in/i }).click();
+  await login(page, { email: `e2e-ngo-${suffix}@sanjivani.test`, password: "Passw0rd!" });
   await page.waitForURL("**/ngo");
-  await expect(page.getByText(/welcome back/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /welcome back/i })).toBeVisible();
 
   await page.goto("/ngo/campaigns/new");
   await page.getByLabel("Title").fill(`E2E Campaign ${suffix}`);

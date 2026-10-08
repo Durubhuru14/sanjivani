@@ -30,7 +30,7 @@ test("volunteer verification adds the badge without gating core use", async ({ p
   const row = page.locator("li", { hasText: `E2E Badge ${suffix}` });
   await expect(row).toBeVisible();
   await row.getByRole("button", { name: "Approve" }).click();
-  await expect(page.getByText(/is now verified/i)).toBeVisible();
+  await expect(page.getByText(/is now verified/i).first()).toBeVisible();
   await page.getByRole("button", { name: "Account menu" }).click();
   await page.getByRole("menuitem", { name: /sign out/i }).click();
 

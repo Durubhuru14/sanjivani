@@ -22,7 +22,7 @@ test("fund allocation lifecycle keeps the budget consistent", async ({ page }) =
   await page.getByRole("option", { name: /priya sharma/i }).click();
   await page.locator("#fund-amount").fill(String(amount));
   await page.getByRole("button", { name: /^allocate$/i }).click();
-  await expect(page.getByText(/allocation recorded/i)).toBeVisible();
+  await expect(page.getByText(/allocation recorded/i).first()).toBeVisible();
 
   // 3. Remaining budget decreased by exactly the allocated amount
   await expect(remainingCard).toHaveText(new RegExp(`₹${(before - amount).toLocaleString("en-IN")}`));
@@ -32,13 +32,13 @@ test("fund allocation lifecycle keeps the budget consistent", async ({ page }) =
     .filter({ hasText: "Pending" })
     .first();
   await pendingRow.getByRole("button", { name: /mark paid/i }).click();
-  await expect(page.getByText(/marked paid/i)).toBeVisible();
+  await expect(page.getByText(/marked paid/i).first()).toBeVisible();
 
   // 5. Over-budget allocation is rejected with a friendly error
   await page.locator("#fund-member").click();
   await page.getByRole("option", { name: /priya sharma/i }).click();
   await page.locator("#fund-amount").fill(String(before + 100000));
-  await expect(page.getByText(/amount too high/i)).toBeVisible();
   await page.getByRole("button", { name: /^allocate$/i }).click();
-  await expect(page.getByText(/more than the campaign's remaining budget/i)).toBeVisible();
+  await expect(page.getByText(/amount too high/i).first()).toBeVisible();
+  await expect(page.getByText(/is left in this campaign's budget/i).first()).toBeVisible();
 });

@@ -18,7 +18,7 @@ test("NGO reports a volunteer and admin reviews it", async ({ page }) => {
     .getByLabel(/what happened\?/i)
     .fill("E2E: skipped the morning briefing and left the site early without informing the team lead.");
   await dialog.getByRole("button", { name: /submit report/i }).click();
-  await expect(page.getByText(/report submitted/i)).toBeVisible();
+  await expect(page.getByText(/report submitted/i).first()).toBeVisible();
   await logout(page);
 
   // 2. The report lands in the admin queue
@@ -29,6 +29,6 @@ test("NGO reports a volunteer and admin reviews it", async ({ page }) => {
 
   // 3. Admin marks it reviewed
   await reportCard.getByRole("button", { name: /mark reviewed/i }).click();
-  await expect(page.getByText(/report marked reviewed/i)).toBeVisible();
+  await expect(page.getByText(/report marked reviewed/i).first()).toBeVisible();
   await expect(reportCard.getByText("Reviewed")).toBeVisible();
 });

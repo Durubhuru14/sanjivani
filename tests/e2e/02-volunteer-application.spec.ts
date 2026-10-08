@@ -15,7 +15,7 @@ test("volunteer applies, NGO accepts, team assignment", async ({ page }) => {
   await page.getByLabel("Password").fill("Passw0rd!");
   await page.getByRole("button", { name: /create account/i }).click();
   await page.waitForURL("**/volunteer");
-  await expect(page.getByText(/hi e2e volunteer/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^hi e2e/i })).toBeVisible();
 
   // 2. Browse public campaigns and apply to the seeded ongoing campaign
   await page.goto("/volunteer/browse");
@@ -24,7 +24,7 @@ test("volunteer applies, NGO accepts, team assignment", async ({ page }) => {
   const card = page.locator("a", { hasText: "After-School Tutoring Program" }).first();
   await card.click();
   await page.getByRole("button", { name: /apply to join/i }).click();
-  await expect(page.getByText(/application sent/i)).toBeVisible();
+  await expect(page.getByText(/application sent/i).first()).toBeVisible();
   await expect(page.getByText("Pending")).toBeVisible();
 
   // 3. NGO accepts the application
@@ -33,15 +33,19 @@ test("volunteer applies, NGO accepts, team assignment", async ({ page }) => {
   const appRow = page.locator("li", { hasText: `E2E Volunteer ${suffix}` });
   await expect(appRow).toBeVisible();
   await appRow.getByRole("link", { name: "Review" }).click();
-  await page.getByRole("button", { name: /^accept$/i }).click();
-  await expect(page.getByText(/can now be added to a team/i)).toBeVisible();
+  await page.getByRole("tab", { name: /applications/i }).click();
+  // scope to the new volunteer's row — other pending applications have Accept too
+  const pendingRow = page.locator("li", { hasText: `E2E Volunteer ${suffix}` }).first();
+  await pendingRow.getByRole("button", { name: /^accept$/i }).click();
+  await expect(page.getByText(/can now be added to a team/i).first()).toBeVisible();
 
   // 4. Add to team — the volunteer becomes assignable
   await page.getByRole("tab", { name: /team & hours/i }).click();
   await page.getByRole("button", { name: /add member/i }).first().click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").click();
-  await dialog.getByRole("option", { name: new RegExp(`E2E Volunteer ${suffix}`) }).click();
+  // Radix portals the option list outside the dialog DOM — scope to the page
+  await page.getByRole("option", { name: new RegExp(`E2E Volunteer ${suffix}`) }).click();
   await dialog.getByRole("button", { name: /add to team/i }).click();
   await expect(
     page.locator("li", { hasText: `E2E Volunteer ${suffix}` }).first()
