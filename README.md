@@ -14,15 +14,21 @@ Replaces Excel sheets, WhatsApp groups, and physical notices with a single open-
 
 ## Run the demo (no Supabase, no setup)
 
-The app ships with a **built-in demo mode**. If no Supabase environment variables are
-present, every data call is served by an **in-memory, seeded store** that mirrors the real
-Postgres schema (see `lib/demo/`) — queries, inserts, updates, the notification triggers,
-the budget guard, and role-based route guards all behave like the real backend.
+The app ships with a **built-in demo mode** that is **separate from a normal deployment**:
+it only starts when you explicitly ask for it. With the demo flag on, every data call is
+served by an **in-memory, seeded store** that mirrors the real Postgres schema (see
+`lib/demo/`) — queries, inserts, updates, the notification triggers, the budget guard,
+and role-based route guards all behave like the real backend.
 
 ```bash
-bun install     # or: npm install
-bun run dev     # or: npm run dev
+npm install
+npm run demo      # = NEXT_PUBLIC_DEMO_MODE=1 next dev (any OS)
+# or: bun install && bun run demo
 ```
+
+Without the flag, `npm run dev` behaves like a normal deployment: it connects to Supabase
+when env vars are configured, and otherwise shows a **setup screen** (`/setup`) with
+configuration instructions — it never silently falls back to demo data.
 
 Open http://localhost:3000 — the login screen lists every demo account, one click fills
 the form. Log in as any role and walk the whole product:
@@ -42,16 +48,18 @@ Demo-mode notes:
 
 - The seeded store lives in the dev server process — it resets when the server restarts.
 - Chat and notifications poll every few seconds instead of using Supabase Realtime.
-- Image uploads return a placeholder (`/demo-placeholder.svg`).
-- Add real Supabase env vars at any time (see below) and the demo layer steps aside
-  automatically — no code changes.
+- **Image uploads work**: pictures are resized in the browser and kept as data URLs in the
+  seeded store (avatars, NGO logos, and campaign images all round-trip). Seeded users,
+  NGOs, and campaigns already carry profile pictures.
+- Add real Supabase env vars and run without the demo flag — the demo layer stays out of
+  the way entirely.
 
 ## Tech stack
 
 | Layer | Technology |
 |---|---|
 | Frontend | Next.js 16 (App Router, Turbopack) + TypeScript 5 + Tailwind CSS 4 |
-| UI | shadcn/ui (New York) + Lucide icons, **Impeccable "Neo Kinpaku"** design system (DESIGN.md) |
+| UI | shadcn/ui (New York) + Lucide icons, **Sanjivani green design system** (spec §3) with light + dark themes and botanical patterns |
 | Backend | Next.js API routes + server actions (most access via the Supabase client + RLS) |
 | Database | Supabase (Postgres) — or the built-in seeded demo store |
 | Auth | Supabase Auth (email + password) — cookie session in demo mode |
@@ -124,13 +132,32 @@ Aisha), an open volunteer report for the admin queue, and notifications for seve
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Start the dev server on port 3000 (demo mode without env vars) |
+| `npm run demo` | Start the dev server in **demo mode** (seeded data, no Supabase) |
+| `npm run dev` | Start the dev server (real Supabase via env vars; `/setup` screen if unconfigured) |
 | `npm run build` / `npm start` | Production build / serve |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript strict check |
 | `npm test` | Vitest unit + component tests |
 | `npm run test:e2e` | Playwright E2E (needs `supabase db reset` first) |
 | `npm run db:reset` | Apply migrations + re-seed (local Supabase) |
+
+## Dark & light mode
+
+The UI ships with both themes (spec §3): the toggle lives in the navbar on every page.
+- Choice is stored under a single `theme` key in `localStorage`.
+- First visit defaults to the system preference (`prefers-color-scheme`).
+- The theme is applied before first paint — no flash of the wrong theme.
+
+## Image uploads
+
+- **Profile pictures** (volunteer / staff / admin avatars), **NGO logos**, and **campaign
+  images** upload from every form that manages them (`ImageUpload` component).
+- Real backend: files go to the public `media` bucket in Supabase Storage (PNG/JPG/WEBP/GIF,
+  2 MB limit, per-user folder enforced by storage policies — spec §10).
+- Demo mode: pictures are resized in the browser and stored as data URLs in the seeded
+  store, so the full upload → save → display round-trip works with zero services.
+- Seeded accounts, NGOs, and campaigns already include profile pictures and banners
+  (`public/demo/`), used by both the demo store and `supabase/seed.sql`.
 
 ## Folder structure
 
@@ -143,6 +170,7 @@ sanjivani/
 │   ├── (staff)/staff/       # Dashboard, accept-invite, chat, profile
 │   ├── (volunteer)/volunteer/ # Dashboard, browse, invites, chat, profile
 │   ├── api/                 # Route handlers (spec §8) + auth bootstrap + /api/demo transport
+│   ├── setup/               # Shown when no backend + no demo flag is configured
 │   └── suspended/           # Suspended-account screen
 ├── components/              # UI kit + chat/staff/funds/ratings/campaign components
 ├── lib/

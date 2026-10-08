@@ -69,6 +69,13 @@ Checklist against the spec (§ = Sanjivani_Spec.md section):
 - [x] All forms validate client + server with Zod (§12) + DB-level guards
 - [x] SVG logo (leaf/S mark) used in navbar, favicon (`app/icon.svg`), landing hero;
       PNG app icon generated from the same SVG
+- [x] Dark + light mode: `theme` in localStorage, `dark` class on `<html>`, system
+      default via `prefers-color-scheme`, no-flash bootstrap, toggle in every navbar
+- [x] Profile pictures: avatars / NGO logos / campaign images upload from every form
+      (Supabase Storage live; browser-resized data URLs in demo) and display across
+      navbar, chat, rosters, cards, and profiles; seeded media included
+- [x] Demo mode as a separate opt-in runtime (`npm run demo`, NEXT_PUBLIC_DEMO_MODE=1);\n      normal dev/production requires Supabase env or shows `/setup`
+- [x] Loading skeletons on all four role dashboards (§11)
 - [x] `.env.example` present; no secrets committed
 - [x] `supabase/seed.sql` demo dataset (all actors + 4 campaigns + flows)
 - [x] README with setup steps + demo credentials
@@ -202,25 +209,42 @@ vars are present (`lib/demo/`):
   each operation and POSTs it to `/api/demo`, so every tab shares the one server store.
 - Demo auth is a cookie session (`sv-demo-user`) validated against the seeded users;
   the login screen lists every account with one-click fill (password `Passw0rd!`).
-- Realtime falls back to polling (chat 4s, notifications 5s); uploads return a
-  kinpaku-styled placeholder.
-- The moment real env vars appear, all three client factories route back to Supabase —
-  demo code is inert in production.
+- Realtime falls back to polling (chat 4s, notifications 5s); image uploads are resized
+  in the browser and kept as data URLs in the seeded store, so avatars/logos/campaign
+  images round-trip exactly like they do against Supabase Storage.
+- Demo mode is **opt-in and separate from deployment**: it activates only when the app is
+  run with `NEXT_PUBLIC_DEMO_MODE=1` (`npm run demo`). A plain `npm run dev`/`npm start`
+  connects to real Supabase when env vars exist, and otherwise shows a `/setup` screen
+  with configuration instructions — production never silently serves seed data.
 
-## 7. UI redesign — Impeccable "Neo Kinpaku"
+## 7. UI — Sanjivani green design system (spec §3)
 
-The interface follows DESIGN.md's design system end to end:
+The interface follows the visual identity defined in `Sanjivani_Spec.md` §3, executed
+with a dynamic, patterned layout:
 
-- **Palette**: kinpaku gold (primary/CTA), verdigris patina (state, live, verified),
-  warm-black lacquer surfaces, neutral hairline borders; OKLCH tokens throughout
-  (`app/globals.css`).
-- **Type**: Alumni Sans display (weight 100 hero, 300 section heads), Albert Sans
-  body/UI, system mono for tracked eyebrows/labels — all bundled as local woff2.
-- **Patterns**: calibration grid on the page ground, gold seam dividers, patina footer
-  edge, bento stat tiles, mono status badges, small radii (2-8px), no card shadows,
-  no glassmorphism, no gradient blobs.
-- **Brand mark**: carved-tile gold square with a diagonal slash + tracked SANJIVANI
-  wordmark; a "Demo · seeded data" chip in the navbar during demo mode.
+- **Palette**: warm green `#2E7D32` primary with the `#E8F5E9` surface tint and
+  `#66BB6A` bright accent; clean, card-based layout, `rounded-xl` corners, soft warm
+  shadows, generous whitespace — welcoming for non-technical NGO staff.
+- **Dark + light mode**: a single `theme` key in `localStorage` toggles a `dark` class
+  on `<html>`, defaulting to `prefers-color-scheme`; applied pre-paint (no flash) via a
+  bootstrap script in `app/layout.tsx`, with a sun/moon toggle in every navbar.
+- **Patterns (botanical, token-driven)**: hairline grid, leaf-dot lattice, growth
+  rings, soft green wash, and seedling strips — layered on the landing hero, stats
+  band, feature cards, and auth screens; all recede further in dark mode.
+- **Type**: Alumni Sans display (hero/section heads), Albert Sans body/UI, system mono
+  for tracked eyebrows/labels — bundled locally as woff2 (zero network fonts).
+- **Brand mark**: the Sanjivani **leaf-S** — two layered leaves (deep green NGO arm +
+  bright green volunteer arm) forming one continuous growth path, readable at 24px,
+  clean at 512px; shipped as `public/logo.svg`, favicon `app/icon.svg`, and a 512px
+  app-icon PNG, with midrib-vein detail in large lockups.
+- **Motion**: quiet CSS-only float/rise accents on hero furniture with
+  `prefers-reduced-motion` respected — no animation libraries.
+- **Profile pictures everywhere**: avatars, NGO logos, and campaign images display in
+  the navbar, chat bubbles, team rosters, applications, room pickers, campaign cards,
+  browse list, and profile/admin pages (shared `UserAvatar` with initials fallback).
+  Seeded accounts, NGOs, and campaigns ship with pictures (`public/demo/`), and every
+  form can upload them (Supabase Storage live, browser-resized data URLs in demo).
+- **Loading skeletons** (`loading.tsx`) on all four role dashboards (spec §11).
 - Dependencies pruned/updated: framer-motion removed (unused), all packages at their
   latest stable majors (Next 16.4, React 19.3, Tailwind 4.3, Radix latest, lucide 1.x).
 
@@ -232,14 +256,15 @@ The interface follows DESIGN.md's design system end to end:
 - **No file sharing / typing indicators in chat** — text messages only.
 - **No map-based proximity search** — plain text/location field.
 - **Image upload size** is enforced client-side (2 MB) + storage MIME/extension policies;
-  a per-request server byte check happens at the storage edge.
+  a per-request server byte check happens at the storage edge. In demo mode the browser
+  canvas resizes to ≤640px before storing, keeping data URLs compact.
 - **Notification spam**: one notification per chat message (spec lists the event; no
   batching/throttling was specified).
 - **First mover on `chat_room_members`**: the room creator (NGO owner) is added as a
   member automatically; message RLS additionally allows the campaign owner.
 - **Deployment** steps are documented but were executed by the team, not in CI.
 - **Demo mode** is in-memory: data resets on server restart, realtime is simulated by
-  polling, storage uploads are placeholders, and RLS is approximated by the same
+  polling, uploads live as data URLs, and RLS is approximated by the same
   route-level checks the real backend enforces. It is a demo vehicle, not a production
   backend — do not deploy it with real user data.
 
