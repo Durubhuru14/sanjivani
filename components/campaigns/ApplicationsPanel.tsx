@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, Loader2, X } from "lucide-react";
 import { decideApplication } from "@/app/(ngo)/ngo/actions";

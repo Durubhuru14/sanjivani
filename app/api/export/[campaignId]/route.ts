@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { toCsv, slugify } from "@/lib/format";
 import { formatMoney } from "@/lib/funds";
-import type { Campaign, Team, FundAllocation, Profile } from "@/lib/types";
+import type { Campaign, Team, FundAllocation } from "@/lib/types";
 
 /**
  * POST /api/export/[campaignId] (spec §8) — CSV of team + fund summary.

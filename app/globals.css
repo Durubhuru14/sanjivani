@@ -458,6 +458,33 @@
   }
 }
 
+/* Printing / Save-as-PDF must show all content: scroll-reveal sections
+   (opacity 0 until intersected) and animated entrances are flattened. */
+@media print {
+  .pattern-drift,
+  .pattern-drift-rings,
+  .animate-leaf,
+  .marquee-track,
+  .animate-msg-in,
+  .animate-pulse-dot::after {
+    animation: none !important;
+  }
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-scale-in {
+    animation: none !important;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .interactive,
+  .press:active {
+    transition: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pattern-drift,
   .pattern-drift-rings,

@@ -20,9 +20,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <main className="flex-1">{children}</main>
       <footer className="border-t border-border bg-tint/60">
         <div className="seam" aria-hidden />
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <p>© {new Date().getFullYear()} Sanjivani · open-source community platform</p>
-          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em]">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-sm sm:flex-row sm:px-6 lg:px-8">
+          <p className="text-foreground/75">
+            © {new Date().getFullYear()} Sanjivani · open-source community platform
+          </p>
+          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-foreground/60">
             built for NGOs, staff, and volunteers
           </p>
         </div>

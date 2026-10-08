@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ok, fail, parseBody } from "@/lib/api";
+import { ok, parseBody } from "@/lib/api";
 
 const schema = z.object({ email: z.email() });
 

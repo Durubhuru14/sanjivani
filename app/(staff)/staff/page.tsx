@@ -3,11 +3,9 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Building2, CalendarCheck2, MessagesSquare } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDate } from "@/lib/format";
-import type { Profile } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 

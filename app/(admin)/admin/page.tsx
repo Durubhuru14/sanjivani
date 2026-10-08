@@ -2,19 +2,15 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
   Building2,
-  CalendarCheck,
   Flag,
   HeartHandshake,
   Inbox,
   ShieldAlert,
-  Users,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
-import { VerifiedBadge } from "@/components/VerifiedBadge";
 import {
   AdminActionButton,
   ReportStatusButton,
@@ -62,7 +58,6 @@ export default async function AdminDashboardPage() {
     ...vols.filter((v) => v.profile?.suspended).map((v) => v.profile!),
   ];
 
-  const roleCounts = { ngo: ngos.length, volunteer: vols.length };
 
   return (
     <div className="space-y-8">

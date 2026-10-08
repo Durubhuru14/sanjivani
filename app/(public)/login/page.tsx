@@ -168,11 +168,10 @@ function LoginForm() {
                   key={a.email}
                   type="button"
                   onClick={() => fillDemo(a.email)}
-                  className="press truncate rounded-md border border-border/70 bg-card px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-leaf/50 hover:text-foreground"
+                  className="press flex flex-col rounded-md border border-border/70 bg-card px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-leaf/50 hover:text-foreground"
                 >
                   <span className="font-medium text-foreground">{a.label}</span>
-                  <span className="mx-1.5 text-leaf/60">·</span>
-                  {a.email}
+                  <span className="mt-0.5 truncate">{a.email}</span>
                 </button>
               ))}
             </div>

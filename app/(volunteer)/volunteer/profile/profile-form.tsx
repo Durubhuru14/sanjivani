@@ -127,6 +127,9 @@ export function VolunteerProfileForm({
             maxLength={100}
             onChange={(e) => set("availability", e.target.value)}
           />
+          <p className="text-xs text-muted-foreground">
+            When NGOs can expect you — used while shortlisting for teams.
+          </p>
         </div>
       </div>
 

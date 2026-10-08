@@ -16,7 +16,6 @@ import { formatMoney } from "@/lib/funds";
 import { formatDate, initials } from "@/lib/format";
 import type {
   Campaign,
-  CampaignInvite,
   FundAllocation,
   Profile,
   Rating,
@@ -92,8 +91,8 @@ export default async function VolunteerCampaignDetailPage({
       .maybeSingle(),
   ]);
 
-  const myApplication = appRes.data as { id: string; status: string } | null;
-  const myInvite = inviteRes.data as { id: string; status: string } | null;
+  const myApplication = appRes.data;
+  const myInvite = inviteRes.data;
   const teamMembers = (teamRes.data ?? []) as unknown as Array<{
     id: string;
     member_type: string;
@@ -188,7 +187,7 @@ export default async function VolunteerCampaignDetailPage({
                 {teamMembers.length === 0 ? (
                   <p className="text-sm text-muted-foreground">Team is being formed.</p>
                 ) : (
-                  <ul className="grid gap-2 sm:grid-cols-2">
+                  <ul className="grid auto-rows-fr gap-2 sm:grid-cols-2">
                     {teamMembers.map((m) => (
                       <li key={m.id} className="flex items-center gap-3 rounded-xl border p-3">
                         <Avatar className="h-9 w-9 border">
@@ -252,7 +251,7 @@ export default async function VolunteerCampaignDetailPage({
               campaignId={id}
               rateeId={campaign.ngo_id}
               rateeName={campaign.ngo?.org_name ?? "the NGO"}
-              myRating={(myRatingToNgo as unknown as Rating) ?? null}
+              myRating={(myRatingToNgo) ?? null}
               canRate={ratingDecision.allowed}
               reason={ratingDecision.reason}
             />

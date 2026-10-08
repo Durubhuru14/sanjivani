@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
-  BadgeCheck,
   CalendarCheck2,
   Clock,
   FileText,
@@ -10,22 +9,17 @@ import {
   Megaphone,
   MessagesSquare,
   Send,
+  Star,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
-import { StarsDisplay } from "@/components/StarsDisplay";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { formatMoney } from "@/lib/funds";
 import { formatDate } from "@/lib/format";
-import type {
-  CampaignInvite,
-  FundAllocation,
-  Profile,
-  Volunteer,
-} from "@/lib/types";
+import type { CampaignInvite, Profile, Volunteer } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -118,9 +112,6 @@ export default async function VolunteerDashboardPage() {
   const totalHours = Number((hoursRes.data as number) ?? 0);
   const myFunds = (fundsRes.data ?? []) as unknown as Array<{ id: string; amount: number; status: string; campaign: { title: string } | null }>;
 
-  const activeCampaigns = teamRows.filter(
-    (t) => t.teams.campaigns.status === "ongoing" || t.teams.campaigns.status === "upcoming"
-  );
   const campaignsJoined = new Set(teamRows.map((t) => t.teams.campaign_id)).size;
 
   return (
@@ -147,7 +138,7 @@ export default async function VolunteerDashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Campaigns joined" value={campaignsJoined} icon={CalendarCheck2} />
         <StatCard label="Hours contributed" value={totalHours} icon={Clock} hint="Logged by NGOs after completion" />
-        <StatCard label="Average rating" value={Number(vol?.avg_rating ?? 0) > 0 ? Number(vol?.avg_rating).toFixed(2) : "New"} icon={BadgeCheck} />
+        <StatCard label="Average rating" value={Number(vol?.avg_rating ?? 0) > 0 ? Number(vol?.avg_rating).toFixed(2) : "New"} icon={Star} />
         <StatCard label="Open invitations" value={pendingInvites.length} icon={Inbox} />
       </div>
 

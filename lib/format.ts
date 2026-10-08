@@ -48,6 +48,7 @@ export const STATUS_TONES: Record<string, string> = {
   accepted: "bg-patina/12 text-patina border-patina/35",
   declined: "bg-vermilion/12 text-vermilion border-vermilion/35",
   invited: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
+  suspended: "bg-vermilion/12 text-vermilion border-vermilion/35",
   active: "bg-patina/12 text-patina border-patina/35",
   open: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
   reviewed: "bg-patina/12 text-patina border-patina/35",

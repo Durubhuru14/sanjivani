@@ -263,20 +263,36 @@ with a dynamic, patterned layout:
   small “live” status dots; entrances stay under 0.6 s.
 - Dependencies pruned/updated: framer-motion removed (unused), all packages at their
   latest stable majors (Next 16.4, React 19.3, Tailwind 4.3, Radix latest, lucide 1.x).
-- Dependency hygiene: jsdom pinned to 29 (Node 20.19+/22.13+ engines), eslint upgraded
-  to 10 (no deprecation), `@playwright/test` + `@types/react`/`-dom`/`-node` declared
-  explicitly, `test:e2e`/`db:reset` scripts wired, and both lockfiles (npm + bun)
-  committed with an engine-check script (`scripts/check-engines.mjs`).
+- Dependency hygiene: jsdom pinned to 29 (Node 20.19+/22.13+ engines), `@playwright/test`
+  + `@types/react`/`-dom`/`-node` declared explicitly, `test:e2e`/`db:reset` scripts wired,
+  and both lockfiles (npm + bun) committed with an engine-check script
+  (`scripts/check-engines.mjs`).
+- Lint stack rebuilt: `eslint-config-next` (whose nested eslint-plugin-import /
+  eslint-plugin-jsx-a11y peers only accept eslint ≤ 9 — the source of every install-time
+  peer warning) replaced with `typescript-eslint` + `eslint-plugin-react-hooks`, both
+  officially eslint-10 compatible. `npm install` now completes with zero warnings and
+  `npm audit` → 0 findings total (the `braces` advisory chain disappeared with
+  `eslint-config-next`). `npm run lint` enforces unused-code, floating-promise and
+  hooks-correctness rules and exits clean.
 - Next 16 conventions: `middleware.ts` migrated to the `proxy.ts` file convention (no
   deprecation warning) and `turbopack.root` pinned in next.config.ts so stray lockfiles
-  above the project directory can never confuse the dev server.
+  above the project directory can never confuse the dev server; `devIndicators: false`
+  keeps the dev UI clean.
+- Full UI/UX audit round (VLM-reviewed screenshots of every route, light + dark +
+  mobile) fixed: chat message-row alignment (avatars top-aligned, consistent bubble
+  x-position within a group), the detached chat character counter, a real RSC crash on
+  the NGO campaign-edit tab (inline closure passed to a client component — now a bound
+  server action), a cross-NGO data leak on the NGO dashboard (pending applications are
+  now scoped to the NGO's own campaigns), inconsistent icons (rating / new-campaign),
+  login demo-chip truncation, over-heavy empty states, dark-footer contrast, the four
+  demo campaign banners regenerated as one visual family, print/PDF safety for
+  scroll-reveal sections, and a rebuilt staff profile page (identity header + workspace
+  card) so the route no longer looks sparse.
 
 ## 8. Known limitations
 
-- Dependency health: production deps audit clean (`npm audit --omit=dev` → 0). One
-  dev-only advisory (GHSA-vfj7-8cjw-p6xm, `braces` via the `eslint-config-next` lint
-  chain) currently has no patched release anywhere — it is lint tooling only, never
-  shipped to production; see README "Requirements & dependency health" for details.
+- Dependency health: `npm audit` → 0 vulnerabilities (production *and* dev tree after
+  the lint-stack rebuild described above).
 
 - **No real payments** — fund tracking is a ledger (amounts + pending/paid), no gateway.
 - **No email/SMS notifications** — in-app only (deliberate, per the spec's out-of-scope list).

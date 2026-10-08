@@ -30,7 +30,7 @@ export function StatCard({
         </div>
         <p className="mt-3 font-display text-3xl font-medium leading-none tabular-nums text-foreground">
           {numeric ? (
-            <CountUp value={value as number} duration={850} />
+            <CountUp value={value} duration={850} />
           ) : (
             value
           )}

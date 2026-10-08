@@ -89,13 +89,17 @@ export function NgoProfileForm({
           </p>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="p-name">Contact person</Label>
+          <Label htmlFor="p-name">Contact person / display name</Label>
           <Input
             id="p-name"
             value={values.name}
             maxLength={100}
             onChange={(e) => set("name", e.target.value)}
           />
+          <p className="text-xs text-muted-foreground">
+            Shown on your chat messages and to volunteers — many NGOs use the
+            org name here.
+          </p>
         </div>
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="p-location">Location</Label>

@@ -67,21 +67,18 @@ node scripts/check-engines.mjs        # checks every package against your Node
 
 **Security posture:**
 
-- Production dependencies audit clean — `npm audit --omit=dev` → **0 vulnerabilities**.
-- `npm audit` (with dev tooling) reports one advisory in the lint chain
-  (`eslint-config-next → @next/eslint-plugin-next → fast-glob → micromatch → braces`,
-  [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)). No patched
-  release of `braces` exists for it yet — it affects *every* project using
-  `eslint-config-next` right now. It is **dev-tooling only** (linting, never shipped to
-  the production build), and the attack path requires adversarial glob patterns inside
-  your own first-party lint config. The suggested `npm audit fix --force` "fix"
-  downgrades `eslint-config-next` to v14, which breaks Next 16 linting — don't apply it.
-  Re-run `npm audit` after a future `braces`/`eslint-config-next` patch lands and this
-  finding will clear on its own.
-- All other audit findings were resolved (`npm audit fix`, non-breaking) and the fixed
-  versions are locked in `package-lock.json`.
-- eslint 10 + jsdom 29 are pinned to versions whose Node engine ranges cover
-  Node 20.19 / 22.13 / 24+ — no more `EBADENGINE` warnings on install.
+- `npm audit` → **0 vulnerabilities** (production *and* dev tooling). The previous
+  dev-only `braces` advisory came through the `eslint-config-next` dependency chain;
+  the lint stack has since been replaced (see below) and the advisory is gone with it.
+- The lint stack is `eslint 10 + typescript-eslint + eslint-plugin-react-hooks` —
+  every package's peer range officially covers eslint 10, so `npm install` completes
+  with **zero warnings** (no ERESOLVE, no deprecated packages, no EBADENGINE).
+  `eslint-config-next` was dropped because its nested plugins
+  (eslint-plugin-import, eslint-plugin-jsx-a11y) only accept eslint ≤ 9.
+  `npm run lint` enforces real correctness rules (unused code, floating promises,
+  hooks rules) and exits clean.
+- jsdom 29 and all other dependencies are pinned to versions whose Node engine
+  ranges cover Node 20.19 / 22.13 / 24+ — no `EBADENGINE` warnings on install.
 
 ## Tech stack
 

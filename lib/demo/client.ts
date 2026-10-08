@@ -192,7 +192,7 @@ function makeNoopChannel(): DemoChannel {
     },
     unsubscribe: () => ch,
     [noChannel]: true,
-  } as DemoChannel;
+  };
   return ch;
 }
 

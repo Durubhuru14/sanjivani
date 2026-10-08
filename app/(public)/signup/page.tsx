@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Building2, HeartHandshake, Loader2, MailCheck, UserCog } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { signUpSchema } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

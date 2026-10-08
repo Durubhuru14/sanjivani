@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { requireRole } from "@/lib/auth";
 import { notifySchema } from "@/lib/validation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { ok, fail, parseBody } from "@/lib/api";
