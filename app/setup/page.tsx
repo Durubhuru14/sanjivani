@@ -33,8 +33,8 @@ export default function SetupPage() {
         </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-lg border border-border bg-background/60 p-5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-tint text-leaf-deep">
+          <div className="rounded-xl border border-border bg-background/60 p-5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-tint text-leaf-deep dark:text-leaf-bright">
               <FlaskConical className="h-4.5 w-4.5" aria-hidden />
             </span>
             <h2 className="mt-3 text-base font-semibold">Demo mode (no setup)</h2>
@@ -50,8 +50,8 @@ export default function SetupPage() {
             </p>
           </div>
 
-          <div className="rounded-lg border border-border bg-background/60 p-5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-tint text-leaf-deep">
+          <div className="rounded-xl border border-border bg-background/60 p-5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-tint text-leaf-deep dark:text-leaf-bright">
               <Server className="h-4.5 w-4.5" aria-hidden />
             </span>
             <h2 className="mt-3 text-base font-semibold">Real backend (Supabase)</h2>

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/PageHeader";
 import { CampaignForm } from "@/components/campaigns/CampaignForm";
 import { createCampaign } from "@/app/(ngo)/ngo/actions";
 
@@ -17,12 +18,10 @@ export default async function NewCampaignPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Create a campaign</h1>
-        <p className="mt-1 text-muted-foreground">
-          Keep the language simple — your volunteers (and future you) will thank you.
-        </p>
-      </div>
+      <PageHeader
+        title="Create a campaign"
+        subtitle="Keep the language simple — your volunteers (and future you) will thank you."
+      />
 
       {ngo && ngo.verification_status !== "approved" ? (
         <Card className="border-leaf/35 bg-tint/70">

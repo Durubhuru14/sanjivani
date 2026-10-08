@@ -85,7 +85,7 @@ export function RespondInviteButtons({
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       <Button className="gap-2" onClick={() => void respond("accept")} disabled={busy !== null}>
         {busy === "accept" ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />

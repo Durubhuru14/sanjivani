@@ -54,7 +54,7 @@ export function StaffProfileForm({
           label="Upload photo"
         />
       </div>
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="s-name">Full name</Label>
           <Input
@@ -74,14 +74,16 @@ export function StaffProfileForm({
           />
         </div>
       </div>
-      <Button type="submit" className="gap-2" disabled={busy || pending}>
-        {busy || pending ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-        ) : (
-          <Save className="h-4 w-4" aria-hidden />
-        )}
-        Save profile
-      </Button>
+      <div className="mt-6 flex justify-end">
+        <Button type="submit" className="gap-2" disabled={busy || pending}>
+          {busy || pending ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          ) : (
+            <Save className="h-4 w-4" aria-hidden />
+          )}
+          Save profile
+        </Button>
+      </div>
     </form>
   );
 }

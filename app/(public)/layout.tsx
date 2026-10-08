@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/75">
+      <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
           <Link href="/" aria-label="Sanjivani home">
             <Logo />
@@ -20,11 +20,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <main className="flex-1">{children}</main>
       <footer className="border-t border-border bg-tint/60">
         <div className="seam" aria-hidden />
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-sm sm:flex-row sm:px-6 lg:px-8">
-          <p className="text-foreground/75">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-sm sm:flex-row sm:items-center sm:px-6 lg:px-8">
+          <p className="text-muted-foreground">
             © {new Date().getFullYear()} Sanjivani · open-source community platform
           </p>
-          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-foreground/60">
+          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
             built for NGOs, staff, and volunteers
           </p>
         </div>

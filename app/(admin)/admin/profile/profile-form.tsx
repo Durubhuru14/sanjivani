@@ -57,17 +57,16 @@ export function AdminProfileForm({
         </div>
       )}
 
-      <div className="space-y-2">
-        <Label>Photo</Label>
-        <ImageUpload
-          value={values.avatarUrl}
-          onChange={(url) => set("avatarUrl", url)}
-          folder="avatars"
-          label="Upload photo"
-        />
-      </div>
-
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid items-start gap-4 sm:grid-cols-2">
+        <div className="space-y-2 sm:row-span-2">
+          <Label>Photo</Label>
+          <ImageUpload
+            value={values.avatarUrl}
+            onChange={(url) => set("avatarUrl", url)}
+            folder="avatars"
+            label="Upload photo"
+          />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="a-name">Full name</Label>
           <Input
@@ -88,14 +87,16 @@ export function AdminProfileForm({
         </div>
       </div>
 
-      <Button type="submit" className="gap-2" disabled={busy || pending}>
-        {busy || pending ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-        ) : (
-          <Save className="h-4 w-4" aria-hidden />
-        )}
-        Save profile
-      </Button>
+      <div className="flex justify-end">
+        <Button type="submit" className="gap-2" disabled={busy || pending}>
+          {busy || pending ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          ) : (
+            <Save className="h-4 w-4" aria-hidden />
+          )}
+          Save profile
+        </Button>
+      </div>
     </form>
   );
 }

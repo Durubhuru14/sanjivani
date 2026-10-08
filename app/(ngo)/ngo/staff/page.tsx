@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { PageHeader } from "@/components/PageHeader";
 import { StaffRoster } from "@/components/staff/StaffRoster";
 import type { NgoStaff } from "@/lib/types";
 
@@ -22,14 +23,13 @@ export default async function NgoStaffPage() {
   const staff = (data ?? []) as unknown as NgoStaff[];
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Staff</h1>
-        <p className="mt-1 text-muted-foreground">
-          Your organisation's staff members. They are scoped to this NGO and can join campaign
-          teams and chat rooms you add them to.
-        </p>
-      </div>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <PageHeader
+        backHref="/ngo"
+        backLabel="Dashboard"
+        title="Staff"
+        subtitle="Your organisation's staff members. They are scoped to this NGO and can join campaign teams and chat rooms you add them to."
+      />
       <StaffRoster staff={staff} />
     </div>
   );

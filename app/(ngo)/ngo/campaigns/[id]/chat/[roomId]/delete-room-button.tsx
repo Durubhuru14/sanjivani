@@ -33,8 +33,8 @@ export function DeleteRoomButton({ roomId, campaignId }: { roomId: string; campa
 
   return (
     <Button
-      variant="ghost"
-      className="gap-2 text-destructive hover:text-destructive"
+      variant="outline"
+      className="gap-2 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
       onClick={() => void remove()}
       disabled={busy}
     >

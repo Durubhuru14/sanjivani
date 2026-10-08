@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/UserAvatar";
 import {
   Select,
   SelectContent,
@@ -32,7 +32,6 @@ import {
 } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/EmptyState";
 import { useToast } from "@/hooks/use-toast";
-import { initials } from "@/lib/format";
 import type { Team, TeamMember } from "@/lib/types";
 
 export interface AssignablePerson {
@@ -90,7 +89,7 @@ export function TeamPanel({
           />
         </div>
         <Button
-          className="gap-2"
+          className="ml-auto gap-2"
           disabled={busy || pending || !newTeamName.trim()}
           onClick={() => {
             run(() => createTeam(campaignId, newTeamName), "Team created");
@@ -116,9 +115,9 @@ export function TeamPanel({
         <div className="space-y-4">
           {teams.map((team) => (
             <div key={team.id} className="rounded-xl border shadow-soft">
-              <div className="flex items-center justify-between gap-2 border-b px-4 py-3">
-                <h3 className="font-semibold">{team.name}</h3>
-                <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b px-4 py-3">
+                <h3 className="min-w-0 truncate font-semibold">{team.name}</h3>
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
                   <Badge variant="secondary" className="font-normal">
                     {(team.members ?? []).length} member{(team.members ?? []).length === 1 ? "" : "s"}
                   </Badge>
@@ -133,9 +132,9 @@ export function TeamPanel({
                     }
                   />
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    className="text-destructive hover:text-destructive"
+                    className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                     disabled={busy || pending}
                     onClick={() => {
                       if (window.confirm(`Remove the team “${team.name}” and its memberships?`)) {
@@ -143,7 +142,7 @@ export function TeamPanel({
                       }
                     }}
                   >
-                    <Trash2 className="h-4 w-4" aria-hidden />
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden />
                     <span className="sr-only">Remove team</span>
                   </Button>
                 </div>
@@ -156,43 +155,42 @@ export function TeamPanel({
               ) : (
                 <ul className="divide-y">
                   {(team.members ?? []).map((m) => (
-                    <li key={m.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                      <Avatar className="h-9 w-9 border">
-                        {m.profile?.avatar_url ? (
-                          <AvatarImage src={m.profile.avatar_url} alt={m.profile?.name ?? "member"} />
-                        ) : null}
-                        <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
-                          {initials(m.profile?.name)}
-                        </AvatarFallback>
-                      </Avatar>
+                    <li key={m.id} className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
+                      <UserAvatar
+                        name={m.profile?.name}
+                        src={m.profile?.avatar_url}
+                        className="h-9 w-9 text-xs"
+                      />
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium">{m.profile?.name ?? "Member"}</p>
-                        <Badge variant="outline" className="mt-0.5 font-normal capitalize">
+                      </div>
+                      <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                        <Badge variant="outline" className="font-normal capitalize">
                           {m.member_type}
                         </Badge>
-                      </div>
-                      <HoursEditor
-                        campaignId={campaignId}
-                        member={m}
-                        campaignCompleted={campaignCompleted}
-                        onSave={(hours) =>
-                          run(() => logHours(campaignId, m.id, hours), "Hours updated")
-                        }
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        disabled={busy || pending}
-                        onClick={() => {
-                          if (window.confirm(`Remove ${m.profile?.name ?? "this member"} from the team?`)) {
-                            run(() => removeTeamMember(campaignId, m.id), "Member removed");
+                        <HoursEditor
+                          campaignId={campaignId}
+                          member={m}
+                          campaignCompleted={campaignCompleted}
+                          onSave={(hours) =>
+                            run(() => logHours(campaignId, m.id, hours), "Hours updated")
                           }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" aria-hidden />
-                        <span className="sr-only">Remove member</span>
-                      </Button>
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          disabled={busy || pending}
+                          onClick={() => {
+                            if (window.confirm(`Remove ${m.profile?.name ?? "this member"} from the team?`)) {
+                              run(() => removeTeamMember(campaignId, m.id), "Member removed");
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                          <span className="sr-only">Remove member</span>
+                        </Button>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -288,7 +286,10 @@ function HoursEditor({
 
   if (!campaignCompleted) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground" title="Hours unlock when the campaign is completed">
+      <span
+        className="inline-flex items-center gap-1.5 text-sm font-medium tabular-nums text-muted-foreground"
+        title="Hours unlock when the campaign is completed"
+      >
         <Clock className="h-3.5 w-3.5" aria-hidden />
         {Number(member.hours_logged ?? 0)} h
       </span>
@@ -300,7 +301,7 @@ function HoursEditor({
       <Button
         variant="ghost"
         size="sm"
-        className="gap-1 text-xs"
+        className="gap-1.5 text-sm font-medium tabular-nums text-muted-foreground hover:text-foreground"
         onClick={() => setEditing(true)}
       >
         <Clock className="h-3.5 w-3.5" aria-hidden />

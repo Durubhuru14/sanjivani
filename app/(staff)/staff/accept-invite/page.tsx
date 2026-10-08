@@ -52,9 +52,9 @@ export default async function AcceptInvitePage() {
   if (me?.role === "staff") {
     return (
       <div className="mx-auto max-w-lg">
-        <Card className="text-center shadow-soft">
-          <CardHeader className="items-center">
-            <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-lg border border-leaf/35 bg-tint text-leaf">
+        <Card className="shadow-soft">
+          <CardHeader className="items-center text-center">
+            <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full border border-leaf/30 bg-tint text-leaf">
               <UserCheck className="h-7 w-7" aria-hidden />
             </span>
             <CardTitle className="text-2xl">You are already staff</CardTitle>
@@ -72,7 +72,7 @@ export default async function AcceptInvitePage() {
     <div className="mx-auto max-w-lg">
       <Card className="shadow-soft">
         <CardHeader className="items-center text-center">
-          <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full border border-leaf/30 bg-tint text-leaf">
             <UserCheck className="h-7 w-7" aria-hidden />
           </span>
           <CardTitle className="text-2xl">Staff invitation</CardTitle>

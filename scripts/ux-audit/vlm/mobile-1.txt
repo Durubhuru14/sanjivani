@@ -1,0 +1,108 @@
+```json
+{
+  "audit": {
+    "image_1": {
+      "page": "Public Landing Page (01-landing.png)",
+      "status": "CLEAN — with minor observations",
+      "issues": [
+        {
+          "severity": "minor",
+          "location": "Hero section — CTA button pair",
+          "issue": "'Sign up as an NGO' is a filled primary button while 'Sign up as a volunteer' is a ghost/outline button. While this establishes visual hierarchy, the size difference appears minimal and the secondary button lacks a visible border or background definition in the screenshot, making it look like plain text.",
+          "why_breaks_rhythm": "Secondary actions should have clear affordance; the ghost button may lack sufficient contrast against the light tinted background."
+        },
+        {
+          "severity": "minor",
+          "location": "Field Overview card — bottom metadata row",
+          "issue": "The row 'HOURS · RATINGS · FUNDS — ONE LEDGER' uses all-caps tracking-wide text that feels slightly disconnected from the card content above it. The em-dash separator before 'ONE LEDGER' creates an asymmetric visual weight.",
+          "why_breaks_rhythm": "Metadata rows should use consistent delimiter patterns; the trailing segment breaks the three-item rhythm established by the first three items."
+        }
+      ]
+    },
+    "image_2": {
+      "page": "Volunteer Dashboard (40-volunteer-dashboard.png)",
+      "status": "ISSUES FOUND",
+      "issues": [
+        {
+          "severity": "moderate",
+          "location": "Stats grid — top row (CAMPAIGNS vs HOURS cards)",
+          "issue": "The four stat cards appear to have equal outer dimensions, but the internal content rhythm differs: 'CAMPAIGNS' shows '3' with label above, while 'HOURS' shows '18' with subtext 'Logged by NGOs afte...' (truncated). The truncation point on HOURS card leaves an orphan fragment that unbalances the card visually compared to CAMPAIGNS which has no subtext.",
+          "why_breaks_rhythm": "Stat cards in a 2×2 grid should follow identical content patterns (value + optional subtitle); mixed presence of subtitles creates uneven visual density."
+        },
+        {
+          "severity": "moderate",
+          "location": "Stats grid — INVITES card (bottom right)",
+          "issue": "Subtext reads 'Waiting for your answ...' — truncated mid-word. The other three cards either have no subtext or complete text. This is the only card with awkward truncation.",
+          "why_breaks_rhythm": "Truncation inconsistency across sibling components breaks the clean, polished feel of the dashboard."
+        },
+        {
+          "severity": "moderate",
+          "location": "My campaigns list items",
+          "issue": "NGO name text is truncated with ellipsis ('Bright Futures Trust - Educ...', 'Green Earth Foundation...', 'Bright Futures Trust - Nig...'). However, the truncation points are inconsistent — some cut at different character lengths. Additionally, the status badges (ONGOING/COMPLETED/UPCOMING) are pinned to the right edge but their horizontal alignment relative to the title baseline appears to float slightly differently per card.",
+          "why_breaks_rhythm": "List items should truncate at consistent max-widths; varying cutoff points suggest non-standardized column widths or padding."
+        },
+        {
+          "severity": "minor",
+          "location": "My applications section — campaign names",
+          "issue": "'After-School Tutoring Program' text appears to have slightly more breathing room than 'Winter Shelter Support', suggesting the title column width might not be rigidly constrained or the font rendering varies.",
+          "why_breaks_rhythm": "Inconsistent text wrapping/truncation behavior within the same list component."
+        },
+        {
+          "severity": "minor",
+          "location": "Funds allocated card — amount display",
+          "issue": "The ₹2,000 value uses a larger/bolder weight than surrounding text, but the alignment with the PENDING badge on the right creates a baseline mismatch — the currency symbol sits higher than the badge text baseline.",
+          "why_breaks_rhythm": "Cross-axis alignment (amount vs status badge) should share a common baseline or optical center."
+        },
+        {
+          "severity": "minor",
+          "location": "Page header — greeting line",
+          "issue": "'Hi Priya' uses a bold large heading, but the Verified badge next to it has a border-radius that appears slightly more pill-shaped (fully rounded) than the status badges below (which appear more squircle).",
+          "why_breaks_rhythm": "Badge radius inconsistency — verification badge vs status badges use different border-radius tokens."
+        }
+      ]
+    },
+    "image_3": {
+      "page": "Browse Campaigns (41-volunteer-browse.png)",
+      "status": "ISSUES FOUND",
+      "issues": [
+        {
+          "severity": "critical",
+          "location": "Campaign cards — header image banners",
+          "issue": "The three campaign cards have banner images of visibly different aspect ratios or content positioning: Card 1 (River Clean-Up) shows a water drop icon centered in teal; Card 2 (Tutoring) shows a book icon in darker green; Card 3 (Tree Plantation) shows a tree icon in olive green. The icon sizes and vertical centering within the banner area differ — the tree icon in Card 3 appears lower and smaller than the water drop in Card 1.",
+          "why_breaks_rhythm": "Card hero images in a list must share identical container dimensions and consistent icon/artwork sizing to maintain grid rhythm."
+        },
+        {
+          "severity": "moderate",
+          "location": "Campaign cards — status + visibility badge pairs",
+          "issue": "Each card shows two badges (e.g., 'UPCOMING' + 'PUBLIC'). The combined width of these two badges varies per card because the text lengths differ ('ONGOING' is longer than 'COMPLETED'). This causes the campaign titles below to start at different x-positions, breaking the left-alignment of titles across the list.",
+          "why_breaks_rhythm": "When badges have variable widths, the content below (titles) becomes misaligned vertically across cards. Consider fixed-width badges or a layout where badges don't push the title start position."
+        },
+        {
+          "severity": "moderate",
+          "location": "Progress bars — funding allocation",
+          "issue": "Card 1 shows '₹0 of ₹20,000 allocated' with what appears to be an empty/minimal bar. Card 2 shows '₹3,500 of ₹50,000 allocated' with a partial green bar. Card 3 shows '₹0 of ₹30,000 allocated'. The bar for Card 1 appears to have a different (possibly lighter) empty-state color treatment than expected, or the zero-state renders differently than Card 3's zero-state.",
+          "why_breaks_rhythm": "Empty/zero states for progress indicators should be visually identical across all instances."
+        },
+        {
+          "severity": "minor",
+          "location": "Star ratings — alignment",
+          "issue": "The star icons + numeric rating (4.33 / 4.30) are positioned after the Verified badge. In Card 1, the stars appear slightly closer to the NGO name than in Card 2, suggesting the Verified badge width variation (icon + text) is causing ripple effects in spacing.",
+          "why_breaks_rhythm": "Variable-width elements (Verified badges) are creating cascading spacing inconsistencies in the info row."
+        },
+        {
+          "severity": "minor",
+          "location": "Date formatting consistency",
+          "issue": "Card 1: '22 Oct 2026 – 29 Oct 2026'; Card 2: '8 Sep 2026 – 7 Nov 2026'; Card 3: '10 Jul 2026 – 18 Sep 2026'. Day values are single-digit (no padding) in Cards 2 and 3 ('8 Sep', '7 Nov') but could be double-digit padded. Minor, but single-digit dates cause the en-dash position to shift.",
+          "why_breaks_rhythm": "Date strings should use zero-padded days (08 vs 8) for monospace tabular alignment when displayed in lists."
+        },
+        {
+          "severity": "minor",
+          "location": "Search bar — internal spacing",
+          "issue": "The search input field has a magnifying glass icon on the left and 'Search' button on the right. The padding between the placeholder text 'Search by title, location, or NG' (truncated) and the Search button appears tight, and the button itself has less internal padding than the 'Sign up' buttons seen on the landing page.",
+          "why_breaks_rhythm": "Button sizing inconsistency between global CTA buttons and utility/search buttons."
+        }
+      ]
+    }
+  }
+}
+```

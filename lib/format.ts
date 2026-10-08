@@ -36,30 +36,32 @@ export function formatTime(value: string | null | undefined): string {
   return `${hh}:${mm}`;
 }
 
-/** Tailwind tone classes for status chips (Neo Kinpaku: patina = positive, gold = pending, vermilion = warning). */
+/** Tailwind tone classes for status chips — one semantic language across the app:
+ *  positive = live/done, info = planned/invited, warning = awaiting,
+ *  danger = blocked/rejected, neutral = archived/type meta. */
 export const STATUS_TONES: Record<string, string> = {
-  upcoming: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
-  ongoing: "bg-patina/12 text-patina border-patina/35",
-  completed: "bg-muted text-champagne/90 border-border",
-  cancelled: "bg-vermilion/12 text-vermilion border-vermilion/35",
-  pending: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
-  approved: "bg-patina/12 text-patina border-patina/35",
-  rejected: "bg-vermilion/12 text-vermilion border-vermilion/35",
-  accepted: "bg-patina/12 text-patina border-patina/35",
-  declined: "bg-vermilion/12 text-vermilion border-vermilion/35",
-  invited: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
-  suspended: "bg-vermilion/12 text-vermilion border-vermilion/35",
-  active: "bg-patina/12 text-patina border-patina/35",
-  open: "bg-kinpaku/10 text-kinpaku border-kinpaku/30",
-  reviewed: "bg-patina/12 text-patina border-patina/35",
-  dismissed: "bg-muted text-champagne/90 border-border",
-  paid: "bg-patina/12 text-patina border-patina/35",
-  public: "bg-muted text-champagne/90 border-border",
-  invite: "bg-patina/12 text-patina-deep border-patina/30",
+  upcoming: "bg-status-info/10 text-status-info border-status-info/35",
+  ongoing: "bg-status-positive/10 text-status-positive border-status-positive/35",
+  completed: "bg-status-neutral/10 text-status-neutral border-status-neutral/30",
+  cancelled: "bg-status-danger/10 text-status-danger border-status-danger/35",
+  pending: "bg-status-warning/10 text-status-warning border-status-warning/35",
+  approved: "bg-status-positive/10 text-status-positive border-status-positive/35",
+  rejected: "bg-status-danger/10 text-status-danger border-status-danger/35",
+  accepted: "bg-status-positive/10 text-status-positive border-status-positive/35",
+  declined: "bg-status-danger/10 text-status-danger border-status-danger/35",
+  invited: "bg-status-info/10 text-status-info border-status-info/35",
+  suspended: "bg-status-danger/10 text-status-danger border-status-danger/35",
+  active: "bg-status-positive/10 text-status-positive border-status-positive/35",
+  open: "bg-status-warning/10 text-status-warning border-status-warning/35",
+  reviewed: "bg-status-positive/10 text-status-positive border-status-positive/35",
+  dismissed: "bg-status-neutral/10 text-status-neutral border-status-neutral/30",
+  paid: "bg-status-positive/10 text-status-positive border-status-positive/35",
+  public: "bg-status-neutral/10 text-status-neutral border-status-neutral/30",
+  invite: "bg-status-info/10 text-status-info border-status-info/35",
 };
 
 export function statusTone(status: string | null | undefined): string {
-  return STATUS_TONES[status ?? ""] ?? "bg-muted text-champagne/90 border-border";
+  return STATUS_TONES[status ?? ""] ?? "bg-status-neutral/10 text-status-neutral border-status-neutral/30";
 }
 
 export function humanize(status: string | null | undefined): string {

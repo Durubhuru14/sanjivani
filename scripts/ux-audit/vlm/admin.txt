@@ -1,0 +1,158 @@
+```json
+{
+  "audit": {
+    "image_1": {
+      "page": "Admin Dashboard — Overview Tab (NGOs view)",
+      "issues": [
+        {
+          "severity": "minor",
+          "location": "Top stat cards row (all 6 cards)",
+          "issue": "Stat cards appear to use equal-width grid columns, but the internal content rhythm is slightly uneven — the 'SUSPENDED' card's label and value feel more loosely spaced than 'NGOS' or 'STAFF'. The sub-label text ('across all roles') is shorter than siblings, creating minor visual imbalance.",
+          "why_breaks_rhythm": "When sibling cards have varying sub-label lengths without a fixed min-height on the text block, the optical center of each card shifts, breaking the grid's perceived uniformity."
+        },
+        {
+          "severity": "minor",
+          "location": "'NGOs awaiting approval' section — single list item card",
+          "issue": "The action buttons (Approve / Reject / Suspend) are right-aligned with a gap from the card edge that differs from the left-side avatar+text padding. The button group appears to float slightly more to the right than the content inset would suggest.",
+          "why_breaks_rhythm": "Asymmetric horizontal padding between content start (avatar) and content end (button group) creates a subtle off-balance feel within the card."
+        },
+        {
+          "severity": "moderate",
+          "location": "'Volunteer reports' section — report detail card",
+          "issue": "The three action buttons (Suspend / Mark reviewed / Dismiss) have inconsistent visual weight: 'Suspend' is red-outlined (destructive), while the other two are gray/neutral. Additionally, the 'OPEN' badge in the top-right uses an amber/orange background that doesn't match any other status color in this view, introducing a new color token without precedent.",
+          "why_breaks_rhythm": "Mixed button variants side-by-side (destructive vs neutral) create visual noise; the amber status color breaks the established green/gray/red palette used elsewhere on the page."
+        },
+        {
+          "severity": "minor",
+          "location": "'Platform oversight' section — NGO list items",
+          "issue": "The 'APPROVED' badge on Green Earth Foundation and Bright Futures Trust uses a light green background, but the 'PENDING' badge on New Hope Collective uses a light amber/yellow background. While semantically distinct, the amber tint is very close to the red-destructive family and may confuse users who expect a neutral/pending gray.",
+          "why_breaks_rhythm": "Inconsistent status-color language — pending states elsewhere in the app (volunteer verification) don't use this amber, creating cognitive dissonance."
+        },
+        {
+          "severity": "minor",
+          "location": "'Platform oversight' — New Hope Collective row",
+          "issue": "This row shows three action buttons (Approve / Reject / Suspend), whereas the two approved NGOs above it show only one button (Suspend). The row height appears identical, but the extra buttons crowd the right side, making that row feel denser than its siblings.",
+          "why_breaks_rhythm": "Variable action density within a homogeneous list breaks the scanning rhythm — the eye expects consistent interaction patterns per row."
+        },
+        {
+          "severity": "minor",
+          "location": "Bottom 'Platform stats' row (3 cards)",
+          "issue": "Only 3 stat cards are shown here (PROFILES, CAMPAIGNS, APPLICATIONS) versus 6 in the top row. The cards are wider as a result, and the internal padding appears proportionally larger, making this section feel like a different component variant rather than part of the same system.",
+          "why_breaks_rhythm": "Changing column count within the same page for structurally identical (stat card) components creates two different 'grid dialects' that fight each other."
+        }
+      ]
+    },
+    "image_2": {
+      "page": "Admin Dashboard — Campaigns Tab",
+      "issues": [
+        {
+          "severity": "critical",
+          "location": "Sticky header bar appearing mid-page",
+          "issue": "A second header/navbar (Sanjivani logo + DEMO badge + Dashboard pill + Platform Admin dropdown) is rendered in the middle of the viewport, overlapping the content between the 'Volunteers awaiting verification' and 'Volunteer reports' sections. This appears to be a sticky header that has positioned incorrectly or a duplicate header injected into the scroll flow.",
+          "why_breaks_rhythm": "Completely destroys vertical rhythm by inserting a full-height navigation element into the content stream; creates layout shift and obscures content."
+        },
+        {
+          "severity": "moderate",
+          "location": "'Platform oversight' section — tab pills",
+          "issue": "The 'Campaigns (4)' tab pill has a green border/highlight indicating active state, but the green is more saturated/vivid than the brand green (#2E7D32) used elsewhere — it looks closer to a success-green. The other tabs (NGOs, Volunteers, Staff) use a muted gray background.",
+          "why_breaks_rhythm": "Active-state color deviates from the primary brand green, introducing a second 'green' into the system."
+        },
+        {
+          "severity": "moderate",
+          "location": "Campaign list items (4 rows)",
+          "issue": "Each campaign row shows two badges (e.g., 'UPCOMING' + 'INVITE', or 'ONGOING' + 'PUBLIC') using different color combinations per row. Row 1: blue + blue. Row 2: blue + gray. Row 3: green + gray. Row 4: gray + gray. The 'View NGO' link on the far right is plain text with no button styling, making it look like an afterthought.",
+          "why_breaks_rhythm": "Inconsistent badge color pairs across rows (sometimes matching, sometimes contrasting) create visual chatter. The 'View NGO' action lacks affordance — it's text, not a button, unlike all other actions on the page which use button components."
+        },
+        {
+          "severity": "minor",
+          "location": "Campaign list — text truncation/wrapping",
+          "issue": "The campaign description text (e.g., 'Bright Futures Trust · 29 Oct 2026 – 24 Dec 2026 · Byculla & Dadar Shelters, Mumbai') wraps to two lines on some rows and potentially one on others depending on content length, causing row heights to vary slightly.",
+          "why_breaks_rhythm": "Inconsistent row heights in a list break the horizontal scan lines; the eye stumbles when rows aren't stratum-perfect."
+        },
+        {
+          "severity": "minor",
+          "location": "Bottom 'Platform stats' — same as Image 1",
+          "issue": "Identical 3-card wide stat row with proportionally different padding than the 6-card top row.",
+          "why_breaks_rhythm": "Reinforces the dual-grid problem noted in Image 1."
+        }
+      ]
+    },
+    "image_3": {
+      "page": "Admin Dashboard — Volunteers Tab",
+      "issues": [
+        {
+          "severity": "critical",
+          "location": "Mid-page duplicate/sticky header",
+          "issue": "Same critical issue as Image 2 — the full navbar (Sanjivani logo, Demo badge, Dashboard, Platform Admin) appears overlaid in the middle of the page between 'Volunteers awaiting verification' and 'Volunteer reports'.",
+          "why_breaks_rhythm": "Layout-destroying insertion of navigation into content flow; completely breaks scrolling rhythm."
+        },
+        {
+          "severity": "moderate",
+          "location": "'Platform oversight' — Volunteers list (6 rows)",
+          "issue": "Massive inconsistency in action buttons per row:
+- Rows 1-2 (Verified): Single 'Suspend' button (red outline)
+- Row 3 (Pending): Three buttons — 'Verify' (checkmark), 'Reject' (X), 'Suspend' (red)
+- Row 4 (Rejected): Single 'Suspend' button
+- Row 5 (Pending + Suspended): Four buttons — 'Verify', 'Reject', 'Unsuspend' (shield), plus implied state
+- Row 6 (Pending): Three buttons
+
+Additionally, status badges cycle through: green (Verified), amber (Pending), red (Rejected), red-outline (Suspended). The 'SUSPENDED' badge on Tarun Mehta combines two states visually.",
+          "why_breaks_rhythm": "Extreme action-button density variation (1→4 buttons) makes the list look unstable. Each row feels like a different component. The multi-state badge (PENDING + SUSPENDED) stacks two pills, breaking the single-badge pattern of all other rows."
+        },
+        {
+          "severity": "minor",
+          "location": "Volunteer list — star ratings alignment",
+          "issue": "The star rating (e.g., '5.0★ avg', '4.0★ avg') appears at the end of the subtitle line but before the action buttons. Its horizontal position shifts based on the length of the name + skills text, so it doesn't align vertically down the column of rows.",
+          "why_breaks_rhythm": "Floating metric without column-alignment prevents quick visual comparison across rows."
+        },
+        {
+          "severity": "minor",
+          "location": "Avatar consistency",
+          "issue": "Avatars use different visual treatments: some are colored circles with initials (PS, RP, VJ, SI, TM, AK), but they use different background colors (brown, blue, green, dark green, olive, dark brown) with no apparent systematic assignment. The color appears random per user.",
+          "why_breaks_rhythm": "While functional, the unpatterned avatar colors add visual noise without conveying information. A deterministic color palette (e.g., based on name hash) would be more systematic."
+        }
+      ]
+    },
+    "image_4": {
+      "page": "Admin Dashboard — Staff Tab",
+      "issues": [
+        {
+          "severity": "critical",
+          "location": "Mid-page duplicate/sticky header",
+          "issue": "Same critical issue as Images 2 & 3 — full navbar overlaid at 'Volunteer reports' section boundary.",
+          "why_breaks_rhythm": "Persistent across all tabs — indicates a systemic layout bug with sticky positioning or conditional rendering of the header."
+        },
+        {
+          "severity": "moderate",
+          "location": "'Platform oversight' — Staff list (4 rows)",
+          "issue": "Rows 1-2 (Active staff) show only a 'Suspend' button. Rows 3-4 (Invited staff) show NO action buttons on the right — instead, they display 'Waiting for signup with this email' as plain muted text aligned to the right. This creates a lopsided layout where the right side of rows 3-4 is empty of interactive elements.",
+          "why_breaks_rhythm": "Breaking the pattern of 'every row has a right-aligned action' creates an unbalanced, incomplete look for the Invited rows. The plain text substitute for a button lacks structural parity."
+        },
+        {
+          "severity": "minor",
+          "location": "Staff list — badge consistency",
+          "issue": "'ACTIVE' = green badge, 'INVITED' = blue/gray badge. The blue for INVITED is a new color introduction not seen in the Volunteers tab (where Pending was amber). Same logical state ('not yet active') gets different colors in different tabs.",
+          "why_breaks_rhythm": "Cross-tab color inconsistency for equivalent semantic states (pending/invited/not-yet-active)."
+        },
+        {
+          "severity": "minor",
+          "location": "Staff list — email visibility",
+          "issue": "Email addresses (meera@sanjivani.test, etc.) are displayed inline with the name/organization info. On other tabs (Volunteers), emails are not shown in the list view. This changes the information density and text-wrapping behavior for this tab specifically.",
+          "why_breaks_rhythm": "Different list-item content structure across tabs breaks the expectation of parallel architecture."
+        }
+      ]
+    }
+  },
+  "summary": {
+    "critical_issues": 3,
+    "moderate_issues": 8,
+    "minor_issues": 12,
+    "cross_cutting_concerns": [
+      "Sticky/duplicate header rendering mid-page on tabs 2-4 (systemic bug)",
+      "Action button count varying wildly per row within lists (1–4 buttons)",
+      "Status badge color inconsistency across tabs (pending/invited states use amber vs blue vs gray)",
+      "Bottom stat row using 3-column grid vs top stat row using 6-column grid (dual grid system)"
+    ]
+  }
+}
+```

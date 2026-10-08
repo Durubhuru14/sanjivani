@@ -2,10 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Inbox, Loader2, X } from "lucide-react";
 import { decideApplication } from "@/app/(ngo)/ngo/actions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/EmptyState";
+import { StatusBadge } from "@/components/StatusBadge";
 import { UserAvatar } from "@/components/UserAvatar";
 import { useToast } from "@/hooks/use-toast";
 import type { Application } from "@/lib/types";
@@ -19,10 +21,11 @@ export function ApplicationsPanel({ applications }: { applications: Application[
 
   if (applications.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-        No volunteer applications yet. Public campaigns collect applications automatically —
-        invite-only campaigns use the invite panel instead.
-      </p>
+      <EmptyState
+        icon={Inbox}
+        title="No applications yet"
+        hint="Public campaigns collect applications automatically — invite-only campaigns use the invite panel instead."
+      />
     );
   }
 
@@ -48,10 +51,13 @@ export function ApplicationsPanel({ applications }: { applications: Application[
   return (
     <ul className="divide-y rounded-xl border">
       {applications.map((app) => (
-        <li key={app.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+        <li
+          key={app.id}
+          className="flex min-h-16 flex-wrap items-center gap-3 px-4 py-3"
+        >
           <UserAvatar name={app.volunteer?.name} src={app.volunteer?.avatar_url} className="h-9 w-9 text-xs" />
           <div className="min-w-0 flex-1">
-            <p className="font-semibold">{app.volunteer?.name ?? "Volunteer"}</p>
+            <p className="truncate font-semibold">{app.volunteer?.name ?? "Volunteer"}</p>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {(app.volunteer?.volunteers?.skills ?? []).slice(0, 4).map((skill) => (
                 <Badge key={skill} variant="secondary" className="font-normal">
@@ -65,11 +71,12 @@ export function ApplicationsPanel({ applications }: { applications: Application[
               ) : null}
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
             {app.status === "pending" ? (
               <>
                 <Button
                   size="sm"
+                  variant="outline"
                   className="gap-1.5"
                   disabled={busyId === app.id || pending}
                   onClick={() => decide(app, "accepted")}
@@ -84,7 +91,7 @@ export function ApplicationsPanel({ applications }: { applications: Application[
                 <Button
                   size="sm"
                   variant="outline"
-                  className="gap-1.5"
+                  className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                   disabled={busyId === app.id || pending}
                   onClick={() => decide(app, "rejected")}
                 >
@@ -92,12 +99,12 @@ export function ApplicationsPanel({ applications }: { applications: Application[
                 </Button>
               </>
             ) : (
-              <Badge
-                variant={app.status === "accepted" ? "default" : "outline"}
-                className={app.status === "accepted" ? "" : "text-muted-foreground"}
-              >
-                {app.status === "accepted" ? "Accepted — assignable to team" : "Rejected"}
-              </Badge>
+              <>
+                <StatusBadge status={app.status} />
+                {app.status === "accepted" ? (
+                  <span className="text-xs text-muted-foreground">assignable to team</span>
+                ) : null}
+              </>
             )}
           </div>
         </li>

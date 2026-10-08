@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { Megaphone } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
 import { BrowseSearchBar } from "./search-bar";
 import type { Campaign } from "@/lib/types";
@@ -54,13 +55,10 @@ export default async function BrowsePage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Browse campaigns</h1>
-        <p className="mt-1 text-muted-foreground">
-          Public campaigns from verified NGOs. Invite-only campaigns reach you by
-          invitation instead.
-        </p>
-      </div>
+      <PageHeader
+        title="Browse campaigns"
+        subtitle="Public campaigns from verified NGOs. Invite-only campaigns reach you by invitation instead."
+      />
 
       <Suspense fallback={null}>
         <BrowseSearchBar />
@@ -77,7 +75,7 @@ export default async function BrowsePage({
           }
         />
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {campaigns.map((c) => (
             <CampaignCard key={c.id} campaign={c} href={`/volunteer/campaigns/${c.id}`} />
           ))}

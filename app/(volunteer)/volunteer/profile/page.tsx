@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { CalendarCheck2, Clock, Star } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { StarsDisplay } from "@/components/StarsDisplay";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
@@ -73,12 +74,13 @@ export default async function VolunteerProfilePage() {
   const totalHours = Number((hoursRes.data as number) ?? 0);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <div className="flex flex-wrap items-center gap-4">
-        <UserAvatar name={profile?.name} src={profile?.avatar_url} className="h-16 w-16 rounded-lg text-lg" rounded="lg" />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">My profile & history</h1>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader
+        backHref="/volunteer"
+        backLabel="Dashboard"
+        title={
+          <span className="flex flex-wrap items-center gap-3">
+            My profile &amp; history
             {vol?.verification_status === "approved" ? (
               <VerifiedBadge verified />
             ) : vol?.verification_status === "pending" ? (
@@ -86,17 +88,27 @@ export default async function VolunteerProfilePage() {
             ) : (
               <StatusBadge status="rejected" />
             )}
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {profile?.name} · {profile?.location || "location not set"}
+          </span>
+        }
+        subtitle="This is the portable record you carry across NGOs — campaigns, hours, and ratings."
+      />
+
+      <div className="flex flex-wrap items-center gap-4">
+        <UserAvatar
+          name={profile?.name}
+          src={profile?.avatar_url}
+          className="h-16 w-16 rounded-lg text-lg"
+          rounded="lg"
+        />
+        <div className="min-w-0">
+          <p className="truncate font-semibold">{profile?.name}</p>
+          <p className="truncate text-sm text-muted-foreground">
+            {profile?.location || "location not set"}
           </p>
         </div>
       </div>
-      <p className="-mt-3 text-sm text-muted-foreground">
-        This is the portable record you carry across NGOs — campaigns, hours, and ratings.
-      </p>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard label="Campaigns joined" value={history.length} icon={CalendarCheck2} />
         <StatCard label="Hours contributed" value={totalHours} icon={Clock} />
         <StatCard
@@ -144,7 +156,7 @@ export default async function VolunteerProfilePage() {
               {history.map((h) => (
                 <li key={h.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold">{h.teams.campaigns.title}</p>
+                    <p className="truncate font-medium">{h.teams.campaigns.title}</p>
                     <p className="truncate text-sm text-muted-foreground">
                       {h.teams.campaigns.ngo?.org_name ?? "NGO"} · {h.member_type} ·{" "}
                       {h.teams.name}
@@ -153,7 +165,7 @@ export default async function VolunteerProfilePage() {
                         : ""}
                     </p>
                   </div>
-                  <span className="text-sm font-semibold">
+                  <span className="text-sm font-semibold tabular-nums">
                     {Number(h.hours_logged)} h
                   </span>
                   <StatusBadge status={h.teams.campaigns.status} />

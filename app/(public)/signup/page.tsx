@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building2, HeartHandshake, Loader2, MailCheck, UserCog } from "lucide-react";
+import { Building2, Check, HeartHandshake, Loader2, MailCheck, UserCog } from "lucide-react";
 import { signUpSchema } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,7 +152,7 @@ export default function SignupPage() {
   return (
     <div className="relative mx-auto w-full max-w-2xl px-4 py-12 sm:py-16">
       <div className="pattern-dots pointer-events-none fixed inset-0 -z-10 opacity-[0.16]" aria-hidden />
-      <Card className="border-border/80 shadow-lift">
+      <Card className="animate-scale-in w-full border-border bg-card shadow-lift">
         <CardHeader className="items-center text-center">
           <LogoMark detailed className="mx-auto mb-2 h-14 w-14" />
           <CardTitle className="font-display text-3xl font-medium tracking-wide text-foreground">Create your account</CardTitle>
@@ -175,7 +175,7 @@ export default function SignupPage() {
           )}
 
           {/* Role selection */}
-          <div className="grid gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Account type">
+          <div className="grid items-stretch gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Account type">
             {ROLE_CARDS.map((card) => (
               <button
                 key={card.value}
@@ -184,23 +184,28 @@ export default function SignupPage() {
                 aria-checked={role === card.value}
                 onClick={() => setRole(card.value)}
                 className={cn(
-                  "rounded-xl border-2 p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "relative h-full rounded-xl border-2 p-4 pb-5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   role === card.value
-                    ? "border-leaf/55 bg-tint/70"
+                    ? "border-primary/70 bg-tint ring-1 ring-primary/30"
                     : "border-border bg-card hover:border-primary/40"
                 )}
               >
+                {role === card.value ? (
+                  <Check className="absolute right-3 top-3 h-4 w-4 text-primary" aria-hidden />
+                ) : null}
                 <card.icon
                   className={cn("h-5 w-5", role === card.value ? "text-leaf" : "text-muted-foreground")}
                   aria-hidden
                 />
                 <p className="mt-2 text-sm font-semibold">{card.title}</p>
-                <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{card.hint}</p>
+                <p className="mt-1 min-h-[3rem] text-xs leading-snug text-muted-foreground line-clamp-2">
+                  {card.hint}
+                </p>
               </button>
             ))}
           </div>
 
-          <form onSubmit={onSubmit} className="mt-6 space-y-4" noValidate>
+          <form onSubmit={onSubmit} className="mt-4 space-y-4" noValidate>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="name">Full name</Label>
@@ -327,15 +332,17 @@ export default function SignupPage() {
               </Alert>
             )}
 
-            <Button type="submit" className="w-full" disabled={busy || checking}>
-              {busy ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Creating your account…
-                </>
-              ) : (
-                "Create account"
-              )}
-            </Button>
+            <div className="flex justify-end">
+              <Button type="submit" className="w-full sm:w-auto" disabled={busy || checking}>
+                {busy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> Creating your account…
+                  </>
+                ) : (
+                  "Create account"
+                )}
+              </Button>
+            </div>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">

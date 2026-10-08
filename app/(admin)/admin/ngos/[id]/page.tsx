@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { ArrowLeft, Building2, UserSquare2 } from "lucide-react";
+import { Building2, Megaphone, Star, UserSquare2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/PageHeader";
+import { StatCard } from "@/components/StatCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StarsDisplay } from "@/components/StarsDisplay";
 import { EmptyState } from "@/components/EmptyState";
@@ -71,72 +71,87 @@ export default async function AdminNgoDetailPage({
     profile?: { id: string; name: string | null; avatar_url: string | null; suspended: boolean } | null;
   }>;
 
-  return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <Link
-        href="/admin"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden /> Admin dashboard
-      </Link>
+  const activeCampaigns = campaigns.filter(
+    (c) => c.status === "ongoing" || c.status === "upcoming"
+  ).length;
+  const activeStaff = staff.filter((s) => s.status === "active").length;
+  const avgRating = Number(ngo.avg_rating ?? 0);
 
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-start gap-4">
-          <UserAvatar
-            name={ngo.org_name}
-            src={ngo.logo_url}
-            className="h-14 w-14 rounded-lg text-base"
-            rounded="lg"
-          />
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <StatusBadge status={ngo.verification_status} />
-              {ngo.profile?.suspended ? <StatusBadge status="cancelled" /> : null}
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight">{ngo.org_name}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+  return (
+    <div className="mx-auto max-w-5xl space-y-6">
+      <PageHeader
+        backHref="/admin"
+        backLabel="Back to dashboard"
+        title={
+          <span className="flex flex-wrap items-center gap-3">
+            <span aria-hidden="true">
+              <UserAvatar
+                name={ngo.org_name}
+                src={ngo.logo_url}
+                className="h-10 w-10 rounded-lg text-base"
+                rounded="lg"
+              />
+            </span>
+            <span>{ngo.org_name}</span>
+          </span>
+        }
+        subtitle={
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <StatusBadge status={ngo.verification_status} />
+            {ngo.profile?.suspended ? <StatusBadge status="suspended" /> : null}
+            <span>
               Registration {ngo.registration_number ?? "—"} · joined{" "}
               {formatDate(ngo.profile?.created_at)} · {ngo.profile?.location ?? "location not set"}
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <AdminActionButton
-            path="/api/admin/approve-ngo"
-            profileId={id}
-            label="Approve NGO"
-            successTitle={`${ngo.org_name} approved.`}
-          />
-          <AdminActionButton
-            path="/api/admin/reject-ngo"
-            profileId={id}
-            label="Reject"
-            variant="ghost"
-            successTitle={`${ngo.org_name} was rejected.`}
-          />
-          <SuspendToggle
-            profileId={id}
-            suspended={Boolean(ngo.profile?.suspended)}
-            name={ngo.org_name}
-          />
-        </div>
-      </div>
+            </span>
+          </span>
+        }
+        action={
+          <>
+            <AdminActionButton
+              path="/api/admin/approve-ngo"
+              profileId={id}
+              label="Approve NGO"
+              size="default"
+              variant="default"
+              successTitle={`${ngo.org_name} approved.`}
+            />
+            <AdminActionButton
+              path="/api/admin/reject-ngo"
+              profileId={id}
+              label="Reject"
+              icon="x"
+              size="default"
+              successTitle={`${ngo.org_name} was rejected.`}
+            />
+            <SuspendToggle
+              profileId={id}
+              suspended={Boolean(ngo.profile?.suspended)}
+              name={ngo.org_name}
+              size="default"
+            />
+          </>
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border bg-muted/30 p-4">
-          <p className="text-sm text-muted-foreground">Campaigns</p>
-          <p className="mt-1 text-2xl font-bold">{campaigns.length}</p>
-        </div>
-        <div className="rounded-xl border bg-muted/30 p-4">
-          <p className="text-sm text-muted-foreground">Staff members</p>
-          <p className="mt-1 text-2xl font-bold">{staff.length}</p>
-        </div>
-        <div className="rounded-xl border bg-muted/30 p-4">
-          <p className="text-sm text-muted-foreground">Average rating</p>
-          <div className="mt-2">
-            <StarsDisplay score={Number(ngo.avg_rating)} />
-          </div>
-        </div>
+        <StatCard
+          label="Campaigns"
+          value={campaigns.length}
+          icon={Megaphone}
+          hint={`${activeCampaigns} upcoming or ongoing`}
+        />
+        <StatCard
+          label="Staff"
+          value={staff.length}
+          icon={UserSquare2}
+          hint={`${activeStaff} active`}
+        />
+        <StatCard
+          label="Avg. rating"
+          value={avgRating > 0 ? avgRating.toFixed(2) : "New"}
+          icon={Star}
+          hint={avgRating > 0 ? "out of 5" : "no ratings yet"}
+        />
       </div>
 
       <Card className="shadow-soft">
@@ -166,9 +181,9 @@ export default async function AdminNgoDetailPage({
                   <li key={c.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate font-semibold">{c.title}</p>
-                        <StatusBadge status={c.type === "invite" ? "invite" : c.status} />
+                        <p className="truncate font-semibold" title={c.title}>{c.title}</p>
                         <StatusBadge status={c.status} />
+                        <StatusBadge status={c.type} />
                       </div>
                       <p className="mt-0.5 text-sm text-muted-foreground">
                         {formatDate(c.start_date)} – {formatDate(c.end_date)} · {c.location ?? "no location"}
@@ -216,15 +231,17 @@ export default async function AdminNgoDetailPage({
                     </div>
                     <p className="mt-0.5 text-sm text-muted-foreground">{s.invited_email}</p>
                   </div>
-                  {s.profile ? (
-                    <SuspendToggle
-                      profileId={s.profile.id}
-                      suspended={Boolean(s.profile.suspended)}
-                      name={s.profile.name ?? "this staff member"}
-                    />
-                  ) : (
-                    <span className="text-xs text-muted-foreground">Waiting for signup with this email</span>
-                  )}
+                  <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                    {s.profile ? (
+                      <SuspendToggle
+                        profileId={s.profile.id}
+                        suspended={Boolean(s.profile.suspended)}
+                        name={s.profile.name ?? "this staff member"}
+                      />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Waiting for signup with this email</span>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -239,14 +256,14 @@ export default async function AdminNgoDetailPage({
         </CardHeader>
         <CardContent>
           {ratings.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No ratings yet.</p>
+            <EmptyState icon={Star} title="No ratings yet" hint="Volunteers can rate this NGO after a completed campaign." />
           ) : (
             <ul className="space-y-3">
               {ratings.map((r) => (
                 <li key={r.id} className="rounded-xl border p-4">
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
                     <p className="font-medium">{r.from_user?.name ?? "Volunteer"}</p>
-                    <StarsDisplay score={Number(r.score)} size="sm" />
+                    <StarsDisplay score={Number(r.score)} size="sm" className="[&>span]:tabular-nums" />
                   </div>
                   {r.comment ? (
                     <p className="mt-1.5 text-sm text-muted-foreground">“{r.comment}”</p>
@@ -257,10 +274,6 @@ export default async function AdminNgoDetailPage({
           )}
         </CardContent>
       </Card>
-
-      <Button asChild variant="outline">
-        <Link href="/admin">Back to dashboard</Link>
-      </Button>
     </div>
   );
 }

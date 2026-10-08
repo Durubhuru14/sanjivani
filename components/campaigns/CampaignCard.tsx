@@ -43,10 +43,10 @@ export function CampaignCard({
           />
         ) : (
           <div
-            className="flex h-36 w-full items-center justify-center bg-tint/70"
+            className="pattern-dots relative flex h-36 w-full select-none items-center justify-center border-b border-border/70 bg-tint/70"
             aria-hidden
           >
-            <span className="text-4xl font-black tracking-tighter text-primary/25">
+            <span className="text-4xl font-black tracking-tighter text-primary/30 drop-shadow-sm">
               {campaign.title.slice(0, 2).toUpperCase()}
             </span>
           </div>
@@ -60,13 +60,13 @@ export function CampaignCard({
               <StatusBadge status="public" />
             )}
           </div>
-          <h3 className="line-clamp-2 text-base font-bold leading-snug group-hover:text-primary">
+          <h3 className="line-clamp-2 min-h-[2.5rem] text-base font-bold leading-snug group-hover:text-primary">
             {campaign.title}
           </h3>
           {ngo ? (
-            <div className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
-              <UserAvatar name={ngo.org_name} src={ngo.logo_url} className="h-5 w-5 text-[9px]" />
-              <span className="font-medium text-foreground/80">{ngo.org_name}</span>
+            <div className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
+              <UserAvatar name={ngo.org_name} src={ngo.logo_url} className="h-5 w-5 shrink-0 text-[9px]" />
+              <span className="truncate font-medium text-foreground/80">{ngo.org_name}</span>
               {ngo.verification_status === "approved" ? <VerifiedBadge verified className="scale-90" /> : null}
               {Number(ngo.avg_rating) > 0 ? (
                 <StarsDisplay score={Number(ngo.avg_rating)} size="sm" className="scale-90 origin-left" />
@@ -93,13 +93,15 @@ export function CampaignCard({
             ) : null}
           </div>
           {budget.total > 0 ? (
-            <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-              <span>
+            <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+              <span className="shrink-0">
                 {formatMoney(budget.total - budget.remaining)} of {formatMoney(budget.total)} allocated
               </span>
-              <Progress value={budgetProgress(budget)} className="h-1.5 w-24" aria-hidden />
+              <Progress value={budgetProgress(budget)} className="h-1.5 max-w-28 flex-1" aria-hidden />
             </div>
-          ) : null}
+          ) : (
+            <div className="h-[6px]" aria-hidden />
+          )}
         </CardContent>
       </Card>
     </Link>

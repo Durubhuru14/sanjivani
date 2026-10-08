@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Send } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { RespondInviteButtons } from "@/app/(volunteer)/volunteer/campaigns/[id]/campaign-actions";
@@ -32,20 +33,19 @@ export default async function VolunteerInvitesPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">My invitations</h1>
-        <p className="mt-1 text-muted-foreground">
-          Personal invitations to invite-only campaigns. Accepting marks your application as
-          accepted immediately.
-        </p>
-      </div>
+      <PageHeader
+        backHref="/volunteer"
+        backLabel="Dashboard"
+        title="My invitations"
+        subtitle="Personal invitations to invite-only campaigns. Accepting marks your application as accepted immediately."
+      />
 
       <Card className="shadow-soft">
         <CardHeader>
           <CardTitle>Waiting for your answer</CardTitle>
-          <CardDescription>
-            {pending.length === 0 ? "Nothing pending — you are all caught up." : undefined}
-          </CardDescription>
+          {pending.length === 0 ? (
+            <CardDescription>Nothing pending — you are all caught up.</CardDescription>
+          ) : null}
         </CardHeader>
         <CardContent className="space-y-4">
           {pending.length === 0 ? (
@@ -102,7 +102,7 @@ export default async function VolunteerInvitesPage() {
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/volunteer/campaigns/${inv.campaign?.id}`}
-                      className="truncate font-semibold hover:text-primary hover:underline"
+                      className="truncate font-medium hover:text-primary hover:underline"
                     >
                       {inv.campaign?.title ?? "Campaign"}
                     </Link>

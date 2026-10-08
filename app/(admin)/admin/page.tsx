@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -100,17 +101,15 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="animate-fade-up">
-        <h1 className="text-3xl font-bold tracking-tight">Admin dashboard</h1>
-        <p className="mt-1 text-muted-foreground">
-          Verification queue, reports, platform health, and account actions — full oversight of
-          every NGO, campaign, staff member, and volunteer on Sanjivani.
-        </p>
-      </div>
+      <PageHeader
+        title="Admin dashboard"
+        subtitle="Verification queue, reports, platform health, and account actions — full oversight of every NGO, campaign, staff member, and volunteer on Sanjivani."
+        className="animate-fade-up"
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <div className="animate-fade-up stagger-1">
-          <StatCard label="NGOs on platform" value={ngos.length} icon={Building2} hint={`${pendingNgos.length} awaiting approval`} />
+          <StatCard label="NGOs" value={ngos.length} icon={Building2} hint={`${pendingNgos.length} awaiting approval`} />
         </div>
         <div className="animate-fade-up stagger-2">
           <StatCard label="Volunteers" value={vols.length} icon={HeartHandshake} hint={`${pendingVols.length} awaiting verification`} />
@@ -118,14 +117,14 @@ export default async function AdminDashboardPage() {
         <div className="animate-fade-up stagger-3">
           <StatCard label="Campaigns" value={campaigns.length} icon={Megaphone} hint={`${activeCampaigns.length} upcoming or ongoing`} />
         </div>
-        <div className="animate-fade-up stagger-3">
-          <StatCard label="Staff members" value={staff.length} icon={UserSquare2} hint={`${activeStaff.length} active`} />
-        </div>
         <div className="animate-fade-up stagger-4">
-          <StatCard label="Open reports" value={openReports.length} icon={Flag} />
+          <StatCard label="Staff" value={staff.length} icon={UserSquare2} hint={`${activeStaff.length} active`} />
         </div>
         <div className="animate-fade-up stagger-5">
-          <StatCard label="Suspended accounts" value={suspendedUsers.length} icon={ShieldAlert} />
+          <StatCard label="Open reports" value={openReports.length} icon={Flag} hint="filed by NGOs" />
+        </div>
+        <div className="animate-fade-up stagger-6">
+          <StatCard label="Suspended" value={suspendedUsers.length} icon={ShieldAlert} hint="across all roles" />
         </div>
       </div>
 
@@ -147,6 +146,11 @@ export default async function AdminDashboardPage() {
             <ul className="divide-y rounded-xl border">
               {pendingNgos.map((n) => (
                 <li key={n.profile_id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                  <UserAvatar
+                    name={n.org_name}
+                    src={n.logo_url}
+                    className="h-9 w-9 text-sm"
+                  />
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/admin/ngos/${n.profile_id}`}
@@ -158,26 +162,27 @@ export default async function AdminDashboardPage() {
                       Reg. {n.registration_number ?? "—"} · joined {formatDate(n.profile?.created_at)}
                     </p>
                   </div>
-                  <AdminActionButton
-                    path="/api/admin/approve-ngo"
-                    profileId={n.profile_id}
-                    label="Approve"
-                    successTitle={`${n.org_name} approved — they were notified.`}
-                  />
-                  <AdminActionButton
-                    path="/api/admin/reject-ngo"
-                    profileId={n.profile_id}
-                    label="Reject"
-                    icon="users"
-                    variant="ghost"
-                    confirmText={`Reject ${n.org_name}? They can still edit their profile.`}
-                    successTitle={`${n.org_name} was rejected.`}
-                  />
-                  <SuspendToggle
-                    profileId={n.profile_id}
-                    suspended={Boolean(n.profile?.suspended)}
-                    name={n.org_name}
-                  />
+                  <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                    <AdminActionButton
+                      path="/api/admin/approve-ngo"
+                      profileId={n.profile_id}
+                      label="Approve"
+                      successTitle={`${n.org_name} approved — they were notified.`}
+                    />
+                    <AdminActionButton
+                      path="/api/admin/reject-ngo"
+                      profileId={n.profile_id}
+                      label="Reject"
+                      icon="x"
+                      confirmText={`Reject ${n.org_name}? They can still edit their profile.`}
+                      successTitle={`${n.org_name} was rejected.`}
+                    />
+                    <SuspendToggle
+                      profileId={n.profile_id}
+                      suspended={Boolean(n.profile?.suspended)}
+                      name={n.org_name}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>
@@ -210,25 +215,26 @@ export default async function AdminDashboardPage() {
                       {v.profile?.location ?? "—"}
                     </p>
                   </div>
-                  <AdminActionButton
-                    path="/api/admin/approve-volunteer"
-                    profileId={v.profile_id}
-                    label="Approve"
-                    successTitle={`${v.profile?.name ?? "Volunteer"} is now verified.`}
-                  />
-                  <AdminActionButton
-                    path="/api/admin/reject-volunteer"
-                    profileId={v.profile_id}
-                    label="Reject"
-                    icon="users"
-                    variant="ghost"
-                    successTitle="Volunteer verification was rejected."
-                  />
-                  <SuspendToggle
-                    profileId={v.profile_id}
-                    suspended={Boolean(v.profile?.suspended)}
-                    name={v.profile?.name ?? "this volunteer"}
-                  />
+                  <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                    <AdminActionButton
+                      path="/api/admin/approve-volunteer"
+                      profileId={v.profile_id}
+                      label="Approve"
+                      successTitle={`${v.profile?.name ?? "Volunteer"} is now verified.`}
+                    />
+                    <AdminActionButton
+                      path="/api/admin/reject-volunteer"
+                      profileId={v.profile_id}
+                      label="Reject"
+                      icon="x"
+                      successTitle="Volunteer verification was rejected."
+                    />
+                    <SuspendToggle
+                      profileId={v.profile_id}
+                      suspended={Boolean(v.profile?.suspended)}
+                      name={v.profile?.name ?? "this volunteer"}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>
@@ -254,44 +260,43 @@ export default async function AdminDashboardPage() {
             <ul className="space-y-3">
               {reports.map((r) => (
                 <li key={r.id} className="rounded-xl border p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="font-semibold">
-                      {r.volunteer?.name ?? "Volunteer"}{" "}
-                      <span className="font-normal text-muted-foreground">
-                        reported by {r.reporter?.name ?? "NGO"}
-                        {r.campaign ? ` · ${r.campaign.title}` : ""}
-                      </span>
-                    </p>
-                    <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold">
+                        {r.volunteer?.name ?? "Volunteer"}{" "}
+                        <span className="font-normal text-muted-foreground">
+                          reported by {r.reporter?.name ?? "NGO"}
+                          {r.campaign ? ` · ${r.campaign.title}` : ""}
+                        </span>
+                      </p>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{r.reason}</p>
+                    </div>
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
                       {r.volunteer?.suspended ? <StatusBadge status="suspended" /> : null}
                       <StatusBadge status={r.status} />
                     </div>
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{r.reason}</p>
-                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                  <div className="mt-3 flex min-h-8 flex-wrap items-center gap-x-4 gap-y-2">
                     <p className="text-xs text-muted-foreground">{formatDateTime(r.created_at)}</p>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {r.status === "open" ? (
-                        <>
-                          <SuspendToggle
-                            profileId={r.volunteer_id}
-                            suspended={Boolean(r.volunteer?.suspended)}
-                            name={r.volunteer?.name ?? "this volunteer"}
-                          />
-                          <ReportStatusButton
-                            reportId={r.id}
-                            status="reviewed"
-                            label="Mark reviewed"
-                          />
-                          <ReportStatusButton
-                            reportId={r.id}
-                            status="dismissed"
-                            label="Dismiss"
-                            className="text-muted-foreground"
-                          />
-                        </>
-                      ) : null}
-                    </div>
+                    {r.status === "open" ? (
+                      <div className="ml-auto flex min-w-[12rem] flex-wrap items-center justify-end gap-2">
+                        <SuspendToggle
+                          profileId={r.volunteer_id}
+                          suspended={Boolean(r.volunteer?.suspended)}
+                          name={r.volunteer?.name ?? "this volunteer"}
+                        />
+                        <ReportStatusButton
+                          reportId={r.id}
+                          status="reviewed"
+                          label="Mark reviewed"
+                        />
+                        <ReportStatusButton
+                          reportId={r.id}
+                          status="dismissed"
+                          label="Dismiss"
+                        />
+                      </div>
+                    ) : null}
                   </div>
                 </li>
               ))}
@@ -314,7 +319,7 @@ export default async function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="ngos">
-            <TabsList className="mb-4">
+            <TabsList className="mb-4 h-auto w-full flex-wrap sm:h-9 sm:w-fit">
               <TabsTrigger value="ngos">NGOs ({ngos.length})</TabsTrigger>
               <TabsTrigger value="campaigns">Campaigns ({campaigns.length})</TabsTrigger>
               <TabsTrigger value="volunteers">Volunteers ({vols.length})</TabsTrigger>
@@ -327,55 +332,63 @@ export default async function AdminDashboardPage() {
                 {ngos.length} organisation{ngos.length === 1 ? "" : "s"} — approve, reject, suspend,
                 or unsuspend directly. Open an NGO for its campaigns, staff, and ratings.
               </p>
-              <ul className="divide-y rounded-xl border">
-                {ngos.map((n) => (
-                  <li key={n.profile_id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Link
-                          href={`/admin/ngos/${n.profile_id}`}
-                          className="font-semibold hover:text-primary hover:underline"
-                        >
-                          {n.org_name}
-                        </Link>
-                        <StatusBadge status={n.verification_status} />
-                        {n.profile?.suspended ? <StatusBadge status="suspended" /> : null}
-                      </div>
-                      <p className="mt-0.5 text-sm text-muted-foreground">
-                        {campaignCountByNgo.get(n.profile_id) ?? 0} campaign
-                        {(campaignCountByNgo.get(n.profile_id) ?? 0) === 1 ? "" : "s"} ·{" "}
-                        {n.profile?.location ?? "location not set"} · joined{" "}
-                        {formatDate(n.profile?.created_at)}
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {n.verification_status === "pending" ? (
-                        <>
-                          <AdminActionButton
-                            path="/api/admin/approve-ngo"
-                            profileId={n.profile_id}
-                            label="Approve"
-                            successTitle={`${n.org_name} approved — they were notified.`}
-                          />
-                          <AdminActionButton
-                            path="/api/admin/reject-ngo"
-                            profileId={n.profile_id}
-                            label="Reject"
-                            icon="users"
-                            variant="ghost"
-                            successTitle={`${n.org_name} was rejected.`}
-                          />
-                        </>
-                      ) : null}
-                      <SuspendToggle
-                        profileId={n.profile_id}
-                        suspended={Boolean(n.profile?.suspended)}
+              {ngos.length === 0 ? (
+                <EmptyState icon={Building2} title="No NGOs yet" hint="Organisations will appear here as soon as they sign up." />
+              ) : (
+                <ul className="divide-y rounded-xl border">
+                  {ngos.map((n) => (
+                    <li key={n.profile_id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                      <UserAvatar
                         name={n.org_name}
+                        src={n.logo_url}
+                        className="h-9 w-9 text-sm"
                       />
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/admin/ngos/${n.profile_id}`}
+                            className="font-semibold hover:text-primary hover:underline"
+                          >
+                            {n.org_name}
+                          </Link>
+                          <StatusBadge status={n.verification_status} />
+                          {n.profile?.suspended ? <StatusBadge status="suspended" /> : null}
+                        </div>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                          {campaignCountByNgo.get(n.profile_id) ?? 0} campaign
+                          {(campaignCountByNgo.get(n.profile_id) ?? 0) === 1 ? "" : "s"} ·{" "}
+                          {n.profile?.location ?? "location not set"} · joined{" "}
+                          {formatDate(n.profile?.created_at)}
+                        </p>
+                      </div>
+                      <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                        {n.verification_status === "pending" ? (
+                          <>
+                            <AdminActionButton
+                              path="/api/admin/approve-ngo"
+                              profileId={n.profile_id}
+                              label="Approve"
+                              successTitle={`${n.org_name} approved — they were notified.`}
+                            />
+                            <AdminActionButton
+                              path="/api/admin/reject-ngo"
+                              profileId={n.profile_id}
+                              label="Reject"
+                              icon="x"
+                              successTitle={`${n.org_name} was rejected.`}
+                            />
+                          </>
+                        ) : null}
+                        <SuspendToggle
+                          profileId={n.profile_id}
+                          suspended={Boolean(n.profile?.suspended)}
+                          name={n.org_name}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </TabsContent>
 
             {/* ---- Campaigns across the platform ---- */}
@@ -402,7 +415,7 @@ export default async function AdminDashboardPage() {
                       <li key={c.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate font-semibold">{c.title}</p>
+                            <p className="truncate font-semibold" title={c.title}>{c.title}</p>
                             <StatusBadge status={c.status} />
                             <StatusBadge status={c.type} />
                             {ownerSuspended ? <StatusBadge status="suspended" /> : null}
@@ -418,12 +431,14 @@ export default async function AdminDashboardPage() {
                             of {rs(total)} ({utilisation}% used)
                           </p>
                         </div>
-                        <Link
-                          href={`/admin/ngos/${c.ngo_id}`}
-                          className="text-sm text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
-                        >
-                          View NGO
-                        </Link>
+                        <div className="ml-auto flex shrink-0 items-center">
+                          <Link
+                            href={`/admin/ngos/${c.ngo_id}`}
+                            className="text-sm text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+                          >
+                            View NGO
+                          </Link>
+                        </div>
                       </li>
                     );
                   })}
@@ -437,57 +452,60 @@ export default async function AdminDashboardPage() {
                 {vols.length} volunteer{vols.length === 1 ? "" : "s"} — verified badge status,
                 ratings, and account actions.
               </p>
-              <ul className="divide-y rounded-xl border">
-                {vols.map((v) => (
-                  <li key={v.profile_id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <UserAvatar
-                      name={v.profile?.name ?? "Volunteer"}
-                      src={v.profile?.avatar_url}
-                      className="h-9 w-9 text-sm"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-semibold">{v.profile?.name ?? "Volunteer"}</p>
-                        {v.verification_status === "approved" ? (
-                          <VerifiedBadge verified />
-                        ) : (
-                          <StatusBadge status={v.verification_status} />
-                        )}
-                        {v.profile?.suspended ? <StatusBadge status="suspended" /> : null}
-                      </div>
-                      <p className="mt-0.5 text-sm text-muted-foreground">
-                        {(v.skills ?? []).slice(0, 4).join(", ") || "No skills listed"} ·{" "}
-                        {v.profile?.location ?? "—"} · {Number(v.avg_rating ?? 0).toFixed(1)}★ avg
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {v.verification_status === "pending" ? (
-                        <>
-                          <AdminActionButton
-                            path="/api/admin/approve-volunteer"
-                            profileId={v.profile_id}
-                            label="Verify"
-                            successTitle={`${v.profile?.name ?? "Volunteer"} is now verified.`}
-                          />
-                          <AdminActionButton
-                            path="/api/admin/reject-volunteer"
-                            profileId={v.profile_id}
-                            label="Reject"
-                            icon="users"
-                            variant="ghost"
-                            successTitle="Volunteer verification was rejected."
-                          />
-                        </>
-                      ) : null}
-                      <SuspendToggle
-                        profileId={v.profile_id}
-                        suspended={Boolean(v.profile?.suspended)}
-                        name={v.profile?.name ?? "this volunteer"}
+              {vols.length === 0 ? (
+                <EmptyState icon={HeartHandshake} title="No volunteers yet" hint="Volunteers will appear here as soon as they join." />
+              ) : (
+                <ul className="divide-y rounded-xl border">
+                  {vols.map((v) => (
+                    <li key={v.profile_id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                      <UserAvatar
+                        name={v.profile?.name ?? "Volunteer"}
+                        src={v.profile?.avatar_url}
+                        className="h-9 w-9 text-sm"
                       />
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="font-semibold">{v.profile?.name ?? "Volunteer"}</p>
+                          {v.verification_status === "approved" ? (
+                            <VerifiedBadge verified />
+                          ) : (
+                            <StatusBadge status={v.verification_status} />
+                          )}
+                          {v.profile?.suspended ? <StatusBadge status="suspended" /> : null}
+                        </div>
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                          {(v.skills ?? []).slice(0, 4).join(", ") || "No skills listed"} ·{" "}
+                          {v.profile?.location ?? "—"} · {Number(v.avg_rating ?? 0).toFixed(1)}★ avg
+                        </p>
+                      </div>
+                      <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                        {v.verification_status === "pending" ? (
+                          <>
+                            <AdminActionButton
+                              path="/api/admin/approve-volunteer"
+                              profileId={v.profile_id}
+                              label="Verify"
+                              successTitle={`${v.profile?.name ?? "Volunteer"} is now verified.`}
+                            />
+                            <AdminActionButton
+                              path="/api/admin/reject-volunteer"
+                              profileId={v.profile_id}
+                              label="Reject"
+                              icon="x"
+                              successTitle="Volunteer verification was rejected."
+                            />
+                          </>
+                        ) : null}
+                        <SuspendToggle
+                          profileId={v.profile_id}
+                          suspended={Boolean(v.profile?.suspended)}
+                          name={v.profile?.name ?? "this volunteer"}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </TabsContent>
 
             {/* ---- Staff across NGOs ---- */}
@@ -531,17 +549,19 @@ export default async function AdminDashboardPage() {
                           · invited {formatDate(s.created_at)}
                         </p>
                       </div>
-                      {s.profile ? (
-                        <SuspendToggle
-                          profileId={s.profile.id}
-                          suspended={Boolean(s.profile.suspended)}
-                          name={s.profile.name ?? "this staff member"}
-                        />
-                      ) : (
-                        <span className="text-xs text-muted-foreground">
-                          Waiting for signup with this email
-                        </span>
-                      )}
+                      <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                        {s.profile ? (
+                          <SuspendToggle
+                            profileId={s.profile.id}
+                            suspended={Boolean(s.profile.suspended)}
+                            name={s.profile.name ?? "this staff member"}
+                          />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            Waiting for signup with this email
+                          </span>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -573,7 +593,9 @@ export default async function AdminDashboardPage() {
                     <p className="font-semibold">{p.name ?? p.id.slice(0, 8)}</p>
                     <p className="text-sm capitalize text-muted-foreground">{p.role}</p>
                   </div>
-                  <SuspendToggle profileId={p.id} suspended name={p.name ?? "this account"} />
+                  <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                    <SuspendToggle profileId={p.id} suspended name={p.name ?? "this account"} />
+                  </div>
                 </li>
               ))}
             </ul>
@@ -582,25 +604,14 @@ export default async function AdminDashboardPage() {
       </Card>
 
       {/* Platform stats */}
-      <Card className="animate-fade-up stagger-6 shadow-soft">
-        <CardHeader>
-          <CardTitle>Platform stats</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-xl border bg-muted/30 p-4">
-            <p className="text-sm text-muted-foreground">Total profiles</p>
-            <p className="mt-1 text-2xl font-bold">{usersRes.count ?? 0}</p>
-          </div>
-          <div className="rounded-xl border bg-muted/30 p-4">
-            <p className="text-sm text-muted-foreground">Campaigns</p>
-            <p className="mt-1 text-2xl font-bold">{campaignsRes.count ?? 0}</p>
-          </div>
-          <div className="rounded-xl border bg-muted/30 p-4">
-            <p className="text-sm text-muted-foreground">Applications</p>
-            <p className="mt-1 text-2xl font-bold">{appsRes.count ?? 0}</p>
-          </div>
-        </CardContent>
-      </Card>
+      <section className="animate-fade-up stagger-6 space-y-4">
+        <h2 className="text-lg font-semibold">Platform stats</h2>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <StatCard label="Profiles" value={usersRes.count ?? 0} icon={Users} hint="across all roles" />
+          <StatCard label="Campaigns" value={campaignsRes.count ?? 0} icon={Megaphone} hint="across every NGO" />
+          <StatCard label="Applications" value={appsRes.count ?? 0} icon={Inbox} hint="all-time" />
+        </div>
+      </section>
     </div>
   );
 }

@@ -16,7 +16,7 @@ export default async function SuspendedPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-16">
-      <Card className="w-full max-w-md text-center shadow-lift">
+      <Card className="animate-scale-in w-full max-w-md text-center shadow-lift">
         <CardHeader className="items-center">
           <span className="mx-auto mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <ShieldAlert className="h-7 w-7" aria-hidden />
@@ -27,7 +27,7 @@ export default async function SuspendedPage() {
             account.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
           <p className="text-sm leading-relaxed text-muted-foreground">
             You are signed out of all areas of Sanjivani. Your campaigns, applications, and
             history are preserved — nothing has been deleted. If you believe this is a

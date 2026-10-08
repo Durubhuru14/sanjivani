@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { CalendarDays, Clock, MapPin, Target, Users, Wallet } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StarsDisplay } from "@/components/StarsDisplay";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
@@ -126,8 +127,29 @@ export default async function VolunteerCampaignDetailPage({
   });
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      {/* Hero */}
+    <div className="mx-auto max-w-6xl space-y-6">
+      <PageHeader
+        backHref="/volunteer/browse"
+        backLabel="Back to browse"
+        title={campaign.title}
+        subtitle={
+          <span className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            <StatusBadge status={campaign.status} />
+            <StatusBadge status={campaign.type === "invite" ? "invite" : "public"} />
+            {campaign.location ? (
+              <span className="inline-flex items-center gap-1">
+                <MapPin className="h-4 w-4" aria-hidden /> {campaign.location}
+              </span>
+            ) : null}
+            <span className="inline-flex items-center gap-1">
+              <CalendarDays className="h-4 w-4" aria-hidden />
+              {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
+            </span>
+          </span>
+        }
+      />
+
+      {/* Campaign banner */}
       <div className="overflow-hidden rounded-md border bg-card">
         {campaign.image_url ? (
           <img src={campaign.image_url} alt={campaign.title} className="h-48 w-full object-cover sm:h-64" />
@@ -138,27 +160,9 @@ export default async function VolunteerCampaignDetailPage({
             </span>
           </div>
         )}
-        <div className="space-y-4 p-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge status={campaign.status} />
-            <StatusBadge status={campaign.type === "invite" ? "invite" : "public"} />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight">{campaign.title}</h1>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
-            {campaign.location ? (
-              <span className="inline-flex items-center gap-1">
-                <MapPin className="h-4 w-4" aria-hidden /> {campaign.location}
-              </span>
-            ) : null}
-            <span className="inline-flex items-center gap-1">
-              <CalendarDays className="h-4 w-4" aria-hidden />
-              {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
-            </span>
-          </div>
-        </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card className="shadow-soft">
             <CardHeader>
@@ -195,9 +199,9 @@ export default async function VolunteerCampaignDetailPage({
                 {teamMembers.length === 0 ? (
                   <p className="text-sm text-muted-foreground">Team is being formed.</p>
                 ) : (
-                  <ul className="grid auto-rows-fr gap-2 sm:grid-cols-2">
+                  <ul className="grid auto-rows-fr grid-cols-1 gap-2 sm:grid-cols-2">
                     {teamMembers.map((m) => (
-                      <li key={m.id} className="flex items-center gap-3 rounded-xl border p-3">
+                      <li key={m.id} className="flex h-full min-h-16 items-center gap-3 rounded-xl border p-3">
                         <Avatar className="h-9 w-9 border">
                           {m.profile?.avatar_url ? (
                             <AvatarImage src={m.profile.avatar_url} alt={m.profile?.name ?? "member"} />
@@ -239,12 +243,14 @@ export default async function VolunteerCampaignDetailPage({
                   <ul className="divide-y rounded-xl border">
                     {myFunds.map((f) => (
                       <li key={f.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                        <p className="font-semibold">{formatMoney(Number(f.amount))}</p>
+                        <p className="shrink-0 font-semibold tabular-nums">{formatMoney(Number(f.amount))}</p>
                         {f.note ? (
                           <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
                             {f.note}
                           </p>
-                        ) : null}
+                        ) : (
+                          <span className="min-w-0 flex-1" aria-hidden />
+                        )}
                         <StatusBadge status={f.status} />
                       </li>
                     ))}
@@ -373,11 +379,12 @@ export default async function VolunteerCampaignDetailPage({
                 </p>
               )}
             </CardContent>
+            <CardFooter>
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/volunteer/browse">Back to browse</Link>
+              </Button>
+            </CardFooter>
           </Card>
-
-          <Button asChild variant="outline" className="w-full">
-            <Link href="/volunteer/browse">Back to browse</Link>
-          </Button>
         </div>
       </div>
     </div>

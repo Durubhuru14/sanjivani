@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import { Star } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { NgoProfileForm } from "./profile-form";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StarsDisplay } from "@/components/StarsDisplay";
@@ -38,6 +41,13 @@ export default async function NgoProfilePage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader
+        backHref="/ngo"
+        backLabel="Dashboard"
+        title="Organisation profile"
+        subtitle="This is what volunteers see about your organisation."
+      />
+
       <div className="flex flex-wrap items-center gap-4">
         <UserAvatar
           name={ngo?.org_name ?? profile?.name}
@@ -45,10 +55,10 @@ export default async function NgoProfilePage() {
           className="h-16 w-16 rounded-lg text-lg"
           rounded="lg"
         />
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Organisation profile</h1>
-          <p className="mt-1 text-muted-foreground">
-            This is what volunteers see about your organisation.
+        <div className="min-w-0">
+          <p className="truncate font-semibold">{ngo?.org_name ?? profile?.name ?? "Your organisation"}</p>
+          <p className="truncate text-sm text-muted-foreground">
+            {profile?.location || "location not set"}
           </p>
         </div>
       </div>
@@ -95,9 +105,11 @@ export default async function NgoProfilePage() {
         </CardHeader>
         <CardContent>
           {ratingsList.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No ratings yet — they appear after you complete campaigns with teams.
-            </p>
+            <EmptyState
+              icon={Star}
+              title="No ratings yet"
+              hint="Ratings appear here after you complete campaigns with teams."
+            />
           ) : (
             <ul className="space-y-3">
               {ratingsList.map((r) => (

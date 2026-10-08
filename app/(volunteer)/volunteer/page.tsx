@@ -11,14 +11,15 @@ import {
   Send,
   Star,
 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/PageHeader";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { formatMoney } from "@/lib/funds";
-import { formatDate } from "@/lib/format";
+import { formatDateTime } from "@/lib/format";
 import type { CampaignInvite, Profile, Volunteer } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -116,30 +117,31 @@ export default async function VolunteerDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+      <PageHeader
+        className="animate-fade-up"
+        title={
+          <>
             Hi {profile?.name?.split(" ")[0] ?? "there"}
             {vol?.verification_status === "approved" ? (
               <VerifiedBadge verified className="ml-3 align-middle" />
             ) : null}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Your campaigns, invitations, and community history in one place.
-          </p>
-        </div>
-        <Button asChild className="gap-2">
-          <Link href="/volunteer/browse">
-            <Megaphone className="h-4 w-4" aria-hidden /> Browse campaigns
-          </Link>
-        </Button>
-      </div>
+          </>
+        }
+        subtitle="Your campaigns, invitations, and community history in one place."
+        action={
+          <Button asChild className="gap-2">
+            <Link href="/volunteer/browse">
+              <Megaphone className="h-4 w-4" aria-hidden /> Browse campaigns
+            </Link>
+          </Button>
+        }
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Campaigns joined" value={campaignsJoined} icon={CalendarCheck2} />
-        <StatCard label="Hours contributed" value={totalHours} icon={Clock} hint="Logged by NGOs after completion" />
-        <StatCard label="Average rating" value={Number(vol?.avg_rating ?? 0) > 0 ? Number(vol?.avg_rating).toFixed(2) : "New"} icon={Star} />
-        <StatCard label="Open invitations" value={pendingInvites.length} icon={Inbox} />
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard label="Campaigns" value={campaignsJoined} icon={CalendarCheck2} />
+        <StatCard label="Hours" value={totalHours} icon={Clock} hint="Logged by NGOs after completion" />
+        <StatCard label="Rating" value={Number(vol?.avg_rating ?? 0) > 0 ? Number(vol?.avg_rating).toFixed(2) : "New"} icon={Star} />
+        <StatCard label="Invites" value={pendingInvites.length} icon={Inbox} hint="Waiting for your answer" />
       </div>
 
       {pendingInvites.length > 0 ? (
@@ -152,27 +154,36 @@ export default async function VolunteerDashboardPage() {
             <CardDescription>
               Invite-only campaigns are only visible to people who are invited.
             </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-3">
-            {pendingInvites.slice(0, 3).map((inv) => (
-              <Button key={inv.id} asChild variant="outline" className="gap-2">
-                <Link href="/volunteer/invites">
-                  {inv.campaign?.title ?? "Campaign"} <StatusBadge status="pending" />
-                </Link>
+            <CardAction>
+              <Button asChild size="sm">
+                <Link href="/volunteer/invites">Review invitations</Link>
               </Button>
-            ))}
-            <Button asChild>
-              <Link href="/volunteer/invites">Review invitations</Link>
-            </Button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {pendingInvites.slice(0, 3).map((inv) => (
+                <Button key={inv.id} asChild size="sm" variant="outline" className="gap-2">
+                  <Link href="/volunteer/invites">
+                    <span className="max-w-[12rem] truncate">
+                      {inv.campaign?.title ?? "Campaign"}
+                    </span>{" "}
+                    <StatusBadge status="pending" />
+                  </Link>
+                </Button>
+              ))}
+            </div>
           </CardContent>
         </Card>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Active campaigns */}
-        <Card className="shadow-soft">
+        <Card className="h-full shadow-soft">
           <CardHeader>
-            <CardTitle>My campaigns</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <CalendarCheck2 className="h-5 w-5 text-primary" aria-hidden /> My campaigns
+            </CardTitle>
             <CardDescription>Teams you are part of.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -194,7 +205,7 @@ export default async function VolunteerDashboardPage() {
                     <div className="min-w-0 flex-1">
                       <Link
                         href={`/volunteer/campaigns/${t.teams.campaign_id}`}
-                        className="truncate font-semibold hover:text-primary hover:underline"
+                        className="truncate font-medium hover:text-primary hover:underline"
                       >
                         {t.teams.campaigns.title}
                       </Link>
@@ -214,7 +225,7 @@ export default async function VolunteerDashboardPage() {
         </Card>
 
         {/* Applications */}
-        <Card className="shadow-soft">
+        <Card className="h-full shadow-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" aria-hidden /> My applications
@@ -240,12 +251,12 @@ export default async function VolunteerDashboardPage() {
                     <div className="min-w-0 flex-1">
                       <Link
                         href={`/volunteer/campaigns/${a.campaign?.id}`}
-                        className="truncate font-semibold hover:text-primary hover:underline"
+                        className="truncate font-medium hover:text-primary hover:underline"
                       >
                         {a.campaign?.title ?? "Campaign"}
                       </Link>
                       <p className="truncate text-sm text-muted-foreground">
-                        {a.campaign?.ngo?.org_name ?? "NGO"} · applied {formatDate(a.created_at)}
+                        {a.campaign?.ngo?.org_name ?? "NGO"} · applied {formatDateTime(a.created_at)}
                       </p>
                     </div>
                     <StatusBadge status={a.status} />
@@ -257,7 +268,7 @@ export default async function VolunteerDashboardPage() {
         </Card>
 
         {/* Chat rooms */}
-        <Card className="shadow-soft">
+        <Card className="h-full shadow-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessagesSquare className="h-5 w-5 text-primary" aria-hidden /> My chat rooms
@@ -278,7 +289,7 @@ export default async function VolunteerDashboardPage() {
                     <div className="min-w-0 flex-1">
                       <Link
                         href={`/volunteer/chat/${r.room_id}`}
-                        className="truncate font-semibold hover:text-primary hover:underline"
+                        className="truncate font-medium hover:text-primary hover:underline"
                       >
                         {r.rooms.name}
                       </Link>
@@ -294,7 +305,7 @@ export default async function VolunteerDashboardPage() {
         </Card>
 
         {/* My fund allocations */}
-        <Card className="shadow-soft">
+        <Card className="h-full shadow-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Send className="h-5 w-5 text-primary" aria-hidden /> Funds allocated to me
@@ -313,7 +324,7 @@ export default async function VolunteerDashboardPage() {
                 {myFunds.map((f) => (
                   <li key={f.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold">{formatMoney(Number(f.amount))}</p>
+                      <p className="truncate font-semibold tabular-nums">{formatMoney(Number(f.amount))}</p>
                       <p className="truncate text-sm text-muted-foreground">
                         {f.campaign?.title ?? "Campaign"}
                       </p>

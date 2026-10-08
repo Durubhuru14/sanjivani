@@ -9,8 +9,7 @@ export function SuspenseSignOutButton() {
   const router = useRouter();
   return (
     <Button
-      variant="outline"
-      className="w-full gap-2"
+      className="press mt-6 w-full gap-2"
       onClick={async () => {
         const supabase = createClient();
         await supabase.auth.signOut();

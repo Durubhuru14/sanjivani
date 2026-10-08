@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Loader2, Save } from "lucide-react";
 import { campaignSchema } from "@/lib/validation";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -118,15 +119,15 @@ export function CampaignForm({
     ) : null;
 
   return (
-    <form onSubmit={onSubmit} className="space-y-6" noValidate>
+    <form onSubmit={onSubmit} noValidate>
       {formError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive" role="alert">
+        <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive" role="alert">
           {formError}
         </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-2 md:col-span-2">
+      <div className="space-y-4">
+        <div className="space-y-2">
           <Label htmlFor="c-title">Title</Label>
           <Input
             id="c-title"
@@ -139,7 +140,7 @@ export function CampaignForm({
           {err("title")}
         </div>
 
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2">
           <Label htmlFor="c-desc">Description</Label>
           <Textarea
             id="c-desc"
@@ -151,7 +152,7 @@ export function CampaignForm({
           />
         </div>
 
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2">
           <Label htmlFor="c-obj">Objectives</Label>
           <Textarea
             id="c-obj"
@@ -163,88 +164,90 @@ export function CampaignForm({
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="c-location">Location</Label>
-          <Input
-            id="c-location"
-            placeholder="Pune"
-            value={values.location}
-            maxLength={140}
-            onChange={(e) => set("location", e.target.value)}
-          />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="c-location">Location</Label>
+            <Input
+              id="c-location"
+              placeholder="Pune"
+              value={values.location}
+              maxLength={140}
+              onChange={(e) => set("location", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="c-budget">Total budget (₹)</Label>
+            <Input
+              id="c-budget"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="20000"
+              value={values.total_budget}
+              onChange={(e) => set("total_budget", e.target.value)}
+              aria-invalid={Boolean(fieldErrors.total_budget)}
+            />
+            {err("total_budget")}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="c-start">Start date</Label>
+            <Input
+              id="c-start"
+              type="date"
+              value={values.start_date}
+              onChange={(e) => set("start_date", e.target.value)}
+              aria-invalid={Boolean(fieldErrors.start_date)}
+            />
+            {err("start_date")}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="c-end">End date</Label>
+            <Input
+              id="c-end"
+              type="date"
+              value={values.end_date}
+              onChange={(e) => set("end_date", e.target.value)}
+              aria-invalid={Boolean(fieldErrors.end_date)}
+            />
+            {err("end_date")}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="c-type">Visibility</Label>
+            <Select value={values.type} onValueChange={(v) => set("type", v as "public" | "invite")}>
+              <SelectTrigger id="c-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public">Public — anyone can apply</SelectItem>
+                <SelectItem value="invite">Invite-only — you invite volunteers</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="c-status">Status</Label>
+            <Select
+              value={values.status}
+              onValueChange={(v) => set("status", v as CampaignFormValues["status"])}
+            >
+              <SelectTrigger id="c-status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="upcoming">Upcoming</SelectItem>
+                <SelectItem value="ongoing">Ongoing</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="c-budget">Total budget (₹)</Label>
-          <Input
-            id="c-budget"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="20000"
-            value={values.total_budget}
-            onChange={(e) => set("total_budget", e.target.value)}
-            aria-invalid={Boolean(fieldErrors.total_budget)}
-          />
-          {err("total_budget")}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="c-start">Start date</Label>
-          <Input
-            id="c-start"
-            type="date"
-            value={values.start_date}
-            onChange={(e) => set("start_date", e.target.value)}
-            aria-invalid={Boolean(fieldErrors.start_date)}
-          />
-          {err("start_date")}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="c-end">End date</Label>
-          <Input
-            id="c-end"
-            type="date"
-            value={values.end_date}
-            onChange={(e) => set("end_date", e.target.value)}
-            aria-invalid={Boolean(fieldErrors.end_date)}
-          />
-          {err("end_date")}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="c-type">Visibility</Label>
-          <Select value={values.type} onValueChange={(v) => set("type", v as "public" | "invite")}>
-            <SelectTrigger id="c-type">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="public">Public — anyone can apply</SelectItem>
-              <SelectItem value="invite">Invite-only — you invite volunteers</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="c-status">Status</Label>
-          <Select
-            value={values.status}
-            onValueChange={(v) => set("status", v as CampaignFormValues["status"])}
-          >
-            <SelectTrigger id="c-status">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="upcoming">Upcoming</SelectItem>
-              <SelectItem value="ongoing">Ongoing</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2 md:col-span-2">
           <Label>Campaign image</Label>
           <ImageUpload
             value={values.image_url}
@@ -255,14 +258,21 @@ export function CampaignForm({
         </div>
       </div>
 
-      <Button type="submit" disabled={busy || pending} className="gap-2">
-        {busy || pending ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-        ) : (
-          <Save className="h-4 w-4" aria-hidden />
-        )}
-        {mode === "create" ? "Create campaign" : "Save changes"}
-      </Button>
+      <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
+        {mode === "create" ? (
+          <Button type="button" variant="outline" asChild>
+            <Link href="/ngo/campaigns">Cancel</Link>
+          </Button>
+        ) : null}
+        <Button type="submit" disabled={busy || pending} className="gap-2">
+          {busy || pending ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          ) : (
+            <Save className="h-4 w-4" aria-hidden />
+          )}
+          {mode === "create" ? "Create campaign" : "Save changes"}
+        </Button>
+      </div>
     </form>
   );
 }

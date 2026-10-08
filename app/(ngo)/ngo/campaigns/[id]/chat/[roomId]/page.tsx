@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ArrowLeft } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { ChatRoom } from "@/components/chat/ChatRoom";
 import { RoomMembersManager } from "@/components/chat/RoomMembersManager";
 import { DeleteRoomButton } from "./delete-room-button";
@@ -59,30 +58,29 @@ export default async function NgoRoomPage({
   const teamMembers = teams.flatMap((t) => t.members ?? []);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Link
-            href={`/ngo/campaigns/${id}/chat`}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden /> All rooms
-          </Link>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Room in “{campaign.title}” · {members.length} member{members.length === 1 ? "" : "s"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <RoomMembersManager
-            roomId={roomId}
-            members={members}
-            teamMembers={teamMembers}
-          />
-          <DeleteRoomButton roomId={roomId} campaignId={id} />
-        </div>
-      </div>
-
-      <ChatRoom roomId={roomId} roomName={room.name} currentUserId={user.id} />
+    <div className="mx-auto max-w-5xl space-y-6">
+      <PageHeader
+        backHref={`/ngo/campaigns/${id}/chat`}
+        backLabel="All rooms"
+        title={room.name}
+        subtitle={`Room in “${campaign.title}” · ${members.length} member${members.length === 1 ? "" : "s"}`}
+        action={
+          <>
+            <RoomMembersManager
+              roomId={roomId}
+              members={members}
+              teamMembers={teamMembers}
+            />
+            <DeleteRoomButton roomId={roomId} campaignId={id} />
+          </>
+        }
+      />
+      <ChatRoom
+        roomId={roomId}
+        roomName={room.name}
+        currentUserId={user.id}
+        showRoomName={false}
+      />
     </div>
   );
 }

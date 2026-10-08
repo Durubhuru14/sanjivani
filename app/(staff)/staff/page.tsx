@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Building2, CalendarCheck2, MessagesSquare } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDate } from "@/lib/format";
 
@@ -75,32 +76,31 @@ export default async function StaffDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="animate-fade-up">
-        <h1 className="text-3xl font-bold tracking-tight">Staff dashboard</h1>
-        <p className="mt-1 text-muted-foreground">
-          Everything your NGO assigned you to — campaigns, teams, and rooms.
-        </p>
-      </div>
+      <PageHeader
+        className="animate-fade-up"
+        title="Staff dashboard"
+        subtitle="Everything your NGO assigned you to — campaigns, teams, and rooms."
+      />
 
       <Card className="animate-fade-up stagger-1 shadow-soft">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" aria-hidden /> Your organisation
           </CardTitle>
+          <CardAction>
+            <StatusBadge status={staff.status} />
+          </CardAction>
         </CardHeader>
-        <CardContent className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="font-semibold">{staff.ngo?.org_name ?? "Your NGO"}</p>
-            <p className="text-sm text-muted-foreground">
-              You see only this NGO's campaigns and chats.
-            </p>
-          </div>
-          <StatusBadge status={staff.status} />
+        <CardContent>
+          <p className="font-semibold">{staff.ngo?.org_name ?? "Your NGO"}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            You see only this NGO's campaigns and chats.
+          </p>
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="shadow-soft">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="h-full shadow-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CalendarCheck2 className="h-5 w-5 text-primary" aria-hidden /> My campaign teams
@@ -121,8 +121,8 @@ export default async function StaffDashboardPage() {
                 {teams.map((t) => (
                   <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold">{t.teams.campaigns.title}</p>
-                      <p className="truncate text-sm text-muted-foreground">
+                      <p className="truncate font-medium">{t.teams.campaigns.title}</p>
+                      <p className="truncate text-sm text-muted-foreground tabular-nums">
                         {t.teams.name} · {formatDate(t.teams.campaigns.start_date)}
                         {t.teams.campaigns.status === "completed" &&
                         Number(t.hours_logged) > 0
@@ -138,7 +138,7 @@ export default async function StaffDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-soft">
+        <Card className="h-full shadow-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessagesSquare className="h-5 w-5 text-primary" aria-hidden /> My chat rooms
@@ -159,7 +159,7 @@ export default async function StaffDashboardPage() {
                     <div className="min-w-0 flex-1">
                       <Link
                         href={`/staff/chat/${r.room_id}`}
-                        className="truncate font-semibold hover:text-primary hover:underline"
+                        className="truncate font-medium hover:text-primary hover:underline"
                       >
                         {r.rooms.name}
                       </Link>

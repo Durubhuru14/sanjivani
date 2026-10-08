@@ -34,22 +34,30 @@ const ACTION_ICONS: Record<string, LucideIcon> = {
   "shield-check": ShieldCheck,
 };
 
+/** Buttons used across the admin section. Taxonomy contract: row-level inline
+ *  actions are size sm variant outline; destructive inline actions stay outline
+ *  but carry the destructive tint; page-level primary actions (e.g. the NGO
+ *  detail header) use variant default at full size. */
 export function AdminActionButton({
   path,
   profileId,
   label,
   icon = "check",
   variant = "outline",
+  size = "sm",
   confirmText,
   successTitle,
+  className,
 }: {
   path: string;
   profileId: string;
   label: string;
   icon?: keyof typeof ACTION_ICONS;
   variant?: "default" | "outline" | "ghost" | "destructive";
+  size?: "default" | "sm" | "lg" | "icon";
   confirmText?: string;
   successTitle: string;
+  className?: string;
 }) {
   const Icon = ACTION_ICONS[icon] ?? Check;
   const [busy, setBusy] = useState(false);
@@ -75,7 +83,13 @@ export function AdminActionButton({
   }
 
   return (
-    <Button size="sm" variant={variant} className="gap-1.5" onClick={() => void run()} disabled={busy}>
+    <Button
+      size={size}
+      variant={variant}
+      className={cn("gap-1.5", className)}
+      onClick={() => void run()}
+      disabled={busy}
+    >
       {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <Icon className="h-3.5 w-3.5" aria-hidden />}
       {label}
     </Button>
@@ -138,10 +152,12 @@ export function SuspendToggle({
   profileId,
   suspended,
   name,
+  size = "sm",
 }: {
   profileId: string;
   suspended: boolean;
   name: string;
+  size?: "default" | "sm" | "lg" | "icon";
 }) {
   return suspended ? (
     <AdminActionButton
@@ -149,6 +165,7 @@ export function SuspendToggle({
       profileId={profileId}
       label="Unsuspend"
       icon="shield-check"
+      size={size}
       successTitle={`${name} can sign in again — their data was preserved.`}
     />
   ) : (
@@ -157,7 +174,9 @@ export function SuspendToggle({
       profileId={profileId}
       label="Suspend"
       icon="shield-ban"
-      variant="destructive"
+      size={size}
+      variant="outline"
+      className="gap-1.5 text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
       confirmText={`Suspend ${name}? They will be signed out and blocked from all writes. Nothing is deleted.`}
       successTitle={`${name} has been suspended.`}
     />

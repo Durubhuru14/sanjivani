@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Building2, CalendarCheck2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { UserAvatar } from "@/components/UserAvatar";
 import { formatDate } from "@/lib/format";
@@ -36,13 +37,13 @@ export default async function StaffProfilePage() {
   const joinedAt = row?.created_at ?? null;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">My profile</h1>
-        <p className="mt-1 text-muted-foreground">
-          How your NGO and teammates see you across Sanjivani.
-        </p>
-      </div>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader
+        backHref="/staff"
+        backLabel="Dashboard"
+        title="My profile"
+        subtitle="How your NGO and teammates see you across Sanjivani."
+      />
 
       {/* Identity header */}
       <Card className="shadow-soft">
@@ -93,26 +94,26 @@ export default async function StaffProfilePage() {
           <CardDescription>Everything staff accounts can do on Sanjivani.</CardDescription>
         </CardHeader>
         <CardContent>
-          <ul className="grid gap-3 text-sm sm:grid-cols-2">
-            <li className="rounded-lg border bg-tint/40 p-3">
+          <ul className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+            <li className="h-full rounded-lg border bg-tint/40 p-3">
               <p className="font-semibold">Chat rooms</p>
               <p className="mt-0.5 text-muted-foreground">
                 Coordinate with volunteers in the rooms your NGO adds you to.
               </p>
             </li>
-            <li className="rounded-lg border bg-tint/40 p-3">
+            <li className="h-full rounded-lg border bg-tint/40 p-3">
               <p className="font-semibold">Campaign teams</p>
               <p className="mt-0.5 text-muted-foreground">
                 NGOs add staff to teams to run day-to-day campaign work.
               </p>
             </li>
-            <li className="rounded-lg border bg-tint/40 p-3">
-              <p className="font-semibold">Profile & photo</p>
+            <li className="h-full rounded-lg border bg-tint/40 p-3">
+              <p className="font-semibold">Profile &amp; photo</p>
               <p className="mt-0.5 text-muted-foreground">
                 Teammates see your name and photo in every room.
               </p>
             </li>
-            <li className="rounded-lg border bg-tint/40 p-3">
+            <li className="h-full rounded-lg border bg-tint/40 p-3">
               <p className="font-semibold">Verified organisation</p>
               <p className="mt-0.5 text-muted-foreground">
                 {ngo?.verification_status === "approved"

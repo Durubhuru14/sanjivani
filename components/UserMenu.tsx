@@ -165,29 +165,11 @@ export function SignInLinks() {
   return (
     <div className="flex items-center gap-2">
       <Button variant="ghost" asChild>
-        <a href="/login">Log in</a>
+        <Link href="/login">Log in</Link>
       </Button>
       <Button asChild>
-        <a href="/signup">Sign up</a>
+        <Link href="/signup">Sign up</Link>
       </Button>
     </div>
-  );
-}
-
-export function SuspendedSignOutButton() {
-  const router = useRouter();
-  return (
-    <Button
-      variant="outline"
-      className="gap-2"
-      onClick={async () => {
-        const supabase = createClient();
-        await supabase.auth.signOut();
-        router.push("/login");
-        router.refresh();
-      }}
-    >
-      <LogOut className="h-4 w-4" aria-hidden /> Sign out
-    </Button>
   );
 }

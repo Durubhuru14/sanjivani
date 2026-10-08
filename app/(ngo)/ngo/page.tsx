@@ -2,22 +2,22 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
   Plus,
-  CalendarCheck,
   ClipboardCheck,
   Clock,
   Flag,
   Inbox,
   Megaphone,
-  Users,
+  Star,
   Wallet,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatDateTime } from "@/lib/format";
 import type { Campaign } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -77,7 +77,7 @@ export default async function NgoDashboardPage() {
       await supabase.from("campaigns").select("id").eq("ngo_id", user.id)
     ).data?.map((c) => c.id) ?? ["00000000-0000-0000-0000-000000000000"];
 
-  const [campaignsRes, pendingAppsRes, teamCountRes, fundsRes, reportsRes] = await Promise.all([
+  const [campaignsRes, pendingAppsRes, fundsRes, reportsRes] = await Promise.all([
     supabase
       .from("campaigns")
       .select("*")
@@ -93,10 +93,6 @@ export default async function NgoDashboardPage() {
       .order("created_at", { ascending: false })
       .limit(6),
     supabase
-      .from("teams")
-      .select("id, campaign_id, team_members(id)")
-      .in("campaign_id", myCampaignIds),
-    supabase
       .from("campaigns")
       .select("total_budget, remaining_budget")
       .eq("ngo_id", user.id)
@@ -110,7 +106,6 @@ export default async function NgoDashboardPage() {
       .order("created_at", { ascending: false })
       .limit(5),
   ]);
-
   const campaigns = (campaignsRes.data ?? []) as Campaign[];
   const pendingApps = (pendingAppsRes.data ?? []) as unknown as Array<{
     id: string;
@@ -119,10 +114,6 @@ export default async function NgoDashboardPage() {
     volunteer: { id: string; name: string | null } | null;
     campaign: { id: string; title: string; status: string } | null;
   }>;
-  const teamSize = (teamCountRes.data ?? []).reduce(
-    (sum, t) => sum + (t.team_members?.length ?? 0),
-    0
-  );
   const fundsRemaining = (fundsRes.data ?? []).reduce(
     (sum, c) => sum + Number(c.remaining_budget ?? 0),
     0
@@ -140,27 +131,46 @@ export default async function NgoDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Welcome back, {ngo.org_name}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Here is what is happening across your campaigns.
-          </p>
-        </div>
-        <Button asChild className="gap-2">
-          <Link href="/ngo/campaigns/new">
-            <Plus className="h-4 w-4" aria-hidden /> New campaign
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        className="animate-fade-up"
+        title={<>Welcome back, {ngo.org_name}</>}
+        subtitle="Here is what is happening across your campaigns."
+        action={
+          <Button asChild className="gap-2">
+            <Link href="/ngo/campaigns/new">
+              <Plus className="h-4 w-4" aria-hidden /> New campaign
+            </Link>
+          </Button>
+        }
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Active campaigns" value={active.length} icon={CalendarCheck} />
-        <StatCard label="Pending applications" value={pendingApps.length} icon={Inbox} />
-        <StatCard label="People on teams" value={teamSize} icon={Users} />
-        <StatCard label="Funds remaining" value={`₹${fundsRemaining.toLocaleString("en-IN")}`} icon={Wallet} />
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard
+          label="Campaigns"
+          value={active.length}
+          icon={Megaphone}
+          hint="active or upcoming"
+        />
+        <StatCard
+          label="Applications"
+          value={pendingApps.length}
+          icon={Inbox}
+          hint="waiting for review"
+        />
+        <StatCard
+          label="Funds left"
+          value={`₹${fundsRemaining.toLocaleString("en-IN")}`}
+          icon={Wallet}
+          hint="excluding cancelled campaigns"
+        />
+        <StatCard
+          label="Rating"
+          value={
+            Number(ngo.avg_rating ?? 0) > 0 ? Number(ngo.avg_rating).toFixed(2) : "New"
+          }
+          icon={Star}
+          hint="from volunteers across campaigns"
+        />
       </div>
 
       {/* Pending applications */}
@@ -182,7 +192,10 @@ export default async function NgoDashboardPage() {
           ) : (
             <ul className="divide-y rounded-xl border">
               {pendingApps.map((app) => (
-                <li key={app.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
+                <li
+                  key={app.id}
+                  className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3"
+                >
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">{app.volunteer?.name ?? "Volunteer"}</p>
                     <p className="break-words text-sm text-muted-foreground">
@@ -196,10 +209,12 @@ export default async function NgoDashboardPage() {
                       · {formatDate(app.created_at)}
                     </p>
                   </div>
-                  <StatusBadge status={app.campaign?.status} />
-                  <Button asChild size="sm" variant="outline">
-                    <Link href={`/ngo/campaigns/${app.campaign?.id}`}>Review</Link>
-                  </Button>
+                  <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                    <StatusBadge status={app.campaign?.status} />
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/ngo/campaigns/${app.campaign?.id}`}>Review</Link>
+                    </Button>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -229,19 +244,21 @@ export default async function NgoDashboardPage() {
             <ul className="space-y-3">
               {filedReports.map((r) => (
                 <li key={r.id} className="rounded-xl border p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="font-semibold">
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                    <p className="min-w-0 flex-1 truncate font-semibold">
                       {r.volunteer?.name ?? "Volunteer"}
                       {r.campaign ? (
                         <span className="font-normal text-muted-foreground"> · {r.campaign.title}</span>
                       ) : null}
                     </p>
-                    <StatusBadge status={r.status} />
+                    <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                      <StatusBadge status={r.status} />
+                    </div>
                   </div>
-                  <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-1.5 line-clamp-2 min-h-10 text-sm leading-relaxed text-muted-foreground">
                     {r.reason}
                   </p>
-                  <p className="mt-2 text-xs text-muted-foreground">Filed {formatDate(r.created_at)}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">Filed {formatDateTime(r.created_at)}</p>
                 </li>
               ))}
             </ul>

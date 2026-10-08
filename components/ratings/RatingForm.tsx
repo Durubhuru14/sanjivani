@@ -24,6 +24,7 @@ export function RatingForm({
   myRating,
   canRate,
   reason,
+  className,
 }: {
   campaignId: string;
   rateeId: string;
@@ -31,6 +32,7 @@ export function RatingForm({
   myRating: Rating | null;
   canRate: boolean;
   reason?: string;
+  className?: string;
 }) {
   const [score, setScore] = useState(0);
   const [hover, setHover] = useState(0);
@@ -41,7 +43,7 @@ export function RatingForm({
 
   if (myRating) {
     return (
-      <Card className="shadow-soft">
+      <Card className={cn("h-full shadow-soft", className)}>
         <CardHeader>
           <CardTitle>Your rating for {rateeName}</CardTitle>
         </CardHeader>
@@ -59,7 +61,7 @@ export function RatingForm({
 
   if (!canRate) {
     return (
-      <Card className="shadow-soft border-dashed">
+      <Card className={cn("h-full shadow-soft border-dashed", className)}>
         <CardHeader>
           <CardTitle>Rate {rateeName}</CardTitle>
           <CardDescription>{reason ?? "Rating is not available for this campaign yet."}</CardDescription>
@@ -98,7 +100,7 @@ export function RatingForm({
   }
 
   return (
-    <Card className="shadow-soft">
+    <Card className={cn("h-full shadow-soft", className)}>
       <CardHeader>
         <CardTitle>Rate {rateeName}</CardTitle>
         <CardDescription>Ratings are public and appear on their profile.</CardDescription>
@@ -143,10 +145,12 @@ export function RatingForm({
             onChange={(e) => setComment(e.target.value)}
           />
         </div>
-        <Button onClick={() => void submit()} disabled={busy || score === 0} className="gap-2">
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
-          Submit rating
-        </Button>
+        <div className="flex justify-end">
+          <Button onClick={() => void submit()} disabled={busy || score === 0} className="gap-2">
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
+            Submit rating
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

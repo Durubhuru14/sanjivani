@@ -124,7 +124,7 @@ export default async function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="press px-8 text-base"
+                className="press bg-card px-8 text-base shadow-soft"
                 asChild
               >
                 <Link href="/signup">Sign up as a volunteer</Link>
@@ -156,15 +156,15 @@ export default async function LandingPage() {
                     live
                   </span>
                 </div>
-                <div className="mt-5 space-y-4">
+                <ul className="mt-5 divide-y divide-border/50">
                   {[
                     { k: "After-School Tutoring Program", v: "ongoing · 60 students", tone: "leaf" },
                     { k: "River Clean-Up Drive", v: "upcoming · 3 km target", tone: "bright" },
                     { k: "Tree Plantation Marathon", v: "completed · 1,000 saplings", tone: "muted" },
                   ].map((row) => (
-                    <div
+                    <li
                       key={row.k}
-                      className="flex items-start gap-3 border-b border-border/50 pb-4 last:border-0 last:pb-0"
+                      className="flex min-h-[3rem] items-start gap-3 py-3 first:pt-0 last:pb-0"
                     >
                       <span
                         className={
@@ -176,17 +176,16 @@ export default async function LandingPage() {
                         }
                         aria-hidden
                       />
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-foreground">{row.k}</p>
-                        <p className="mt-0.5 font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-muted-foreground">
+                        <p className="mt-1 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
                           {row.v}
                         </p>
                       </div>
-                    </div>
+                    </li>
                   ))}
-                </div>
-                <div className="seam mt-6" aria-hidden />
-                <p className="mt-4 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-muted-foreground">
+                </ul>
+                <p className="mt-4 border-t border-border/60 pt-4 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-muted-foreground">
                   hours · ratings · funds — one ledger
                 </p>
               </div>
@@ -335,7 +334,7 @@ export default async function LandingPage() {
       {/* Closing brand moment */}
       <section className="relative overflow-hidden border-t border-border">
         <div className="pattern-wash pointer-events-none absolute inset-0" aria-hidden />
-        <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-16 text-center sm:px-6 lg:px-8">
+        <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-20 text-center sm:px-6 lg:px-8">
           <Reveal>
             <LogoMark detailed className="h-14 w-14" />
           </Reveal>

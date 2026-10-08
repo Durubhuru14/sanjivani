@@ -57,7 +57,7 @@ export function InviteStaffForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-[1fr_1fr_auto]" noValidate>
+    <form onSubmit={onSubmit} className="grid items-end gap-4 sm:grid-cols-[1fr_1fr_auto]" noValidate>
       <div className="space-y-2">
         <Label htmlFor="staff-name">Name</Label>
         <Input
@@ -85,7 +85,7 @@ export function InviteStaffForm() {
           <p className="text-sm text-destructive" role="alert">{fieldErrors.invited_email}</p>
         )}
       </div>
-      <div className="flex items-end">
+      <div className="flex items-end justify-end">
         <Button type="submit" className="gap-2" disabled={busy}>
           {busy ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -132,9 +132,9 @@ export function RemoveStaffButton({ staffId, name }: { staffId: string; name: st
 
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="sm"
-      className="gap-1.5 text-destructive hover:text-destructive"
+      className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
       onClick={() => void remove()}
       disabled={busy}
     >

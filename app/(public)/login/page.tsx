@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, LogIn } from "lucide-react";
@@ -31,6 +31,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const submitRef = useRef<HTMLButtonElement>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -84,6 +85,16 @@ function LoginForm() {
     setPassword("Passw0rd!");
     setFormError(null);
     setFieldErrors({});
+    // Keep the "Log in" submit clear of the sticky header on small screens —
+    // if it sits under (or below) the visible area, recentre it in view.
+    requestAnimationFrame(() => {
+      const btn = submitRef.current;
+      if (!btn) return;
+      const { top, bottom } = btn.getBoundingClientRect();
+      if (top < 72 || bottom > window.innerHeight) {
+        btn.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
   }
 
   return (
@@ -113,7 +124,7 @@ function LoginForm() {
             <AlertDescription>{formError}</AlertDescription>
           </Alert>
         )}
-        <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <form onSubmit={onSubmit} className="space-y-4 scroll-mt-20" noValidate>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -146,32 +157,35 @@ function LoginForm() {
               <p className="text-sm text-destructive" role="alert">{fieldErrors.password}</p>
             )}
           </div>
-          <Button type="submit" className="press w-full gap-2" disabled={busy}>
+          <Button ref={submitRef} type="submit" className="press w-full gap-2" disabled={busy}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <LogIn className="h-4 w-4" aria-hidden />}
             {busy ? "Logging in…" : "Log in"}
           </Button>
         </form>
 
         {demoActive ? (
-          <div className="panel-tinted mt-6 rounded-lg p-4">
-            <p className="flex items-center gap-2 font-mono text-[0.625rem] font-medium uppercase tracking-[0.16em] text-leaf">
-              <span className="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-current text-leaf" aria-hidden />
-              Demo mode · seeded data · no Supabase needed
-            </p>
-            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-              Click an account to fill the form. Every account uses the password{" "}
-              <code className="rounded-sm bg-card px-1.5 py-0.5 font-mono text-[0.6875rem] text-foreground">Passw0rd!</code>
-            </p>
-            <div className="mt-3 grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+          <div className="panel-tinted mt-6 space-y-4 rounded-xl p-6">
+            <div className="space-y-2">
+              <p className="flex items-center gap-2 font-mono text-[0.625rem] font-medium uppercase tracking-[0.14em] text-leaf">
+                <span className="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-current text-leaf" aria-hidden />
+                Demo mode · seeded data · no Supabase needed
+              </p>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Click an account to fill the form. Every account uses the password{" "}
+                <code className="rounded-sm bg-card px-1.5 py-0.5 font-mono text-[0.6875rem] text-foreground">Passw0rd!</code>
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {DEMO_ACCOUNTS.map((a) => (
                 <button
                   key={a.email}
                   type="button"
                   onClick={() => fillDemo(a.email)}
-                  className="press flex flex-col rounded-md border border-border/70 bg-card px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:border-leaf/50 hover:text-foreground"
+                  title={a.email}
+                  className="press flex min-h-9 items-center gap-2 rounded-md border border-border/70 bg-card px-3 py-2 text-left text-xs transition-colors hover:border-leaf/50 hover:bg-accent/50"
                 >
-                  <span className="font-medium text-foreground">{a.label}</span>
-                  <span className="mt-0.5 truncate">{a.email}</span>
+                  <span className="shrink-0 font-medium text-foreground">{a.label}</span>
+                  <span className="min-w-0 flex-1 truncate text-muted-foreground">{a.email}</span>
                 </button>
               ))}
             </div>

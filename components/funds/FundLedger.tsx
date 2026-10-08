@@ -154,15 +154,15 @@ export function FundLedger({
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-xl border bg-muted/30 p-4">
               <p className="text-sm text-muted-foreground">Total budget</p>
-              <p className="mt-1 text-2xl font-bold">{formatMoney(budget.total)}</p>
+              <p className="mt-1 text-2xl font-bold tabular-nums">{formatMoney(budget.total)}</p>
             </div>
             <div className="rounded-xl border bg-muted/30 p-4">
               <p className="text-sm text-muted-foreground">Allocated</p>
-              <p className="mt-1 text-2xl font-bold text-primary">{formatMoney(allocated)}</p>
+              <p className="mt-1 text-2xl font-bold tabular-nums text-primary">{formatMoney(allocated)}</p>
             </div>
             <div className="rounded-xl border bg-muted/30 p-4">
               <p className="text-sm text-muted-foreground">Remaining</p>
-              <p className="mt-1 text-2xl font-bold">{formatMoney(budget.remaining)}</p>
+              <p className="mt-1 text-2xl font-bold tabular-nums">{formatMoney(budget.remaining)}</p>
             </div>
           </div>
           {budget.total > 0 ? (
@@ -194,7 +194,7 @@ export function FundLedger({
               hint="Build your campaign team first, then allocate funds to its members."
             />
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_1.4fr_auto] lg:items-end">
+            <div className="grid items-end gap-4 sm:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_1.4fr_auto]">
               <div className="space-y-2">
                 <Label htmlFor="fund-member">Team member</Label>
                 <Select value={memberId} onValueChange={setMemberId}>
@@ -239,7 +239,7 @@ export function FundLedger({
                   onChange={(e) => setNote(e.target.value)}
                 />
               </div>
-              <Button className="gap-2" onClick={() => void allocate()} disabled={busy || !memberId}>
+              <Button className="gap-2 justify-self-end" onClick={() => void allocate()} disabled={busy || !memberId}>
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
                 Allocate
               </Button>
@@ -278,7 +278,7 @@ export function FundLedger({
                       <TableCell className="font-medium">
                         {f.profile?.name ?? f.member_id.slice(0, 8)}
                       </TableCell>
-                      <TableCell>{formatMoney(Number(f.amount))}</TableCell>
+                      <TableCell className="tabular-nums">{formatMoney(Number(f.amount))}</TableCell>
                       <TableCell>
                         <StatusBadge status={f.status} />
                       </TableCell>
@@ -286,7 +286,7 @@ export function FundLedger({
                         {f.note ?? "—"}
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex justify-end gap-1">
+                        <div className="flex justify-end gap-2">
                           {f.status === "pending" ? (
                             <Button
                               size="sm"
@@ -301,8 +301,8 @@ export function FundLedger({
                           {f.status === "pending" ? (
                             <Button
                               size="sm"
-                              variant="ghost"
-                              className="text-destructive hover:text-destructive"
+                              variant="outline"
+                              className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                               onClick={() => void removeAllocation(f)}
                               disabled={busy}
                             >

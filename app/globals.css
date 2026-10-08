@@ -30,6 +30,12 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  /* semantic status colors — one language for every badge in the app */
+  --color-status-positive: var(--status-positive);
+  --color-status-info: var(--status-info);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --color-status-neutral: var(--status-neutral);
   /* Sanjivani brand ramp (spec §3) — semantic names for direct use */
   --color-leaf: var(--primary);
   --color-leaf-bright: var(--primary-bright);
@@ -88,6 +94,14 @@
   --chart-3: #a5d6a7;
   --chart-4: #43a047;
   --chart-5: #1b5e20;
+
+  /* status semantics — positive=done/live, info=planned/invited,
+     warning=awaiting, danger=blocked, neutral=archived */
+  --status-positive: #2e7d32;
+  --status-info: #1d6a96;
+  --status-warning: #a05e03;
+  --status-danger: #c62828;
+  --status-neutral: #5a6e5f;
 }
 
 .dark {
@@ -111,7 +125,7 @@
   --secondary: #203227;
   --secondary-foreground: #cbe7d0;
 
-  --border: #273a2e;
+  --border: #2a4033;
   --input: #31463a;
   --ring: #66bb6a;
   --destructive: #e57373;
@@ -122,6 +136,13 @@
   --chart-3: #43a047;
   --chart-4: #2e7d32;
   --chart-5: #c8e6c9;
+
+  /* brightened status semantics for the dark ground */
+  --status-positive: #85cf90;
+  --status-info: #8ccbe8;
+  --status-warning: #f7bd66;
+  --status-danger: #f09393;
+  --status-neutral: #aec2b4;
 }
 
 @layer base {

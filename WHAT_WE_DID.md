@@ -320,6 +320,46 @@ with a dynamic, patterned layout:
   scroll-reveal sections, and a rebuilt staff profile page (identity header + workspace
   card) so the route no longer looks sparse.
 
+### Visual-consistency QA pass (final round)
+
+A full designer-grade audit was run over screenshots of every page (all four roles,
+dark mode, and 390 px mobile) with fixes applied against one written contract:
+
+- **Semantic status colours** — the badge tone map previously referenced a legacy
+  palette that no longer existed, so every `StatusBadge` rendered uncoloured. It now
+  uses five semantic tokens (`status-positive / info / warning / danger / neutral`,
+  with dark-mode variants) defined in `globals.css`, and every status chip in the app
+  goes through the same component.
+- **One stat-card rhythm** — `StatCard` guarantees equal heights inside a grid (fixed
+  hint line, bottom-aligned value, `h-full`), so mixed rows (4-up dashboards, 6-up
+  admin, 3-up closing stats) all share one anatomy. Labels were shortened so nothing
+  truncates awkwardly.
+- **One page-header pattern** — `components/PageHeader.tsx` (back link + title +
+  subtitle + right-aligned action slot) is used on every page across all roles;
+  orphaned bottom "Back" buttons are gone.
+- **One button taxonomy** — row actions are `size="sm" variant="outline"`
+  (destructive ones tinted red), page-level primaries are solid green, destructive
+  confirms stay solid inside dialogs, form submits are right-aligned. The mixed
+  solid/ghost/outline action rows were normalised everywhere.
+- **Stable card grids** — campaign cards, workspace cards, staff/team cards and
+  profile forms use `h-full` + grid stretch, fixed image aspect and `min-h` text
+  blocks, so sibling cards always share baselines.
+- **Consistent chat anatomy** — bubbles cap at 75 % width with a sharpened corner
+  toward the sender, uniform padding, and consistent timestamp placement; the
+  composer's send button matches the input's radius.
+- **Uniform container widths** — profiles `max-w-3xl`, list pages `max-w-5xl`,
+  campaign detail `max-w-6xl`, chat `max-w-5xl`, dashboards full width — the same
+  page type is the same width for every role.
+- **Mobile overflow fixed** — the volunteer dashboard (419 px) and admin dashboard
+  (427 px) both overflowed a 390 px viewport; every page now measures exactly 390 px
+  wide at that breakpoint, and the login submit can no longer hide under the sticky
+  header after tapping a demo account.
+- Verified after the pass: `tsc` clean, ESLint clean, 84/84 unit tests, 10/10 e2e
+  specs, plus a re-audit of fresh screenshots (remaining VLM notes were either
+  data-dependent by design, intentional semantic colouring, or full-page-screenshot
+  artefacts of the scroll-reveal animation — each remaining claim was checked and
+  disproven in the DOM).
+
 ## 8. Known limitations
 
 - Dependency health: `npm audit` → 0 vulnerabilities (production *and* dev tree after

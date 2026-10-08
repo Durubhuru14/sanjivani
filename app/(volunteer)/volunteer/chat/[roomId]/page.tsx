@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ArrowLeft } from "lucide-react";
+import { PageHeader } from "@/components/PageHeader";
 import { ChatRoom } from "@/components/chat/ChatRoom";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +35,12 @@ export default async function VolunteerRoomPage({
     .eq("user_id", user.id);
   if (!memberCount) notFound();
 
+  const { count: messageCount } = await supabase
+    .from("messages")
+    .select("id", { count: "exact", head: true })
+    .eq("room_id", roomId);
+  const messages = messageCount ?? 0;
+
   const roomData = room as unknown as {
     id: string;
     name: string;
@@ -44,19 +49,20 @@ export default async function VolunteerRoomPage({
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4">
-      <div>
-        <Link
-          href="/volunteer"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden /> Dashboard
-        </Link>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Room for “{roomData.campaigns.title}”
-        </p>
-      </div>
-      <ChatRoom roomId={roomId} roomName={roomData.name} currentUserId={user.id} />
+    <div className="mx-auto max-w-5xl space-y-6">
+      <PageHeader
+        backHref="/volunteer"
+        backLabel="Dashboard"
+        title={roomData.name}
+        subtitle={`Room for “${roomData.campaigns.title}” · ${messages} message${messages === 1 ? "" : "s"}`}
+      />
+      <ChatRoom
+        roomId={roomId}
+        roomName={roomData.name}
+        currentUserId={user.id}
+        showRoomName={false}
+        showMessageCount={false}
+      />
     </div>
   );
 }

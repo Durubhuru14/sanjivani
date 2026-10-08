@@ -6,11 +6,10 @@ import { Loader2, Search, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
+import { UserAvatar } from "@/components/UserAvatar";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
-import { initials } from "@/lib/format";
 import { useToast } from "@/hooks/use-toast";
 import type { CampaignInvite } from "@/lib/types";
 
@@ -101,7 +100,7 @@ export function InviteVolunteersPanel({
               }}
             />
           </div>
-          <Button className="gap-2" onClick={() => void search()} disabled={searching}>
+          <Button className="ml-auto gap-2" onClick={() => void search()} disabled={searching}>
             {searching ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
             ) : (
@@ -121,16 +120,11 @@ export function InviteVolunteersPanel({
               hits.map((v) => (
                 <div
                   key={v.profile_id}
-                  className="flex flex-wrap items-center gap-3 rounded-lg border bg-card px-3 py-2.5"
+                  className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border bg-card px-3 py-2.5"
                 >
-                  <Avatar className="h-9 w-9 border">
-                    {v.avatar_url ? <AvatarImage src={v.avatar_url} alt={v.name ?? "volunteer"} /> : null}
-                    <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
-                      {initials(v.name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar name={v.name} src={v.avatar_url} className="h-9 w-9 text-xs" />
                   <div className="min-w-0 flex-1">
-                    <p className="flex items-center gap-1.5 font-medium">
+                    <p className="flex items-center gap-1.5 truncate font-medium">
                       {v.name ?? "Volunteer"}
                       {v.verification_status === "approved" ? (
                         <VerifiedBadge verified label="Verified volunteer" />
@@ -144,20 +138,22 @@ export function InviteVolunteersPanel({
                       ))}
                     </div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="gap-1.5"
-                    disabled={inviting === v.profile_id}
-                    onClick={() => void invite(v.profile_id, v.name ?? "Volunteer")}
-                  >
-                    {inviting === v.profile_id ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
-                    ) : (
-                      <Send className="h-3.5 w-3.5" aria-hidden />
-                    )}
-                    Invite
-                  </Button>
+                  <div className="ml-auto flex shrink-0 items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1.5"
+                      disabled={inviting === v.profile_id}
+                      onClick={() => void invite(v.profile_id, v.name ?? "Volunteer")}
+                    >
+                      {inviting === v.profile_id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                      ) : (
+                        <Send className="h-3.5 w-3.5" aria-hidden />
+                      )}
+                      Invite
+                    </Button>
+                  </div>
                 </div>
               ))
             )}
@@ -171,7 +167,7 @@ export function InviteVolunteersPanel({
       </div>
 
       <div>
-        <h4 className="mb-3 font-semibold">Sent invitations</h4>
+        <h3 className="mb-3 font-semibold">Sent invitations</h3>
         {invites.length === 0 ? (
           <EmptyState
             icon={Send}
@@ -181,16 +177,18 @@ export function InviteVolunteersPanel({
         ) : (
           <ul className="divide-y rounded-xl border">
             {invites.map((inv) => (
-              <li key={inv.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+              <li key={inv.id} className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium">{inv.volunteer?.name ?? "Volunteer"}</p>
+                  <p className="truncate font-medium">{inv.volunteer?.name ?? "Volunteer"}</p>
                   {(inv.volunteer?.volunteers?.skills ?? []).length > 0 ? (
                     <p className="truncate text-sm text-muted-foreground">
                       {(inv.volunteer?.volunteers?.skills ?? []).join(", ")}
                     </p>
                   ) : null}
                 </div>
-                <StatusBadge status={inv.status} />
+                <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                  <StatusBadge status={inv.status} />
+                </div>
               </li>
             ))}
           </ul>

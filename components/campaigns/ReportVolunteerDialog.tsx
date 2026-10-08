@@ -74,7 +74,11 @@ export function ReportVolunteerDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-1.5 text-destructive hover:text-destructive">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+        >
           <Flag className="h-3.5 w-3.5" aria-hidden /> Report
         </Button>
       </DialogTrigger>

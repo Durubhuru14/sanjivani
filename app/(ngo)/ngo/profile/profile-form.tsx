@@ -66,7 +66,7 @@ export function NgoProfileForm({
         />
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">
           <Label htmlFor="p-org">Organisation name</Label>
           <Input
@@ -112,14 +112,16 @@ export function NgoProfileForm({
         </div>
       </div>
 
-      <Button type="submit" className="gap-2" disabled={busy || pending}>
-        {busy || pending ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-        ) : (
-          <Save className="h-4 w-4" aria-hidden />
-        )}
-        Save profile
-      </Button>
+      <div className="flex justify-end">
+        <Button type="submit" className="gap-2" disabled={busy || pending}>
+          {busy || pending ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          ) : (
+            <Save className="h-4 w-4" aria-hidden />
+          )}
+          Save profile
+        </Button>
+      </div>
     </form>
   );
 }

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessagesSquare } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/PageHeader";
 import { RoomList } from "@/components/chat/RoomList";
 import { CreateRoomDialog } from "@/components/chat/CreateRoomDialog";
 import type { ChatRoom, Team } from "@/lib/types";
@@ -32,7 +33,7 @@ export default async function CampaignChatPage({
   const [{ data: roomsData }, { data: teamsData }] = await Promise.all([
     supabase
       .from("chat_rooms")
-      .select("*, chat_room_members(user_id)")
+      .select("*, members:chat_room_members(user_id)")
       .eq("campaign_id", id)
       .order("created_at", { ascending: false }),
     supabase
@@ -47,15 +48,17 @@ export default async function CampaignChatPage({
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-3xl font-bold tracking-tight">Chat rooms</h1>
-          <p className="mt-1 text-muted-foreground">
+      <PageHeader
+        backHref={`/ngo/campaigns/${id}`}
+        backLabel="Back to campaign"
+        title="Chat rooms"
+        subtitle={
+          <>
             Rooms for “{campaign.title}”. Only the members you pick can see each room.
-          </p>
-        </div>
-        <CreateRoomDialog campaignId={id} teamMembers={teamMembers} />
-      </div>
+          </>
+        }
+        action={<CreateRoomDialog campaignId={id} teamMembers={teamMembers} />}
+      />
 
       <Card className="shadow-soft">
         <CardHeader>

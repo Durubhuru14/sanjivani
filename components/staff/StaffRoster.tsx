@@ -1,10 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/EmptyState";
 import { InviteStaffForm, RemoveStaffButton } from "@/components/staff/InviteStaffForm";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatDateTime, initials } from "@/lib/format";
+import { UserAvatar } from "@/components/UserAvatar";
+import { formatDateTime } from "@/lib/format";
 import type { NgoStaff } from "@/lib/types";
 import { Users } from "lucide-react";
 
@@ -30,29 +29,27 @@ export function StaffRoster({ staff }: { staff: NgoStaff[] }) {
         ) : (
           <ul className="divide-y rounded-xl border">
             {staff.map((member) => (
-              <li key={member.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                <Avatar className="h-10 w-10 border">
-                  {member.profile?.avatar_url ? (
-                    <AvatarImage src={member.profile.avatar_url} alt={member.invited_name ?? "staff"} />
-                  ) : null}
-                  <AvatarFallback className="bg-primary/10 text-sm font-bold text-primary">
-                    {initials(member.invited_name ?? member.profile?.name)}
-                  </AvatarFallback>
-                </Avatar>
+              <li
+                key={member.id}
+                className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3"
+              >
+                <UserAvatar
+                  name={member.profile?.name ?? member.invited_name}
+                  src={member.profile?.avatar_url}
+                  className="h-9 w-9 text-xs"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">
                     {member.invited_name ?? member.profile?.name ?? "Staff member"}
                   </p>
                   <p className="truncate text-sm text-muted-foreground">{member.invited_email}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <StatusBadge status={member.status} />
                   {member.status === "invited" ? (
-                    <Badge variant="outline" className="font-normal text-muted-foreground">
-                      Not yet claimed
-                    </Badge>
+                    <p className="text-xs italic text-muted-foreground">Not yet claimed</p>
                   ) : null}
-                  <span className="hidden text-xs text-muted-foreground md:block">
+                </div>
+                <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                  <StatusBadge status={member.status} />
+                  <span className="whitespace-nowrap text-xs text-muted-foreground">
                     {formatDateTime(member.created_at)}
                   </span>
                   <RemoveStaffButton staffId={member.id} name={member.invited_name ?? member.invited_email} />

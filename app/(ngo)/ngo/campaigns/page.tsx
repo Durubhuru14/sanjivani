@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Megaphone, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
 import type { Campaign } from "@/lib/types";
 
@@ -25,19 +26,17 @@ export default async function NgoCampaignsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Campaigns</h1>
-          <p className="mt-1 text-muted-foreground">
-            Everything your organisation is running — or has finished.
-          </p>
-        </div>
-        <Button asChild className="gap-2">
-          <Link href="/ngo/campaigns/new">
-            <Plus className="h-4 w-4" aria-hidden /> New campaign
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Campaigns"
+        subtitle="Everything your organisation is running — or has finished."
+        action={
+          <Button asChild className="gap-2">
+            <Link href="/ngo/campaigns/new">
+              <Plus className="h-4 w-4" aria-hidden /> New campaign
+            </Link>
+          </Button>
+        }
+      />
 
       {campaigns.length === 0 ? (
         <EmptyState

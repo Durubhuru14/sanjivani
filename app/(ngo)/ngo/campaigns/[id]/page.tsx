@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { CalendarDays, MapPin, MessageSquare, Pencil } from "lucide-react";
+import { CalendarDays, MapPin, Star, Users } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
 import { StarsDisplay } from "@/components/StarsDisplay";
+import { UserAvatar } from "@/components/UserAvatar";
 import { CampaignForm } from "@/components/campaigns/CampaignForm";
 import { CampaignStatusActions } from "@/components/campaigns/CampaignStatusActions";
 import { ApplicationsPanel } from "@/components/campaigns/ApplicationsPanel";
@@ -123,18 +124,20 @@ export default async function ManageCampaignPage({
   const assignable: AssignablePerson[] = [...assignableStaff, ...acceptedVolunteers];
 
   const completed = campaign.status === "completed";
+  const pendingApplications = applications.filter((a) => a.status === "pending").length;
+  const reportableVolunteers = teamMembers.filter((m) => m.member_type === "volunteer");
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       {/* header */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="mb-2 flex flex-wrap items-center gap-2">
+      <PageHeader
+        backHref="/ngo/campaigns"
+        backLabel="Back to campaigns"
+        title={campaign.title}
+        subtitle={
+          <span className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
             <StatusBadge status={campaign.status} />
             <StatusBadge status={campaign.type === "invite" ? "invite" : "public"} />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight">{campaign.title}</h1>
-          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
             {campaign.location ? (
               <span className="inline-flex items-center gap-1">
                 <MapPin className="h-4 w-4" aria-hidden /> {campaign.location}
@@ -147,38 +150,26 @@ export default async function ManageCampaignPage({
             <span>
               Budget {formatMoney(Number(campaign.total_budget))} · {formatMoney(Number(campaign.remaining_budget))} left
             </span>
-          </div>
-        </div>
-        <div className="flex flex-col items-end gap-3">
-          <CampaignStatusActions campaign={campaign} />
-          <Button asChild variant="outline" className="gap-2">
-            <Link href={`/ngo/campaigns/${id}/chat`}>
-              <MessageSquare className="h-4 w-4" aria-hidden /> Chat rooms
-            </Link>
-          </Button>
-        </div>
-      </div>
+          </span>
+        }
+      />
+
+      {/* status toolbar — primary action left, secondary + destructive right */}
+      <CampaignStatusActions campaign={campaign} />
 
       <Tabs defaultValue="team">
-        <TabsList className="flex-wrap">
-          <TabsTrigger value="team">Team & hours</TabsTrigger>
+        <TabsList className="h-auto w-full flex-wrap sm:h-9 sm:w-fit">
+          <TabsTrigger value="team">Team &amp; hours</TabsTrigger>
           <TabsTrigger value="applications">
-            Applications
-            {applications.filter((a) => a.status === "pending").length > 0 ? (
-              <span className="ml-1.5 rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
-                {applications.filter((a) => a.status === "pending").length}
-              </span>
-            ) : null}
+            Applications{pendingApplications > 0 ? ` (${pendingApplications})` : ""}
           </TabsTrigger>
           {campaign.type === "invite" ? <TabsTrigger value="invites">Invite volunteers</TabsTrigger> : null}
           <TabsTrigger value="funds">Funds</TabsTrigger>
           {completed ? <TabsTrigger value="ratings">Ratings</TabsTrigger> : null}
-          <TabsTrigger value="edit">
-            <Pencil className="mr-1.5 h-3.5 w-3.5" aria-hidden /> Edit
-          </TabsTrigger>
+          <TabsTrigger value="edit">Edit</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="team" className="mt-4">
+        <TabsContent value="team" className="mt-4 space-y-6">
           <Card className="shadow-soft">
             <CardHeader>
               <CardTitle>Campaign team</CardTitle>
@@ -200,7 +191,7 @@ export default async function ManageCampaignPage({
           </Card>
         </TabsContent>
 
-        <TabsContent value="applications" className="mt-4">
+        <TabsContent value="applications" className="mt-4 space-y-6">
           <Card className="shadow-soft">
             <CardHeader>
               <CardTitle>Volunteer applications</CardTitle>
@@ -215,7 +206,7 @@ export default async function ManageCampaignPage({
         </TabsContent>
 
         {campaign.type === "invite" ? (
-          <TabsContent value="invites" className="mt-4">
+          <TabsContent value="invites" className="mt-4 space-y-6">
             <Card className="shadow-soft">
               <CardHeader>
                 <CardTitle>Invite volunteers</CardTitle>
@@ -231,7 +222,7 @@ export default async function ManageCampaignPage({
           </TabsContent>
         ) : null}
 
-        <TabsContent value="funds" className="mt-4">
+        <TabsContent value="funds" className="mt-4 space-y-6">
           <FundLedger campaign={campaign} allocations={funds} teamMembers={teamMembers} />
         </TabsContent>
 
@@ -246,16 +237,24 @@ export default async function ManageCampaignPage({
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4 md:grid-cols-2">
-                {teamMembers.filter((m) => m.member_type === "volunteer").length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
-                    No volunteers on the team to rate.
-                  </p>
+                {reportableVolunteers.length === 0 ? (
+                  <EmptyState
+                    icon={Users}
+                    title="No volunteers to rate"
+                    hint="Add volunteers to your campaign team — they become rateable once the work is done."
+                    className="md:col-span-2"
+                  />
                 ) : (
-                  teamMembers
-                    .filter((m) => m.member_type === "volunteer")
-                    .map((m) => (
+                  reportableVolunteers
+                    .map((m, i) => (
                       <RatingForm
                         key={m.user_id}
+                        className={
+                          reportableVolunteers.length % 2 === 1 &&
+                          i === reportableVolunteers.length - 1
+                            ? "md:col-span-2"
+                            : undefined
+                        }
                         campaignId={id}
                         rateeId={m.user_id}
                         rateeName={m.profile?.name ?? "Volunteer"}
@@ -281,7 +280,11 @@ export default async function ManageCampaignPage({
               </CardHeader>
               <CardContent>
                 {ratings.filter((r) => r.to_user_id === user.id).length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No ratings received yet.</p>
+                  <EmptyState
+                    icon={Star}
+                    title="No ratings received yet"
+                    hint="Feedback from your team appears here after the campaign is completed."
+                  />
                 ) : (
                   <ul className="space-y-3">
                     {ratings
@@ -304,7 +307,7 @@ export default async function ManageCampaignPage({
           </TabsContent>
         ) : null}
 
-        <TabsContent value="edit" className="mt-4">
+        <TabsContent value="edit" className="mt-4 space-y-6">
           <Card className="shadow-soft">
             <CardHeader>
               <CardTitle>Edit campaign</CardTitle>
@@ -335,25 +338,40 @@ export default async function ManageCampaignPage({
       </Tabs>
 
       {/* report volunteers — visible with a team */}
-      {teamMembers.some((m) => m.member_type === "volunteer") ? (
+      {reportableVolunteers.length > 0 ? (
         <Card className="shadow-soft">
           <CardHeader>
-            <CardTitle className="text-base">Report a volunteer</CardTitle>
+            <CardTitle>Report a volunteer</CardTitle>
             <CardDescription>
               For serious conduct issues — visible only to platform administrators.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            {teamMembers
-              .filter((m) => m.member_type === "volunteer")
-              .map((m) => (
-                <ReportVolunteerDialog
+          <CardContent>
+            <ul className="divide-y rounded-xl border">
+              {reportableVolunteers.map((m) => (
+                <li
                   key={m.user_id}
-                  volunteerId={m.user_id}
-                  campaignId={id}
-                  volunteerName={m.profile?.name ?? "Volunteer"}
-                />
+                  className="flex min-h-16 flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-3"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <UserAvatar
+                      name={m.profile?.name}
+                      src={m.profile?.avatar_url}
+                      className="h-9 w-9 text-xs"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{m.profile?.name ?? "Volunteer"}</p>
+                      <p className="text-sm text-muted-foreground">Volunteer</p>
+                    </div>
+                  </div>
+                  <ReportVolunteerDialog
+                    volunteerId={m.user_id}
+                    campaignId={id}
+                    volunteerName={m.profile?.name ?? "Volunteer"}
+                  />
+                </li>
               ))}
+            </ul>
           </CardContent>
         </Card>
       ) : null}
