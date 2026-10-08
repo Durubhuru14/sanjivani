@@ -31,6 +31,15 @@ Checklist against the spec (§ = Sanjivani_Spec.md section):
 - [x] NGO signup → `ngos` row `pending`; campaign creation blocked until approved
       (UI gate in the proxy + RLS insert policy) (§6)
 - [x] Admin dashboard: pending NGO queue with approve/reject (§8 routes)
+- [x] Admin platform oversight: full directories of every NGO, campaign, staff
+      member, and volunteer on one dashboard (tabbed) — with inline
+      approve/reject, verify/reject, and suspend/unsuspend on every row, no
+      report required; campaign rows show owner, status, type, dates, team
+      size, applications, and budget utilisation (enough to keep operations in
+      check without exposing ledgers/chat); suspended owners are flagged
+- [x] Admin NGO detail page: campaign overview enriched with team size,
+      applications count, and budget use; staff roster with claim state and
+      per-account suspend actions
 - [x] Volunteer verification: pending → approved/rejected → verified badge; core
       features usable while pending (§6)
 - [x] Volunteer verified badge + admin approval queue on the dashboard
@@ -58,13 +67,26 @@ Checklist against the spec (§ = Sanjivani_Spec.md section):
       team assignment, fund allocation, new chat message, NGO approval/rejection,
       staff invite) — implemented as SECURITY DEFINER triggers + realtime panel
 - [x] Campaign `completed` unlocks ratings UI and hours logging
+- [x] NGO dashboard: pending applications queue, live stats, and a “reports you
+      filed” card tracking the review status of the NGO's volunteer reports
 - [x] Bidirectional ratings (1–5 + comment) with eligibility triggers; `avg_rating`
-      recomputed automatically on both `ngos` and `volunteers`
+      recomputed automatically on both `ngos` and `volunteers`; the campaign's
+      NGO owner counts as a rating participant (volunteer ⇄ NGO, both ways)
 - [x] Volunteer auto-history: campaigns joined, hours sum (`volunteer_total_hours`
       RPC), average rating, ratings list
 - [x] Hours logging (`hours_logged`) only after completion, NGO-only (trigger)
 - [x] Suspension: admin suspend/unsuspend; blocked at the proxy layer (redirect to
       `/suspended`) and RLS (writes rejected); data preserved
+- [x] Suspension takes down the NGO's public operation: a suspended NGO's
+      campaigns disappear from volunteer browse and their detail pages 404 for
+      non-members (RLS policy + app-level guard); new applications to their
+      campaigns are rejected; unsuspend restores everything
+- [x] Notifications for all 7 spec trigger events plus end-to-end coverage:
+      new application → NGO, campaign status change → every team member
+      (completion announces open ratings), rating received, hours logged,
+      report filed → admins, report reviewed/dismissed → reporting NGO,
+      campaign invite declined → NGO, team removal → member, and
+      suspension/unsuspension → the account
 - [x] CSV export of team + fund summary (§8 POST `/api/export/[campaignId]`)
 - [x] All forms validate client + server with Zod (§12) + DB-level guards
 - [x] SVG logo (leaf/S mark) used in navbar, favicon (`app/icon.svg`), landing hero;
@@ -80,8 +102,11 @@ Checklist against the spec (§ = Sanjivani_Spec.md section):
 - [x] `supabase/seed.sql` demo dataset (all actors + 4 campaigns + flows)
 - [x] README with setup steps + demo credentials
 - [x] Vitest unit/component tests: validation rules, fund arithmetic, rating
-      eligibility, formatting/CSV helpers, RatingForm component
-- [x] Playwright E2E specs for all 10 critical flows (§19)
+      eligibility, formatting/CSV helpers, RatingForm component, and demo-engine
+      business-rule guards + notification coverage (22 tests mirroring the
+      Postgres triggers)
+- [x] Playwright E2E specs for all 10 critical flows (§19) — all green against
+      the demo server (`NEXT_PUBLIC_DEMO_MODE=1 npm run dev` + `npm run test:e2e`)
 - [x] Supabase Storage bucket + policies (images ≤ 2 MB, image types only, own folder)
 
 **Descoped / not applicable in this environment**
@@ -133,8 +158,8 @@ flowchart LR
 
 ## 4. Database schema (as deployed)
 
-16 tables in `supabase/migrations/00001_schema.sql` (+ `00002…00006` for functions,
-RLS, triggers, realtime/storage, stats RPC):
+16 tables in `supabase/migrations/00001_schema.sql` (+ `00002…00007` for functions,
+RLS, triggers, realtime/storage, stats RPC, and the oversight hardening):
 
 | Table | Purpose | Key relations |
 |---|---|---|
@@ -152,16 +177,19 @@ RLS, triggers, realtime/storage, stats RPC):
 | `chat_rooms` | Named room per campaign | campaign_id → campaigns, created_by |
 | `chat_room_members` | Who can see which room | room_id, user_id |
 | `messages` | Room messages (1–2000 chars) | room_id, sender_id |
-| `notifications` | In-app notifications (7 trigger types) | user_id |
+| `notifications` | In-app notifications (20 trigger types) | user_id |
 | `ratings` | Bidirectional 1–5 ratings post-completion | campaign_id, from/to users |
 
 **Business rules enforced in the database** (triggers):
 duplicate applications, invite-only application path, campaign date/budget sanity,
 fund amount ≤ remaining + automatic `remaining_budget` sync (never negative),
 team member eligibility (active staff / accepted volunteers), chat room members must
-be on the campaign team, rating eligibility (completed + shared team + no self/dup) +
-`avg_rating` recomputation, hours only after completion, role/suspension/verification
-column guards, and all 7 notification events.
+be on the campaign team, rating eligibility (completed + shared team/NGO owner + no
+self/dup) + `avg_rating` recomputation, hours only after completion, role/suspension/
+verification column guards, and all 20 notification events (the 7 spec events + end-to-end coverage). `00007_oversight.sql`
+additionally takes down a suspended NGO's public operation (campaigns hidden from
+everyone but admins, the owner, and existing team members) and restricts application
+inserts to genuinely joinable campaigns.
 
 ## 5. API / routes summary
 
@@ -202,9 +230,12 @@ vars are present (`lib/demo/`):
 - `engine.ts` is a PostgREST-compatible executor: filters (`eq/neq/in/ilike/is/or`),
   ordering, `limit`, `single/maybeSingle`, exact counts, FK embed resolution
   (`sender:sender_id(…)`, `rooms!inner(…)`, nested `ngo:ngos!fkey(…)`), plus the same
-  business-rule side effects as the Postgres triggers — the 9 notification events,
+  business-rule side effects as the Postgres triggers — the 20 notification events,
   `avg_rating` / `remaining_budget` maintenance, the budget guard
-  (`FUND_EXCEEDS_REMAINING`) and unique-index violations.
+  (`FUND_EXCEEDS_REMAINING`), the full set of BEFORE-trigger validation guards
+  (fund immutability, invite-only applications, team eligibility, rating eligibility
+  including the NGO owner, hours-after-completion, campaign date/budget sanity,
+  take-down of suspended NGOs' campaigns) and unique-index violations.
 - `client.ts` builds the fluent supabase-js-shaped builder; in the browser it serialises
   each operation and POSTs it to `/api/demo`, so every tab shares the one server store.
 - Demo auth is a cookie session (`sv-demo-user`) validated against the seeded users;

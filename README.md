@@ -154,6 +154,22 @@ Seeded data includes 4 campaigns (upcoming public, ongoing public with teams/cha
 completed with ratings + hours, and an invite-only campaign with a pending invitation to
 Aisha), an open volunteer report for the admin queue, and notifications for several users.
 
+## Admin oversight
+
+The admin dashboard is a full control room, not just a verification queue:
+
+- **Platform oversight tabs** list every NGO, campaign, staff member, and volunteer on
+  the platform with inline approve/reject, verify/reject, and suspend/unsuspend on every
+  row — suspension never requires a report first.
+- Campaign rows show the owner, status, type, dates, team size, applications, and budget
+  utilisation — enough to keep operations in check without exposing ledgers or chat.
+- **Suspending an NGO takes down their public operation**: their campaigns vanish from
+  volunteer browse, detail pages 404 for non-members, and new applications are rejected.
+  Unsuspending restores everything — data is never deleted.
+- Notifications close the loop for every actor: new applications, campaign status
+  changes, ratings, logged hours, report outcomes, declined invites, team removals, and
+  suspension/unsuspension all reach the people they affect.
+
 ## Scripts
 
 | Command | What it does |
@@ -164,7 +180,7 @@ Aisha), an open volunteer report for the admin queue, and notifications for seve
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript strict check |
 | `npm test` | Vitest unit + component tests |
-| `npm run test:e2e` | Playwright E2E (needs `supabase db reset` first) |
+| `npm run test:e2e` | Playwright E2E — all 10 critical flows; runs against the demo server (`NEXT_PUBLIC_DEMO_MODE=1 npm run dev`) or a reset local Supabase |
 | `npm run db:reset` | Apply migrations + re-seed (local Supabase) |
 
 ## Dark & light mode
