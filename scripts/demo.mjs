@@ -10,6 +10,9 @@
  * data lives in the server's memory, seeded from the README accounts.
  */
 import { spawn } from "node:child_process";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
 
 const arg = process.argv[2] ?? "dev";
 const env = {
@@ -20,10 +23,12 @@ const env = {
   NEXT_TELEMETRY_DISABLED: "1",
 };
 
+const nextCli = require.resolve("next/dist/bin/next");
+
 const commands = {
-  dev: () => ({ cmd: "next", args: ["dev", "-p", "3000"] }),
-  build: () => ({ cmd: "next", args: ["build"] }),
-  start: () => ({ cmd: "next", args: ["start", "-p", "3000"] }),
+  dev: () => ({ args: ["dev", "-p", "3000"] }),
+  build: () => ({ args: ["build"] }),
+  start: () => ({ args: ["start", "-p", "3000"] }),
 };
 
 const pick = commands[arg];
@@ -32,8 +37,13 @@ if (!pick) {
   process.exit(1);
 }
 
-const { cmd, args } = pick();
+const { args } = pick();
 console.log(`\n  Sanjivani demo mode — seeded data, no Supabase required\n`);
 
-const child = spawn(cmd, args, { env, stdio: "inherit", shell: process.platform === "win32" });
+// Resolve the Next CLI through node_modules so the launcher works
+// regardless of whether node_modules/.bin is on PATH.
+const child = spawn(process.execPath, [nextCli, ...args], {
+  env,
+  stdio: "inherit",
+});
 child.on("exit", (code) => process.exit(code ?? 0));

@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  // Keep the dev UI clean: no floating dev-tools indicator in the corner.
+  devIndicators: false,
   typescript: {
     ignoreBuildErrors: true,
   },
