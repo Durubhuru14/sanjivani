@@ -327,7 +327,7 @@ export default async function ManageCampaignPage({
                   total_budget: String(Number(campaign.total_budget ?? 0)),
                   image_url: campaign.image_url ?? "",
                 }}
-                submit={(values) => updateCampaign(id, values)}
+                submit={updateCampaign.bind(null, id)}
               />
             </CardContent>
           </Card>

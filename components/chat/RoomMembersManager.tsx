@@ -23,12 +23,10 @@ import type { TeamMember } from "@/lib/types";
 /** Add/remove members in an existing room (spec §8 chat room members). */
 export function RoomMembersManager({
   roomId,
-  campaignId,
   members,
   teamMembers,
 }: {
   roomId: string;
-  campaignId: string;
   members: Array<{ user_id: string; profile?: { name: string | null; avatar_url?: string | null } }>;
   teamMembers: TeamMember[];
 }) {
@@ -39,7 +37,6 @@ export function RoomMembersManager({
   const { toast } = useToast();
 
   const memberIds = new Set(members.map((m) => m.user_id));
-  const candidates = teamMembers.filter((m) => !memberIds.has(m.user_id));
 
   async function applyChanges(add: string[], remove: string[]) {
     if (add.length === 0 && remove.length === 0) {

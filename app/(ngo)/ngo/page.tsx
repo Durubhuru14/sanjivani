@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
+  Plus,
   CalendarCheck,
   ClipboardCheck,
   Clock,
@@ -16,7 +17,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
 import { formatDate } from "@/lib/format";
-import type { Application, Campaign } from "@/lib/types";
+import type { Campaign } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +67,15 @@ export default async function NgoDashboardPage() {
     );
   }
 
+  // Campaign ids owned by this NGO — used to scope BOTH the applications
+  // and teams queries below, so other NGOs' activity can never leak onto
+  // this dashboard (status-only filtering would show every pending
+  // application on the platform).
+  const myCampaignIds =
+    (
+      await supabase.from("campaigns").select("id").eq("ngo_id", user.id)
+    ).data?.map((c) => c.id) ?? ["00000000-0000-0000-0000-000000000000"];
+
   const [campaignsRes, pendingAppsRes, teamCountRes, fundsRes] = await Promise.all([
     supabase
       .from("campaigns")
@@ -78,17 +88,13 @@ export default async function NgoDashboardPage() {
         "id, status, created_at, volunteer:volunteer_id(id, name), campaign:campaign_id(id, title, status)"
       )
       .eq("status", "pending")
+      .in("campaign_id", myCampaignIds)
       .order("created_at", { ascending: false })
       .limit(6),
     supabase
       .from("teams")
-      .select("id, campaign_id, team_members(id)", )
-      .in(
-        "campaign_id",
-        (await supabase.from("campaigns").select("id").eq("ngo_id", user.id)).data?.map(
-          (c) => c.id
-        ) ?? ["00000000-0000-0000-0000-000000000000"]
-      ),
+      .select("id, campaign_id, team_members(id)")
+      .in("campaign_id", myCampaignIds),
     supabase
       .from("campaigns")
       .select("total_budget, remaining_budget")
@@ -128,7 +134,7 @@ export default async function NgoDashboardPage() {
         </div>
         <Button asChild className="gap-2">
           <Link href="/ngo/campaigns/new">
-            <Megaphone className="h-4 w-4" aria-hidden /> New campaign
+            <Plus className="h-4 w-4" aria-hidden /> New campaign
           </Link>
         </Button>
       </div>
@@ -159,10 +165,10 @@ export default async function NgoDashboardPage() {
           ) : (
             <ul className="divide-y rounded-xl border">
               {pendingApps.map((app) => (
-                <li key={app.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                <li key={app.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">{app.volunteer?.name ?? "Volunteer"}</p>
-                    <p className="truncate text-sm text-muted-foreground">
+                    <p className="break-words text-sm text-muted-foreground">
                       applied to{" "}
                       <Link
                         href={`/ngo/campaigns/${app.campaign?.id}`}

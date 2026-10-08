@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { ChatRoom } from "@/components/chat/ChatRoom";
 import { RoomMembersManager } from "@/components/chat/RoomMembersManager";
 import { DeleteRoomButton } from "./delete-room-button";
-import type { ChatRoom as ChatRoomType, Team, TeamMember } from "@/lib/types";
+import type { ChatRoom as ChatRoomType, Team } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +37,7 @@ export default async function NgoRoomPage({
     .eq("id", id)
     .limit(1)
     .maybeSingle();
-  const campaign = campaignRow as { id: string; ngo_id: string; title: string } | null;
+  const campaign = campaignRow;
   if (!campaign || campaign.ngo_id !== user.id) notFound();
 
   const [{ data: membersData }, { data: teamsData }] = await Promise.all([
@@ -56,7 +56,7 @@ export default async function NgoRoomPage({
     profile?: { id: string; name: string | null };
   }>;
   const teams = (teamsData ?? []) as unknown as Team[];
-  const teamMembers = teams.flatMap((t) => t.members ?? []) as TeamMember[];
+  const teamMembers = teams.flatMap((t) => t.members ?? []);
 
   return (
     <div className="mx-auto max-w-5xl space-y-4">
@@ -75,7 +75,6 @@ export default async function NgoRoomPage({
         <div className="flex items-center gap-2">
           <RoomMembersManager
             roomId={roomId}
-            campaignId={id}
             members={members}
             teamMembers={teamMembers}
           />

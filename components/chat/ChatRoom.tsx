@@ -156,21 +156,28 @@ export function ChatRoom({
             return (
               <div
                 key={message.id}
-                className={cn("animate-msg-in flex items-end gap-2", mine ? "justify-end" : "justify-start")}
+                className={cn(
+                  "animate-msg-in flex items-start gap-2",
+                  mine ? "justify-end" : "justify-start"
+                )}
               >
-                {!mine && !compact ? (
-                  <UserAvatar name={sender.name} src={sender.avatar_url} className="h-7 w-7 text-[10px]" />
-                ) : null}
-                {!mine && !compact ? <div className="w-14 shrink-0" aria-hidden /> : null}
-                {!mine && compact ? (
-                  <div className="w-[46px] shrink-0" aria-hidden />
+                {!mine ? (
+                  compact ? (
+                    <span className="w-7 shrink-0" aria-hidden />
+                  ) : (
+                    <UserAvatar
+                      name={sender.name}
+                      src={sender.avatar_url}
+                      className="mt-0.5 h-7 w-7 shrink-0 text-[10px]"
+                    />
+                  )
                 ) : null}
                 <div
                   className={cn(
                     "max-w-[75%] rounded-md px-3.5 py-2 text-sm leading-relaxed",
                     mine
-                      ? "rounded-br-md bg-primary text-primary-foreground"
-                      : "rounded-bl-md bg-muted text-foreground"
+                      ? "rounded-br-sm bg-primary text-primary-foreground"
+                      : "rounded-bl-sm bg-muted text-foreground"
                   )}
                 >
                   {!mine && !compact ? (
@@ -189,8 +196,6 @@ export function ChatRoom({
                     {formatTime(message.created_at)}
                   </p>
                 </div>
-                {mine && !compact ? <div className="w-14 shrink-0" aria-hidden /> : null}
-                {mine && compact ? <div className="w-6 shrink-0" aria-hidden /> : null}
               </div>
             );
           })
@@ -210,7 +215,8 @@ export function ChatRoom({
                   if (text.trim() && !sending) void send();
                 }
               }}
-              placeholder="Write a message… (Enter to send, Shift+Enter for a new line)"
+              placeholder="Write a message…"
+              title="Enter to send · Shift+Enter for a new line"
               rows={1}
               className="max-h-32 min-h-11 resize-none"
               maxLength={2000}
@@ -226,7 +232,16 @@ export function ChatRoom({
               <Send className="h-4 w-4" aria-hidden />
             </Button>
           </div>
-          <p className="mt-1 text-right text-xs text-muted-foreground">{text.length}/2000</p>
+          <div className="mt-1 flex items-center justify-between">
+            <span className="text-[11px] text-muted-foreground" aria-hidden>
+              Enter to send · Shift+Enter for a new line
+            </span>
+            {text.length > 1800 ? (
+              <span className="text-[11px] tabular-nums text-muted-foreground">
+                {text.length}/2000
+              </span>
+            ) : null}
+          </div>
         </div>
       ) : (
         <div className="border-t px-4 py-3 text-center text-sm text-muted-foreground">

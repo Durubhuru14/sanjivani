@@ -32,7 +32,7 @@ function toDb(values: CampaignFormValues) {
     total_budget: values.total_budget === "" ? 0 : values.total_budget,
   });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid campaign data" as string, data: null };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid campaign data", data: null };
   }
   const d = parsed.data;
   return {

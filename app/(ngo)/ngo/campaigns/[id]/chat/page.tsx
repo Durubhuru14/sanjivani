@@ -4,7 +4,7 @@ import { MessagesSquare } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RoomList } from "@/components/chat/RoomList";
 import { CreateRoomDialog } from "@/components/chat/CreateRoomDialog";
-import type { ChatRoom, Team, TeamMember } from "@/lib/types";
+import type { ChatRoom, Team } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +26,7 @@ export default async function CampaignChatPage({
     .eq("id", id)
     .limit(1)
     .maybeSingle();
-  const campaign = campaignRow as { id: string; title: string; ngo_id: string } | null;
+  const campaign = campaignRow;
   if (!campaign || campaign.ngo_id !== user.id) notFound();
 
   const [{ data: roomsData }, { data: teamsData }] = await Promise.all([
@@ -43,15 +43,18 @@ export default async function CampaignChatPage({
 
   const rooms = (roomsData ?? []) as unknown as ChatRoom[];
   const teams = (teamsData ?? []) as unknown as Team[];
-  const teamMembers = teams.flatMap((t) => t.members ?? []) as TeamMember[];
+  const teamMembers = teams.flatMap((t) => t.members ?? []);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Chat rooms</h1>
-        <p className="mt-1 text-muted-foreground">
-          Rooms for “{campaign.title}”. Only the members you pick can see each room.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold tracking-tight">Chat rooms</h1>
+          <p className="mt-1 text-muted-foreground">
+            Rooms for “{campaign.title}”. Only the members you pick can see each room.
+          </p>
+        </div>
+        <CreateRoomDialog campaignId={id} teamMembers={teamMembers} />
       </div>
 
       <Card className="shadow-soft">
@@ -64,10 +67,7 @@ export default async function CampaignChatPage({
             belongs in each.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex justify-end">
-            <CreateRoomDialog campaignId={id} teamMembers={teamMembers} />
-          </div>
+        <CardContent>
           <RoomList rooms={rooms} basePath={`/ngo/campaigns/${id}/chat/`} />
         </CardContent>
       </Card>
