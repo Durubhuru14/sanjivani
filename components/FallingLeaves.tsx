@@ -4,14 +4,11 @@
  * from assistive tech and switched off under prefers-reduced-motion.
  */
 const LEAVES = [
-  { left: "6%", size: 14, duration: 17, delay: 0, opacity: 0.34 },
-  { left: "17%", size: 10, duration: 22, delay: 3.5, opacity: 0.26 },
-  { left: "29%", size: 18, duration: 15, delay: 6, opacity: 0.3 },
-  { left: "44%", size: 9, duration: 26, delay: 1.5, opacity: 0.22 },
-  { left: "58%", size: 13, duration: 19, delay: 8, opacity: 0.32 },
-  { left: "71%", size: 11, duration: 24, delay: 4.5, opacity: 0.24 },
-  { left: "83%", size: 16, duration: 16, delay: 2, opacity: 0.3 },
-  { left: "93%", size: 9, duration: 21, delay: 10, opacity: 0.2 },
+  { left: "8%", size: 13, duration: 20, delay: 0, opacity: 0.26 },
+  { left: "26%", size: 9, duration: 26, delay: 7, opacity: 0.2 },
+  { left: "47%", size: 16, duration: 17, delay: 3, opacity: 0.28 },
+  { left: "69%", size: 10, duration: 24, delay: 11, opacity: 0.22 },
+  { left: "88%", size: 12, duration: 21, delay: 5, opacity: 0.24 },
 ] as const;
 
 function Leaf({ size }: { size: number }) {

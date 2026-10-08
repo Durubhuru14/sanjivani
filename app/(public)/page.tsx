@@ -110,7 +110,7 @@ export default async function LandingPage() {
               Run every campaign, team, and{" "}
               <span className="text-grow">rupee</span> in one place
             </h1>
-            <p className="animate-fade-up stagger-2 mt-6 max-w-[62ch] text-base leading-relaxed text-foreground/75">
+            <p className="animate-fade-up stagger-2 mt-7 max-w-[62ch] text-base leading-relaxed text-foreground/80">
               Sanjivani replaces Excel sheets, WhatsApp groups, and paper notices with one simple
               system — so your NGO can focus on the work, and your volunteers can build a history
               they are proud of.
@@ -132,7 +132,7 @@ export default async function LandingPage() {
             </div>
             <p className="animate-fade-up stagger-4 mt-5 text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="font-medium text-leaf hover:underline">
+              <Link href="/login" className="font-medium text-leaf underline-offset-4 hover:underline">
                 Log in
               </Link>
             </p>
@@ -334,7 +334,7 @@ export default async function LandingPage() {
         <div className="pattern-wash pointer-events-none absolute inset-0" aria-hidden />
         <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-16 text-center sm:px-6 lg:px-8">
           <Reveal>
-            <LogoMark detailed className="h-14 w-14 animate-rise-slow" />
+            <LogoMark detailed className="h-14 w-14" />
           </Reveal>
           <Reveal delay={0.1}>
             <h2 className="mt-6 font-display text-[clamp(1.8rem,3vw,2.4rem)] font-normal text-foreground">
