@@ -27,6 +27,15 @@ export default async function VolunteerRoomPage({
     .maybeSingle();
   if (!room) notFound();
 
+  // explicit membership guard — mirrors the chat_room_members RLS policy so
+  // demo mode (no RLS) blocks non-members exactly like live mode does
+  const { count: memberCount } = await supabase
+    .from("chat_room_members")
+    .select("id", { count: "exact", head: true })
+    .eq("room_id", roomId)
+    .eq("user_id", user.id);
+  if (!memberCount) notFound();
+
   const roomData = room as unknown as {
     id: string;
     name: string;
