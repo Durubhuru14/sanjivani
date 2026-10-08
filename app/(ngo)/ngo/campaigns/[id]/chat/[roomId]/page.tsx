@@ -47,7 +47,7 @@ export default async function NgoRoomPage({
       .eq("room_id", roomId),
     supabase
       .from("teams")
-      .select("*, team_members(*, profile:profiles!team_members_user_id_fkey(id, name, avatar_url))")
+      .select("*, members:team_members(*, profile:profiles!team_members_user_id_fkey(id, name, avatar_url))")
       .eq("campaign_id", id),
   ]);
 
