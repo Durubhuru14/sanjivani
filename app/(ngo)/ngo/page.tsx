@@ -5,6 +5,7 @@ import {
   CalendarCheck,
   ClipboardCheck,
   Clock,
+  Flag,
   Inbox,
   Megaphone,
   Users,
@@ -76,7 +77,7 @@ export default async function NgoDashboardPage() {
       await supabase.from("campaigns").select("id").eq("ngo_id", user.id)
     ).data?.map((c) => c.id) ?? ["00000000-0000-0000-0000-000000000000"];
 
-  const [campaignsRes, pendingAppsRes, teamCountRes, fundsRes] = await Promise.all([
+  const [campaignsRes, pendingAppsRes, teamCountRes, fundsRes, reportsRes] = await Promise.all([
     supabase
       .from("campaigns")
       .select("*")
@@ -100,6 +101,14 @@ export default async function NgoDashboardPage() {
       .select("total_budget, remaining_budget")
       .eq("ngo_id", user.id)
       .neq("status", "cancelled"),
+    supabase
+      .from("volunteer_reports")
+      .select(
+        "id, status, reason, created_at, volunteer:volunteer_id(id, name, avatar_url), campaign:campaign_id(id, title)"
+      )
+      .eq("reported_by", user.id)
+      .order("created_at", { ascending: false })
+      .limit(5),
   ]);
 
   const campaigns = (campaignsRes.data ?? []) as Campaign[];
@@ -118,6 +127,14 @@ export default async function NgoDashboardPage() {
     (sum, c) => sum + Number(c.remaining_budget ?? 0),
     0
   );
+  const filedReports = (reportsRes.data ?? []) as unknown as Array<{
+    id: string;
+    status: string;
+    reason: string;
+    created_at: string;
+    volunteer?: { id: string; name: string | null } | null;
+    campaign?: { id: string; title: string } | null;
+  }>;
 
   const active = campaigns.filter((c) => c.status === "ongoing" || c.status === "upcoming");
 
@@ -183,6 +200,48 @@ export default async function NgoDashboardPage() {
                   <Button asChild size="sm" variant="outline">
                     <Link href={`/ngo/campaigns/${app.campaign?.id}`}>Review</Link>
                   </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Reports you filed — track the review outcome end to end */}
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Flag className="h-5 w-5 text-primary" aria-hidden /> Reports you filed
+          </CardTitle>
+          <CardDescription>
+            Volunteer misconduct reports and where the platform admin stands on them — you are
+            notified the moment one is reviewed or dismissed.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {filedReports.length === 0 ? (
+            <EmptyState
+              icon={Flag}
+              title="No reports filed"
+              hint="If a volunteer on one of your campaigns misbehaves, report them from the campaign page."
+            />
+          ) : (
+            <ul className="space-y-3">
+              {filedReports.map((r) => (
+                <li key={r.id} className="rounded-xl border p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="font-semibold">
+                      {r.volunteer?.name ?? "Volunteer"}
+                      {r.campaign ? (
+                        <span className="font-normal text-muted-foreground"> · {r.campaign.title}</span>
+                      ) : null}
+                    </p>
+                    <StatusBadge status={r.status} />
+                  </div>
+                  <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                    {r.reason}
+                  </p>
+                  <p className="mt-2 text-xs text-muted-foreground">Filed {formatDate(r.created_at)}</p>
                 </li>
               ))}
             </ul>
