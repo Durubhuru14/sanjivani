@@ -14,7 +14,6 @@ import type { NextConfig } from "next";
 const projectRoot = typeof __dirname === "string" ? __dirname : path.resolve();
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   turbopack: {
     root: projectRoot,
   },

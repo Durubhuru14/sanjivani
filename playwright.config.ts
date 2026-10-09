@@ -3,12 +3,16 @@ import { defineConfig, devices } from "@playwright/test";
 /**
  * E2E tests for Sanjivani's critical flows (spec §19).
  *
- * Prerequisites:
+ * Prerequisites: none — the webServer below boots the app in demo mode
+ * (seeded in-memory store, no Supabase). To run the suite against a real
+ * backend instead, point E2E_BASE_URL at it and set E2E_NO_SERVER=1:
+ *
  *   1. Supabase running locally with migrations + seed applied:
  *        supabase db reset
- *   2. Dev server:  npm run dev   (or `bun run dev`)
+ *   2. Dev server:  npm run dev
+ *   3. Run:         E2E_NO_SERVER=1 E2E_BASE_URL=http://localhost:3000 npm run test:e2e
  *
- * Run:  npm run test:e2e
+ * Default:  npm run test:e2e   (demo server, works on any OS)
  */
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -27,7 +31,7 @@ export default defineConfig({
   webServer: process.env.E2E_NO_SERVER
     ? undefined
     : {
-        command: "npm run dev",
+        command: "node scripts/demo.mjs",
         url: "http://localhost:3000",
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
