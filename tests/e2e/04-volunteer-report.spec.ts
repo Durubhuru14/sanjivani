@@ -30,5 +30,11 @@ test("NGO reports a volunteer and admin reviews it", async ({ page }) => {
   // 3. Admin marks it reviewed
   await reportCard.getByRole("button", { name: /mark reviewed/i }).click();
   await expect(page.getByText(/report marked reviewed/i).first()).toBeVisible();
-  await expect(reportCard.getByText("Reviewed")).toBeVisible();
+
+  // 4. The reviewed report lives in the reports directory now — the overview
+  //    queue only shows open reports
+  await page.goto("/admin/reports");
+  const reviewedCard = page.locator("li", { hasText: "E2E: skipped the morning briefing" });
+  await expect(reviewedCard).toBeVisible();
+  await expect(reviewedCard.getByText("Reviewed")).toBeVisible();
 });

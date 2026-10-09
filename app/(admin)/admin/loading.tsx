@@ -1,8 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Dashboard loading skeleton (spec §11 UX — skeleton loaders on lists).
- *  Mirrors the real page: 6-tile stat grid at the contract breakpoints and
- *  section cards, inside the layout's own max-w-7xl container. */
+/** Admin loading skeleton (spec §11 UX — skeleton loaders on lists).
+ *  Neutral shape that reads correctly on the overview (header + stat row +
+ *  queue cards) and on every directory page (header + toolbar + list card). */
 export default function AdminLoading() {
   return (
     <div className="space-y-8">
@@ -15,6 +15,7 @@ export default function AdminLoading() {
           <Skeleton key={i} className="h-36 rounded-md" />
         ))}
       </div>
+      <Skeleton className="h-10 w-full max-w-md rounded-lg" />
       <Skeleton className="h-64 rounded-md" />
       <Skeleton className="h-64 rounded-md" />
     </div>

@@ -33,19 +33,14 @@ test("suspension blocks access and unsuspend restores it", async ({ browser }) =
   await tarun.waitForURL("**/volunteer");
   await expect(tarun.getByRole("heading", { name: /^hi tarun/i })).toBeVisible();
 
-  // 3. Admin suspends Tarun again — from the platform oversight volunteers
-  //    directory (suspension never needs a report)
+  // 3. Admin suspends Tarun again — from the volunteers directory
+  //    (suspension never needs a report)
   const admin2Context = await browser.newContext();
   const admin2 = await admin2Context.newPage();
   admin2.on("dialog", (d) => d.accept());
   await login(admin2, { email: "admin@sanjivani.test", password: "Passw0rd!" });
-  await admin2.getByRole("tab", { name: /volunteers/i }).click();
-  // scope to the active oversight tabpanel — the pending-verification queue
-  // higher up the page lists Tarun too
-  const suspendRow = admin2
-    .getByRole("tabpanel")
-    .locator("li", { hasText: "Tarun Mehta" })
-    .first();
+  await admin2.goto("/admin/volunteers");
+  const suspendRow = admin2.locator("li", { hasText: "Tarun Mehta" }).first();
   await expect(suspendRow).toBeVisible();
   await suspendRow.getByRole("button", { name: /^suspend$/i }).click();
   await expect(admin2.getByText(/has been suspended/i).first()).toBeVisible();

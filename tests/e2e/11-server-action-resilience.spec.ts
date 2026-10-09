@@ -104,16 +104,14 @@ test("server actions survive a role swap (another tab's session)", async ({ brow
 test("server actions survive a mid-session suspension", async ({ browser }) => {
   test.setTimeout(120_000);
 
-  // 1. admin suspends the Green Earth NGO (scope to the oversight tabpanel —
-  //    the report list above also mentions the org by name)
+  // 1. admin suspends the Green Earth NGO (from the NGO directory — the
+  //    reports list also mentions the org by name)
   const adminContext = await browser.newContext();
   const admin = await adminContext.newPage();
   admin.on("dialog", (d) => d.accept());
   await login(admin, { email: "admin@sanjivani.test", password: "Passw0rd!" });
-  const row = admin
-    .getByRole("tabpanel")
-    .locator("li", { hasText: "Green Earth Foundation" })
-    .first();
+  await admin.goto("/admin/ngos");
+  const row = admin.locator("li", { hasText: "Green Earth Foundation" }).first();
   await expect(row).toBeVisible();
   await row.getByRole("button", { name: /^suspend$/i }).click();
   await expect(admin.getByText(/has been suspended/i).first()).toBeVisible();
@@ -137,8 +135,9 @@ test("server actions survive a mid-session suspension", async ({ browser }) => {
   const restore = await restoreContext.newPage();
   await login(restore, { email: "admin@sanjivani.test", password: "Passw0rd!" });
   restore.on("dialog", (d) => d.accept());
+  // the suspended-filtered NGO directory lists exactly the taken-down orgs
+  await restore.goto("/admin/ngos?status=suspended");
   const restoreRow = restore
-    .getByRole("tabpanel")
     .locator("li", { hasText: "Green Earth Foundation" })
     .first();
   await restoreRow.getByRole("button", { name: /unsuspend/i }).click();
