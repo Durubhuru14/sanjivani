@@ -45,7 +45,27 @@ export const emptyCampaign: CampaignFormValues = {
   image_url: "",
 };
 
-/** Shared create/edit campaign form (spec §5 Campaign Create/Edit). */
+const STATUS_OPTIONS: Array<{ value: CampaignFormValues["status"]; label: string }> = [
+  { value: "upcoming", label: "Upcoming" },
+  { value: "ongoing", label: "Ongoing" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
+/** Legal successors per status — must stay in sync with the toolbar's
+ *  NEXT_STATUS map and the server-side CAMPAIGN_TRANSITIONS guard. */
+const NEXT: Record<CampaignFormValues["status"], CampaignFormValues["status"][]> = {
+  upcoming: ["ongoing", "cancelled"],
+  ongoing: ["completed", "cancelled"],
+  completed: [],
+  cancelled: [],
+};
+
+/** Shared create/edit campaign form (spec §5 Campaign Create/Edit).
+ *  Status: campaigns always start "upcoming" (create mode hard-codes it and
+ *  hides the field); edit mode offers only the current status and its legal
+ *  successors via the NEXT map above — the form can no longer bypass the
+ *  campaign lifecycle. */
 export function CampaignForm({
   mode,
   initial,
@@ -228,23 +248,37 @@ export function CampaignForm({
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="c-status">Status</Label>
-            <Select
-              value={values.status}
-              onValueChange={(v) => set("status", v as CampaignFormValues["status"])}
-            >
-              <SelectTrigger id="c-status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="upcoming">Upcoming</SelectItem>
-                <SelectItem value="ongoing">Ongoing</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {mode === "edit" ? (
+            <div className="space-y-2">
+              <Label htmlFor="c-status">Status</Label>
+              <Select
+                value={values.status}
+                onValueChange={(v) => set("status", v as CampaignFormValues["status"])}
+              >
+                <SelectTrigger id="c-status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.filter(
+                    (o) => o.value === initial.status || NEXT[initial.status].includes(o.value)
+                  ).map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                      {o.value === initial.status ? " (current)" : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {NEXT[initial.status].length === 0
+                  ? "This campaign has ended — its status can no longer change."
+                  : "Use the buttons on the campaign page to advance the lifecycle; only legal transitions are listed."}
+              </p>
+            </div>
+          ) : (
+            /* create mode: campaigns always start upcoming — no field needed */
+            <input type="hidden" name="status" value="upcoming" />
+          )}
         </div>
 
         <div className="space-y-2">

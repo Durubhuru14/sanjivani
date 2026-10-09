@@ -20,11 +20,16 @@ export async function POST(req: NextRequest) {
     return fail("You cannot suspend your own admin account.", "SELF_SUSPEND", 400);
   }
 
-  const { error } = await auth.supabase
+  const { data, error } = await auth.supabase
     .from("profiles")
     .update({ suspended: true })
-    .eq("id", parsed.data.profileId);
+    .eq("id", parsed.data.profileId)
+    .select("id")
+    .maybeSingle();
   if (error) return fail(error.message, "DB_ERROR", 400);
+  // a valid-but-nonexistent id is a quiet no-op in PostgREST — surface it
+  // instead of reporting success for something that changed nothing
+  if (!data) return fail("That account no longer exists.", "NOT_FOUND", 404);
 
   return ok({ profileId: parsed.data.profileId, suspended: true });
 }

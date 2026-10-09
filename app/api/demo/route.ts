@@ -72,7 +72,20 @@ export async function POST(req: NextRequest) {
   const kind = String(body.kind ?? "");
 
   if (kind === "query") {
-    const result = execute(body.op as DemoOp);
+    const op = body.op as DemoOp;
+    // Emulate the notifications RLS policies for browser queries: demo mode
+    // has no row-level security, so without this the bell would show every
+    // account's notifications (and mark-all-read would cross accounts).
+    // Live mode enforces this in Postgres; here we scope by session cookie.
+    if (op.t === "select" && op.table === "notifications") {
+      const uid = req.cookies.get(DEMO_COOKIE)?.value;
+      op.filters.push({ op: "eq", col: "user_id", val: uid ?? "" });
+    }
+    if (op.t === "update" && op.table === "notifications") {
+      const uid = req.cookies.get(DEMO_COOKIE)?.value;
+      op.filters.push({ op: "eq", col: "user_id", val: uid ?? "" });
+    }
+    const result = execute(op);
     return NextResponse.json(result, { headers: { "cache-control": "no-store" } });
   }
 

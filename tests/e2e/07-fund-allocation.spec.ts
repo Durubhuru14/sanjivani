@@ -6,6 +6,8 @@ import { expect, test, login } from "./helpers";
  * over-budget allocation is rejected.
  */
 test("fund allocation lifecycle keeps the budget consistent", async ({ page }) => {
+  // mark-paid now asks for a confirmation (paid allocations are immutable)
+  page.on("dialog", (d) => d.accept());
   await login(page, { email: "brightfutures@sanjivani.test", password: "Passw0rd!" });
   await page.goto("/ngo/campaigns");
   await page.locator("a", { hasText: "After-School Tutoring Program" }).first().click();

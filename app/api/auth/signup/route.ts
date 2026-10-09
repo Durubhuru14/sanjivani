@@ -18,6 +18,37 @@ export async function POST(req: NextRequest) {
 
   const supabase = await createClient();
 
+  const admin = createAdminClient();
+
+  // Staff invites are checked BEFORE the auth user is created: failing late
+  // (the old order) left an orphan auth account that blocks every retry with
+  // "User already registered". The lookup is read-only, so ordering it first
+  // has no side effects.
+  let staffInvite: { id: string; ngo_id: string } | null = null;
+  if (input.role === "staff") {
+    // Claim a pending invite matching this email (no public staff signup otherwise).
+    const email = input.email.trim().toLowerCase();
+    // oldest pending invite wins, so a multi-invite email claims deterministically
+    const { data: invite } = await admin
+      .from("ngo_staff")
+      .select("id, ngo_id")
+      .ilike("invited_email", email)
+      .is("profile_id", null)
+      .eq("status", "invited")
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (!invite) {
+      return fail(
+        "No pending staff invite found for this email. Ask your NGO to invite you first, or sign up as an NGO or volunteer.",
+        "NO_STAFF_INVITE",
+        400
+      );
+    }
+    staffInvite = invite;
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email: input.email,
     password: input.password,
@@ -31,31 +62,8 @@ export async function POST(req: NextRequest) {
   }
   const userId = data.user.id;
 
-  const admin = createAdminClient();
-
   try {
     if (input.role === "staff") {
-      // Claim a pending invite matching this email (no public staff signup otherwise).
-      const email = input.email.trim().toLowerCase();
-      // oldest pending invite wins, so a multi-invite email claims deterministically
-      const { data: invite } = await admin
-        .from("ngo_staff")
-        .select("id, ngo_id")
-        .ilike("invited_email", email)
-        .is("profile_id", null)
-        .eq("status", "invited")
-        .order("created_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-      if (!invite) {
-        return fail(
-          "No pending staff invite found for this email. Ask your NGO to invite you first, or sign up as an NGO or volunteer.",
-          "NO_STAFF_INVITE",
-          400
-        );
-      }
-
       await admin.from("profiles").insert({
         id: userId,
         role: "staff",
@@ -69,7 +77,7 @@ export async function POST(req: NextRequest) {
       const { error: linkError } = await admin
         .from("ngo_staff")
         .update({ profile_id: userId, status: "active" })
-        .eq("id", invite.id);
+        .eq("id", staffInvite!.id);
       if (linkError) throw linkError;
     } else if (input.role === "ngo") {
       await admin.from("profiles").insert({

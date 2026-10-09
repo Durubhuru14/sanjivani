@@ -38,6 +38,8 @@ test("NGO signup, admin approval, and first campaign", async ({ page }) => {
   await page.goto("/ngo/campaigns/new");
   await page.getByLabel("Title").fill(`E2E Campaign ${suffix}`);
   await page.getByLabel("Description").fill("Campaign created by the E2E flow.");
+  await page.getByLabel("Start date").fill("2026-11-01");
+  await page.getByLabel("End date").fill("2026-11-30");
   await page.getByLabel("Total budget (₹)").fill("10000");
   await page.getByRole("button", { name: /create campaign/i }).click();
   await page.waitForURL(new RegExp(`/ngo/campaigns/.+`));

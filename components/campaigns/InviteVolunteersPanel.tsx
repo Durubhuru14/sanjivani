@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
 import { UserAvatar } from "@/components/UserAvatar";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { StarsDisplay } from "@/components/StarsDisplay";
 import { useToast } from "@/hooks/use-toast";
 import type { CampaignInvite } from "@/lib/types";
 
@@ -19,6 +20,7 @@ interface SearchHit {
   location: string | null;
   skills: string[] | null;
   verification_status: string;
+  avg_rating?: number | null;
   avatar_url?: string | null;
 }
 
@@ -139,6 +141,9 @@ export function InviteVolunteersPanel({
                     </div>
                   </div>
                   <div className="ml-auto flex shrink-0 items-center gap-2">
+                    {Number(v.avg_rating ?? 0) > 0 ? (
+                      <StarsDisplay score={Number(v.avg_rating)} size="sm" />
+                    ) : null}
                     <Button
                       size="sm"
                       variant="outline"

@@ -41,17 +41,21 @@ export interface AssignablePerson {
   memberType: "staff" | "volunteer";
 }
 
-/** Team creation + member assignment + hours logging (spec §5 Campaign Manage). */
+/** Team creation + member assignment + hours logging (spec §5 Campaign Manage).
+ *  On terminal campaigns (completed / cancelled) team changes are locked:
+ *  members keep their seats and their logged hours — history is preserved. */
 export function TeamPanel({
   campaignId,
   teams,
   assignable,
   campaignCompleted,
+  changesLocked = false,
 }: {
   campaignId: string;
   teams: Team[];
   assignable: AssignablePerson[];
   campaignCompleted: boolean;
+  changesLocked?: boolean;
 }) {
   const [newTeamName, setNewTeamName] = useState("");
   const [busy, setBusy] = useState(false);
@@ -75,7 +79,15 @@ export function TeamPanel({
 
   return (
     <div className="space-y-6">
+      {changesLocked ? (
+        <p className="rounded-lg border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+          This campaign has ended — its teams are locked. Members and their logged hours are
+          preserved as history.
+        </p>
+      ) : null}
+
       {/* create team */}
+      {changesLocked ? null : (
       <div className="flex flex-wrap items-end gap-3 rounded-xl border bg-muted/30 p-4">
         <div className="min-w-56 flex-1 space-y-1.5">
           <label htmlFor={`team-name-${campaignId}`} className="text-sm font-medium">
@@ -105,6 +117,7 @@ export function TeamPanel({
           Add team
         </Button>
       </div>
+      )}
 
       {teams.length === 0 ? (
         <EmptyState
@@ -122,30 +135,34 @@ export function TeamPanel({
                   <Badge variant="secondary" className="font-normal">
                     {(team.members ?? []).length} member{(team.members ?? []).length === 1 ? "" : "s"}
                   </Badge>
-                  <AddMemberDialog
-                    team={team}
-                    assignable={assignable}
-                    onAdd={(userId, memberType) =>
-                      run(
-                        () => addTeamMember(campaignId, team.id, userId, memberType),
-                        "Member added to team"
-                      )
-                    }
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    disabled={busy || pending}
-                    onClick={() => {
-                      if (window.confirm(`Remove the team “${team.name}” and its memberships?`)) {
-                        run(() => removeTeam(campaignId, team.id), "Team removed");
-                      }
-                    }}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" aria-hidden />
-                    <span className="sr-only">Remove team</span>
-                  </Button>
+                  {changesLocked ? null : (
+                    <>
+                      <AddMemberDialog
+                        team={team}
+                        assignable={assignable}
+                        onAdd={(userId, memberType) =>
+                          run(
+                            () => addTeamMember(campaignId, team.id, userId, memberType),
+                            "Member added to team"
+                          )
+                        }
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        disabled={busy || pending}
+                        onClick={() => {
+                          if (window.confirm(`Remove the team “${team.name}” and its memberships?`)) {
+                            run(() => removeTeam(campaignId, team.id), "Team removed");
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                        <span className="sr-only">Remove team</span>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -177,20 +194,22 @@ export function TeamPanel({
                             run(() => logHours(campaignId, m.id, hours), "Hours updated")
                           }
                         />
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                          disabled={busy || pending}
-                          onClick={() => {
-                            if (window.confirm(`Remove ${m.profile?.name ?? "this member"} from the team?`)) {
-                              run(() => removeTeamMember(campaignId, m.id), "Member removed");
-                            }
-                          }}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" aria-hidden />
-                          <span className="sr-only">Remove member</span>
-                        </Button>
+                        {changesLocked ? null : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            disabled={busy || pending}
+                            onClick={() => {
+                              if (window.confirm(`Remove ${m.profile?.name ?? "this member"} from the team?`)) {
+                                run(() => removeTeamMember(campaignId, m.id), "Member removed");
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                            <span className="sr-only">Remove member</span>
+                          </Button>
+                        )}
                       </div>
                     </li>
                   ))}

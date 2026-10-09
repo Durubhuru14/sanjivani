@@ -9,16 +9,30 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/EmptyState";
 import { StatusBadge } from "@/components/StatusBadge";
+import { StarsDisplay } from "@/components/StarsDisplay";
 import { UserAvatar } from "@/components/UserAvatar";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { useToast } from "@/hooks/use-toast";
-import type { Application } from "@/lib/types";
+import { formatDateTime } from "@/lib/format";
+import type { Application, Campaign } from "@/lib/types";
 
-/** Accept / reject applications for the campaign owner (spec §5). */
-export function ApplicationsPanel({ applications }: { applications: Application[] }) {
+/** Accept / reject applications for the campaign owner (spec §5).
+ *  The decision row carries every trust signal the spec exposes — skills,
+ *  availability, verification badge, public rating, and when they applied —
+ *  so accept/reject is an informed decision, not a name match. */
+export function ApplicationsPanel({
+  applications,
+  campaignStatus,
+}: {
+  applications: Application[];
+  campaignStatus: Campaign["status"];
+}) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
+
+  const decided = campaignStatus === "completed" || campaignStatus === "cancelled";
 
   if (applications.length === 0) {
     return (
@@ -31,6 +45,12 @@ export function ApplicationsPanel({ applications }: { applications: Application[
   }
 
   function decide(app: Application, decision: "accepted" | "rejected") {
+    if (decision === "rejected") {
+      const ok = window.confirm(
+        `Decline ${app.volunteer?.name ?? "this volunteer"}'s application? They will be notified.`
+      );
+      if (!ok) return;
+    }
     setBusyId(app.id);
     startTransition(async () => {
       const res = await runServerAction(() => decideApplication(app.id, decision));
@@ -50,66 +70,94 @@ export function ApplicationsPanel({ applications }: { applications: Application[
   }
 
   return (
-    <ul className="divide-y rounded-xl border">
-      {applications.map((app) => (
-        <li
-          key={app.id}
-          className="flex min-h-16 flex-wrap items-center gap-3 px-4 py-3"
-        >
-          <UserAvatar name={app.volunteer?.name} src={app.volunteer?.avatar_url} className="h-9 w-9 text-xs" />
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold">{app.volunteer?.name ?? "Volunteer"}</p>
-            <div className="mt-1 flex flex-wrap gap-1.5">
-              {(app.volunteer?.volunteers?.skills ?? []).slice(0, 4).map((skill) => (
-                <Badge key={skill} variant="secondary" className="font-normal">
-                  {skill}
-                </Badge>
-              ))}
-              {app.volunteer?.volunteers?.availability ? (
-                <Badge variant="outline" className="font-normal text-muted-foreground">
-                  {app.volunteer.volunteers.availability}
-                </Badge>
-              ) : null}
-            </div>
-          </div>
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-            {app.status === "pending" ? (
-              <>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-1.5"
-                  disabled={busyId === app.id || pending}
-                  onClick={() => decide(app, "accepted")}
-                >
-                  {busyId === app.id ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+    <div className="space-y-3">
+      {decided ? (
+        <p className="rounded-lg border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+          This campaign is {campaignStatus} — pending applications can no longer be decided.
+        </p>
+      ) : null}
+      <ul className="divide-y rounded-xl border">
+        {applications.map((app) => {
+          const vol = app.volunteer;
+          const rating = Number(vol?.volunteers?.avg_rating ?? 0);
+          return (
+            <li
+              key={app.id}
+              className="flex min-h-16 flex-wrap items-center gap-3 px-4 py-3"
+            >
+              <UserAvatar name={vol?.name} src={vol?.avatar_url} className="h-9 w-9 text-xs" />
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="truncate font-semibold">{vol?.name ?? "Volunteer"}</p>
+                  {vol?.volunteers?.verification_status === "approved" ? (
+                    <VerifiedBadge verified />
+                  ) : vol?.volunteers?.verification_status === "pending" ? (
+                    <Badge variant="outline" className="font-normal text-muted-foreground">
+                      Pending verification
+                    </Badge>
+                  ) : null}
+                  {rating > 0 ? <StarsDisplay score={rating} size="sm" /> : null}
+                </div>
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {(vol?.volunteers?.skills ?? []).slice(0, 4).map((skill) => (
+                    <Badge key={skill} variant="secondary" className="font-normal">
+                      {skill}
+                    </Badge>
+                  ))}
+                  {vol?.volunteers?.availability ? (
+                    <Badge variant="outline" className="font-normal text-muted-foreground">
+                      {vol.volunteers.availability}
+                    </Badge>
+                  ) : null}
+                </div>
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Applied {formatDateTime(app.created_at)}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                {app.status === "pending" ? (
+                  decided ? (
+                    <StatusBadge status="pending" />
                   ) : (
-                    <Check className="h-3.5 w-3.5" aria-hidden />
-                  )}
-                  Accept
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                  disabled={busyId === app.id || pending}
-                  onClick={() => decide(app, "rejected")}
-                >
-                  <X className="h-3.5 w-3.5" aria-hidden /> Reject
-                </Button>
-              </>
-            ) : (
-              <>
-                <StatusBadge status={app.status} />
-                {app.status === "accepted" ? (
-                  <span className="text-xs text-muted-foreground">assignable to team</span>
-                ) : null}
-              </>
-            )}
-          </div>
-        </li>
-      ))}
-    </ul>
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5"
+                        disabled={busyId === app.id || pending}
+                        onClick={() => decide(app, "accepted")}
+                      >
+                        {busyId === app.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                        ) : (
+                          <Check className="h-3.5 w-3.5" aria-hidden />
+                        )}
+                        Accept
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        disabled={busyId === app.id || pending}
+                        onClick={() => decide(app, "rejected")}
+                      >
+                        <X className="h-3.5 w-3.5" aria-hidden /> Reject
+                      </Button>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <StatusBadge status={app.status} />
+                    {app.status === "accepted" ? (
+                      <span className="text-xs text-muted-foreground">assignable to team</span>
+                    ) : null}
+                  </>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }

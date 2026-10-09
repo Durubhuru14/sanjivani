@@ -6,6 +6,7 @@ import { BadgeIndianRupee, CheckCircle2, Loader2, Wallet } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { fundAllocationSchema } from "@/lib/validation";
 import { canAllocate, formatMoney, budgetProgress, round2, type BudgetState } from "@/lib/funds";
+import { friendlyDbError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -87,12 +88,7 @@ export function FundLedger({
     } catch (err) {
       toast({
         title: "Allocation failed",
-        description:
-          err instanceof Error && /FUND_EXCEEDS_REMAINING/i.test(err.message)
-            ? `Only ${formatMoney(budget.remaining)} is left in this campaign's budget.`
-            : err instanceof Error
-              ? err.message
-              : "Please try again.",
+        description: friendlyDbError(err).message,
       });
     } finally {
       setBusy(false);
@@ -100,6 +96,13 @@ export function FundLedger({
   }
 
   async function markPaid(allocation: FundAllocation) {
+    if (
+      !window.confirm(
+        `Mark ${formatMoney(Number(allocation.amount))} to ${allocation.profile?.name ?? "this member"} as paid? Paid allocations cannot be edited afterwards.`
+      )
+    ) {
+      return;
+    }
     setBusy(true);
     try {
       const supabase = createClient();
@@ -114,7 +117,7 @@ export function FundLedger({
     } catch (err) {
       toast({
         title: "Could not update",
-        description: err instanceof Error ? err.message : "Please try again.",
+        description: err instanceof Error ? friendlyDbError(err).message : "Please try again.",
       });
     } finally {
       setBusy(false);
@@ -133,7 +136,7 @@ export function FundLedger({
     } catch (err) {
       toast({
         title: "Could not remove",
-        description: err instanceof Error ? err.message : "Please try again.",
+        description: err instanceof Error ? friendlyDbError(err).message : "Please try again.",
       });
     } finally {
       setBusy(false);
@@ -141,6 +144,7 @@ export function FundLedger({
   }
 
   const allocated = round2(budget.total - budget.remaining);
+  const cancelled = campaign.status === "cancelled";
 
   return (
     <div className="space-y-6">
@@ -176,6 +180,22 @@ export function FundLedger({
         </CardContent>
       </Card>
 
+      {cancelled ? (
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BadgeIndianRupee className="h-5 w-5 text-primary" aria-hidden /> Allocate funds
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EmptyState
+              icon={Wallet}
+              title="This campaign was cancelled"
+              hint="New allocations are closed — the ledger below is preserved as history, and pending allocations can still be settled or removed."
+            />
+          </CardContent>
+        </Card>
+      ) : (
       <Card className="shadow-soft">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -247,6 +267,7 @@ export function FundLedger({
           )}
         </CardContent>
       </Card>
+      )}
 
       <Card className="shadow-soft">
         <CardHeader>

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Building2, CalendarCheck2, MessagesSquare, UserMinus } from "lucide-react";
+import { Building2, CalendarCheck2, IndianRupee, MessagesSquare, UserMinus } from "lucide-react";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
+import { formatMoney } from "@/lib/funds";
 import { formatDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -56,7 +57,7 @@ export default async function StaffDashboardPage() {
     );
   }
 
-  const [teamRes, roomsRes] = await Promise.all([
+  const [teamRes, roomsRes, fundsRes] = await Promise.all([
     supabase
       .from("team_members")
       .select(
@@ -67,6 +68,12 @@ export default async function StaffDashboardPage() {
       .from("chat_room_members")
       .select("room_id, rooms!inner(id, name, campaign_id, campaigns!inner(title))")
       .eq("user_id", user.id),
+    supabase
+      .from("fund_allocations")
+      .select("id, amount, status, campaign:campaign_id(title)")
+      .eq("member_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(5),
   ]);
 
   type TeamRow = {
@@ -90,6 +97,12 @@ export default async function StaffDashboardPage() {
   const roomRows = (roomsRes.data ?? []) as unknown as Array<{
     room_id: string;
     rooms: { id: string; name: string; campaign_id: string; campaigns: { title: string } };
+  }>;
+  const myFunds = (fundsRes.data ?? []) as unknown as Array<{
+    id: string;
+    amount: number;
+    status: string;
+    campaign: { title: string } | null;
   }>;
 
   const active = teams.filter(
@@ -116,7 +129,7 @@ export default async function StaffDashboardPage() {
         <CardContent>
           <p className="font-semibold">{staff.ngo?.org_name ?? "Your NGO"}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            You see only this NGO's campaigns and chats.
+            Campaign teams and chat rooms appear here as your NGO assigns you to them.
           </p>
         </CardContent>
       </Card>
@@ -165,7 +178,7 @@ export default async function StaffDashboardPage() {
             <CardTitle className="flex items-center gap-2">
               <MessagesSquare className="h-5 w-5 text-primary" aria-hidden /> My chat rooms
             </CardTitle>
-            <CardDescription>Rooms this NGO added you to.</CardDescription>
+            <CardDescription>Rooms your NGO added you to.</CardDescription>
           </CardHeader>
           <CardContent>
             {roomRows.length === 0 ? (
@@ -196,6 +209,38 @@ export default async function StaffDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="shadow-soft">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <IndianRupee className="h-5 w-5 text-primary" aria-hidden /> Funds allocated to me
+          </CardTitle>
+          <CardDescription>Only you and the NGO can see these amounts.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {myFunds.length === 0 ? (
+            <EmptyState
+              icon={IndianRupee}
+              title="No fund allocations yet"
+              hint="Allocations for your work will appear here once the NGO records them."
+            />
+          ) : (
+            <ul className="divide-y rounded-xl border">
+              {myFunds.map((f) => (
+                <li key={f.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold tabular-nums">{formatMoney(Number(f.amount))}</p>
+                    <p className="truncate text-sm text-muted-foreground">
+                      {f.campaign?.title ?? "Campaign"}
+                    </p>
+                  </div>
+                  <StatusBadge status={f.status} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -42,6 +42,17 @@ async function requireApprovedNgoClient() {
   return ctx;
 }
 
+/** Legal campaign status transitions — mirrors the toolbar's NEXT_STATUS map
+ * and the seed schema's forward-only lifecycle (spec §5). Edit-form status
+ * choices are filtered through this, and updateCampaign enforces it again
+ * server-side so a crafted request cannot resurrect a terminal campaign. */
+const CAMPAIGN_TRANSITIONS: Record<string, string[]> = {
+  upcoming: ["ongoing", "cancelled"],
+  ongoing: ["completed", "cancelled"],
+  completed: [],
+  cancelled: [],
+};
+
 function toDb(values: CampaignFormValues) {
   const parsed = campaignSchema.safeParse({
     ...values,
@@ -87,9 +98,28 @@ export async function createCampaign(values: CampaignFormValues) {
 }
 
 export async function updateCampaign(id: string, values: CampaignFormValues) {
-  const { supabase } = await requireApprovedNgoClient();
+  const { supabase, userId } = await requireApprovedNgoClient();
   const { error, data } = toDb(values);
   if (error || !data) return { ok: false, error: error ?? "Invalid data" };
+
+  // Ownership + status-transition check: the edit form only offers legal
+  // targets, but the action itself must not trust the client (demo mode has
+  // no RLS; live mode additionally enforces ownership via policies).
+  const { data: current } = await supabase
+    .from("campaigns")
+    .select("id, ngo_id, status")
+    .eq("id", id)
+    .maybeSingle();
+  if (!current || current.ngo_id !== userId) {
+    return { ok: false, error: "Campaign not found." };
+  }
+  const allowed = new Set([current.status, ...(CAMPAIGN_TRANSITIONS[current.status] ?? [])]);
+  if (!allowed.has(data.status)) {
+    return {
+      ok: false,
+      error: `A ${current.status} campaign cannot move to ${data.status}.`,
+    };
+  }
 
   const { error: dbError } = await supabase.from("campaigns").update(data).eq("id", id);
   if (dbError) return { ok: false, error: friendlyDbError(dbError).message };
@@ -125,7 +155,31 @@ export async function deleteCampaign(id: string) {
 /* ================= applications ================= */
 
 export async function decideApplication(applicationId: string, decision: "accepted" | "rejected") {
-  const { supabase } = await requireApprovedNgoClient();
+  const { supabase, userId } = await requireApprovedNgoClient();
+
+  // Only pending applications on live campaigns can be decided — accepting
+  // after completion/cancellation would create rating eligibility and team
+  // entry for work that is already over (the live INSERT path is guarded by
+  // trigger 00007; this closes the owner-side UPDATE path).
+  const { data: app } = await supabase
+    .from("applications")
+    .select("id, status, campaign:campaign_id(id, ngo_id, status)")
+    .eq("id", applicationId)
+    .maybeSingle();
+  const campaign = Array.isArray(app?.campaign) ? app?.campaign?.[0] : app?.campaign;
+  if (!app || app.status !== "pending") {
+    return { ok: false, error: "Only pending applications can be decided." };
+  }
+  if (!campaign || campaign.ngo_id !== userId) {
+    return { ok: false, error: "Application not found." };
+  }
+  if (campaign.status !== "upcoming" && campaign.status !== "ongoing") {
+    return {
+      ok: false,
+      error: `This campaign is ${campaign.status} — its applications can no longer be decided.`,
+    };
+  }
+
   const { error } = await supabase
     .from("applications")
     .update({ status: decision })
@@ -137,11 +191,33 @@ export async function decideApplication(applicationId: string, decision: "accept
 
 /* ================= teams ================= */
 
+/** Terminal campaigns (completed / cancelled) are locked for team changes:
+ *  adding members after completion would grant rating eligibility for work
+ *  that is over, and removing them would destroy their logged hours
+ *  (hours live on the team_members row). Hours logging stays open on
+ *  completed campaigns — that is exactly what completion unlocks. */
+async function requireEditableCampaign(supabase: Awaited<ReturnType<typeof createClient>>, userId: string, campaignId: string) {
+  const { data: campaign } = await supabase
+    .from("campaigns")
+    .select("id, ngo_id, status")
+    .eq("id", campaignId)
+    .maybeSingle();
+  if (!campaign || campaign.ngo_id !== userId) {
+    return { error: "Campaign not found." as const };
+  }
+  if (campaign.status === "completed" || campaign.status === "cancelled") {
+    return { error: `This campaign is ${campaign.status} — its teams can no longer be changed.` as const };
+  }
+  return { campaign };
+}
+
 export async function createTeam(campaignId: string, name: string) {
-  const { supabase } = await requireApprovedNgoClient();
+  const { supabase, userId } = await requireApprovedNgoClient();
   if (!name.trim() || name.trim().length > 80) {
     return { ok: false, error: "Team name is required (max 80 characters)." };
   }
+  const guard = await requireEditableCampaign(supabase, userId, campaignId);
+  if ("error" in guard && guard.error) return { ok: false, error: guard.error };
   const { error } = await supabase
     .from("teams")
     .insert({ campaign_id: campaignId, name: name.trim() });
@@ -151,7 +227,9 @@ export async function createTeam(campaignId: string, name: string) {
 }
 
 export async function removeTeam(campaignId: string, teamId: string) {
-  const { supabase } = await requireApprovedNgoClient();
+  const { supabase, userId } = await requireApprovedNgoClient();
+  const guard = await requireEditableCampaign(supabase, userId, campaignId);
+  if ("error" in guard && guard.error) return { ok: false, error: guard.error };
   const { error } = await supabase.from("teams").delete().eq("id", teamId);
   if (error) return { ok: false, error: friendlyDbError(error).message };
   revalidatePath(`/ngo/campaigns/${campaignId}`);
@@ -164,7 +242,9 @@ export async function addTeamMember(
   userId: string,
   memberType: "staff" | "volunteer"
 ) {
-  const { supabase } = await requireApprovedNgoClient();
+  const { supabase, userId: owner } = await requireApprovedNgoClient();
+  const guard = await requireEditableCampaign(supabase, owner, campaignId);
+  if ("error" in guard && guard.error) return { ok: false, error: guard.error };
   const { error } = await supabase
     .from("team_members")
     .insert({ team_id: teamId, user_id: userId, member_type: memberType });
@@ -174,7 +254,9 @@ export async function addTeamMember(
 }
 
 export async function removeTeamMember(campaignId: string, memberId: string) {
-  const { supabase } = await requireApprovedNgoClient();
+  const { supabase, userId } = await requireApprovedNgoClient();
+  const guard = await requireEditableCampaign(supabase, userId, campaignId);
+  if ("error" in guard && guard.error) return { ok: false, error: guard.error };
   const { error } = await supabase.from("team_members").delete().eq("id", memberId);
   if (error) return { ok: false, error: friendlyDbError(error).message };
   revalidatePath(`/ngo/campaigns/${campaignId}`);

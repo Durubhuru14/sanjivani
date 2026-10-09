@@ -120,9 +120,10 @@ describe("campaignSchema (spec §12 campaign rules)", () => {
     expect(campaignSchema.safeParse({ ...valid, type: "private" }).success).toBe(false);
   });
 
-  it("allows dates to be omitted entirely", () => {
+  it("requires both dates (date-less campaign cards render broken)", () => {
     const res = campaignSchema.safeParse({ title: "T", start_date: "", end_date: "" });
-    expect(res.success).toBe(true);
+    expect(res.success).toBe(false);
+    expect(res.error?.issues[0]?.message).toBe("Start date is required");
   });
 });
 

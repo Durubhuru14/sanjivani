@@ -38,6 +38,9 @@ export default async function AcceptInvitePage() {
       .ilike("invited_email", email)
       .is("profile_id", null)
       .eq("status", "invited")
+      // oldest pending invite wins — same rule as claimStaffInvite, so the
+      // page never advertises NGO B while the claim links NGO A
+      .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle();
     if (data) {

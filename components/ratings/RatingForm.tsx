@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ratingSchema } from "@/lib/validation";
+import { friendlyDbError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -92,7 +93,7 @@ export function RatingForm({
     } catch (err) {
       toast({
         title: "Could not submit",
-        description: err instanceof Error ? err.message : "Please try again.",
+        description: friendlyDbError(err).message,
       });
     } finally {
       setBusy(false);

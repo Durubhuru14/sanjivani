@@ -123,7 +123,7 @@ insert into public.teams (id, campaign_id, name, created_at) values
 
 -- ============ team_members ============
 insert into public.team_members (team_id, user_id, member_type, hours_logged) values
-  ('f0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000005', 'staff',     0),
+  ('f0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000006', 'staff',     0),
   ('f0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000007', 'volunteer', 0),
   ('f0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000008', 'volunteer', 0),
   ('f0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000005', 'staff',     24),
@@ -135,31 +135,38 @@ insert into public.team_members (team_id, user_id, member_type, hours_logged) va
 
 -- ============ fund allocations (ongoing campaign) ============
 insert into public.fund_allocations (campaign_id, member_id, amount, note, status, created_at) values
-  ('c0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000005', 1500, 'Travel reimbursement for site visits', 'paid',    now() - interval '20 days'),
+  ('c0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000006', 1500, 'Travel reimbursement for site visits', 'paid',    now() - interval '20 days'),
   ('c0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000007', 2000, 'Teaching materials for batch A',      'pending', now() - interval '5 days');
 
 -- ============ chat rooms ============
 insert into public.chat_rooms (id, campaign_id, name, created_by, created_at) values
   ('11000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000002', 'Planning Room', 'a0000000-0000-4000-8000-000000000003', now() - interval '40 days'),
-  ('11000000-0000-4000-8000-000000000002', 'c0000000-0000-4000-8000-000000000002', 'Field Updates', 'a0000000-0000-4000-8000-000000000003', now() - interval '12 days');
+  ('11000000-0000-4000-8000-000000000002', 'c0000000-0000-4000-8000-000000000002', 'Field Updates', 'a0000000-0000-4000-8000-000000000003', now() - interval '12 days'),
+  ('11000000-0000-4000-8000-000000000003', 'c0000000-0000-4000-8000-000000000003', 'Crew Coordination', 'a0000000-0000-4000-8000-000000000002', now() - interval '85 days');
 
 insert into public.chat_room_members (room_id, user_id) values
   ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000003'),
-  ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000005'),
+  ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000006'),
   ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000007'),
   ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000008'),
   ('11000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000003'),
-  ('11000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000005'),
-  ('11000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000008');
+  ('11000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000006'),
+  ('11000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000008'),
+  ('11000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000002'),
+  ('11000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000005'),
+  ('11000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000007');
 
 -- ============ messages ============
 insert into public.messages (room_id, sender_id, text, created_at) values
-  ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000003', 'Welcome everyone! Batch A starts Monday at 5 pm. Meera, can you confirm the centre is unlocked?', now() - interval '39 days'),
-  ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000005', 'Confirmed. I will pick up the keys from the trust office by 4:30.', now() - interval '39 days'),
+  ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000003', 'Welcome everyone! Batch A starts Monday at 5 pm. Arvind, can you confirm the centre is unlocked?', now() - interval '39 days'),
+  ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000006', 'Confirmed. I will pick up the keys from the trust office by 4:30.', now() - interval '39 days'),
   ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000007', 'I can bring the maths workbooks I prepared. 30 copies should be enough for Monday.', now() - interval '38 days'),
   ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000008', 'I will handle attendance and click photos for the monthly report.', now() - interval '38 days'),
   ('11000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000003', 'Perfect. Priya, your material budget has been recorded in the fund ledger.', now() - interval '5 days'),
-  ('11000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000005', 'Reminder: field visit tomorrow. Please reach the centre by 4 pm.', now() - interval '11 days'),
+  ('11000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000006', 'Reminder: field visit tomorrow. Please reach the centre by 4 pm.', now() - interval '11 days'),
+  ('11000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000002', 'Crew leads - the sapling truck arrives at 6:30 am. Please collect your zone maps at the gate.', now() - interval '84 days'),
+  ('11000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000005', 'I will brief the buddy groups and hand out gloves and first-aid kits.', now() - interval '84 days'),
+  ('11000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000007', 'Got it. My group takes the ring road east stretch.', now() - interval '83 days'),
   ('11000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000008', 'On my way with the projector. Traffic is heavy, may be 10 minutes late.', now() - interval '11 days');
 
 -- ============ ratings (completed campaign, bidirectional) ============

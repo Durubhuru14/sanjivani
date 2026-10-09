@@ -5,8 +5,8 @@ import { ok, fail, friendlyDbError } from "@/lib/api";
 /**
  * DELETE /api/ngo/staff/[id] (spec §8).
  * Removes the staff member AND their team/chat-room memberships across this
- * NGO's campaigns. Data elsewhere (hours history stays on campaign teams) is
- * preserved; only the assignment rows are removed.
+ * NGO's campaigns. Note: deleting a team membership also deletes the hours
+ * logged on it — hours live on the team_members row.
  */
 export async function DELETE(
   _req: NextRequest,

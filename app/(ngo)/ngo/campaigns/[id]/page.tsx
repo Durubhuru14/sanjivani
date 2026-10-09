@@ -68,7 +68,7 @@ export default async function ManageCampaignPage({
     supabase
       .from("applications")
       .select(
-        "*, volunteer:volunteer_id(id, name, avatar_url, volunteers(profile_id, skills, availability))"
+        "*, volunteer:volunteer_id(id, name, avatar_url, volunteers(profile_id, skills, availability, avg_rating, verification_status))"
       )
       .eq("campaign_id", id)
       .order("created_at", { ascending: false }),
@@ -124,6 +124,7 @@ export default async function ManageCampaignPage({
   const assignable: AssignablePerson[] = [...assignableStaff, ...acceptedVolunteers];
 
   const completed = campaign.status === "completed";
+  const terminal = completed || campaign.status === "cancelled";
   const pendingApplications = applications.filter((a) => a.status === "pending").length;
   const reportableVolunteers = teamMembers.filter((m) => m.member_type === "volunteer");
 
@@ -186,6 +187,7 @@ export default async function ManageCampaignPage({
                 teams={teams}
                 assignable={assignable}
                 campaignCompleted={completed}
+                changesLocked={terminal}
               />
             </CardContent>
           </Card>
@@ -200,7 +202,7 @@ export default async function ManageCampaignPage({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ApplicationsPanel applications={applications} />
+              <ApplicationsPanel applications={applications} campaignStatus={campaign.status} />
             </CardContent>
           </Card>
         </TabsContent>

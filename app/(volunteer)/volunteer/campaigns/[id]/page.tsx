@@ -357,9 +357,17 @@ export default async function VolunteerCampaignDetailPage({
                     {myApplication.status === "pending"
                       ? "The NGO is reviewing your application — you will be notified."
                       : myApplication.status === "accepted"
-                        ? "You are accepted! Ask the NGO to add you to a team."
-                        : "This application was declined. You can apply again if the campaign reopens."}
+                        ? "You are accepted! The NGO will add you to a team next — you will be notified when that happens."
+                        : "This application was declined."}
                   </p>
+                  {myApplication.status === "rejected" && joinable ? (
+                    <div className="space-y-3 pt-1">
+                      <p className="text-sm text-muted-foreground">
+                        You can apply again, or browse other campaigns.
+                      </p>
+                      <ApplyButton campaignId={id} />
+                    </div>
+                  ) : null}
                 </div>
               ) : joinable ? (
                 <div className="space-y-3">

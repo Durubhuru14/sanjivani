@@ -137,6 +137,21 @@ export default async function VolunteerDashboardPage() {
         }
       />
 
+      {vol && vol.verification_status === "pending" ? (
+        <Card className="border-primary/30 bg-primary/5 shadow-soft">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Clock className="h-5 w-5" aria-hidden /> Verification in progress
+            </CardTitle>
+            <CardDescription>
+              An administrator is reviewing your profile. You can browse and apply to campaigns
+              in the meantime — the verified badge appears once the review is done, and you will
+              get a notification either way.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      ) : null}
+
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Campaigns" value={campaignsJoined} icon={CalendarCheck2} />
         <StatCard label="Hours" value={totalHours} icon={Clock} hint="Logged by NGOs after completion" />
@@ -249,12 +264,18 @@ export default async function VolunteerDashboardPage() {
                 {apps.slice(0, 6).map((a) => (
                   <li key={a.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">
-                      <Link
-                        href={`/volunteer/campaigns/${a.campaign?.id}`}
-                        className="truncate font-medium hover:text-primary hover:underline"
-                      >
-                        {a.campaign?.title ?? "Campaign"}
-                      </Link>
+                      {a.campaign?.id ? (
+                        <Link
+                          href={`/volunteer/campaigns/${a.campaign.id}`}
+                          className="truncate font-medium hover:text-primary hover:underline"
+                        >
+                          {a.campaign.title ?? "Campaign"}
+                        </Link>
+                      ) : (
+                        <p className="truncate font-medium text-muted-foreground">
+                          Campaign unavailable
+                        </p>
+                      )}
                       <p className="truncate text-sm text-muted-foreground">
                         {a.campaign?.ngo?.org_name ?? "NGO"} · applied {formatDateTime(a.created_at)}
                       </p>

@@ -175,8 +175,9 @@ export function CampaignStatusActions({ campaign }: { campaign: Campaign }) {
                   Cancel this campaign?
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  The campaign will be hidden from browse and no further applications are
-                  possible. Team history is preserved.
+                  The campaign will be hidden from browse and no further applications, team
+                  changes, or fund allocations are possible. Team history and logged hours are
+                  preserved.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

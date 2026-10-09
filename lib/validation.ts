@@ -51,14 +51,12 @@ export const campaignSchema = z
     location: z.string().trim().max(140).optional().or(z.literal("")),
     start_date: z
       .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Use the date picker (YYYY-MM-DD)")
-      .optional()
-      .or(z.literal("")),
+      .min(1, "Start date is required")
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Use the date picker (YYYY-MM-DD)"),
     end_date: z
       .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Use the date picker (YYYY-MM-DD)")
-      .optional()
-      .or(z.literal("")),
+      .min(1, "End date is required")
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Use the date picker (YYYY-MM-DD)"),
     type: z.enum(["public", "invite"]).default("public"),
     status: z.enum(["upcoming", "ongoing", "completed", "cancelled"]).default("upcoming"),
     total_budget: z.coerce

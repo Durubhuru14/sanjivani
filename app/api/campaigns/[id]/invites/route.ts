@@ -28,11 +28,12 @@ export async function GET(
 
   const { data: all } = await supabase
     .from("volunteers")
-    .select("profile_id, verification_status, skills, profile:profile_id(name, location, avatar_url, suspended)");
+    .select("profile_id, verification_status, avg_rating, skills, profile:profile_id(name, location, avatar_url, suspended)");
 
   type VolRow = {
     profile_id: string;
     verification_status: string;
+    avg_rating: number | null;
     skills: string[] | null;
     profile: { name: string | null; location: string | null; avatar_url: string | null; suspended: boolean | null } | null;
   };
@@ -63,6 +64,7 @@ export async function GET(
       avatar_url: v.profile?.avatar_url ?? null,
       skills: v.skills,
       verification_status: v.verification_status,
+      avg_rating: v.avg_rating,
     }));
 
   return ok({ volunteers });
