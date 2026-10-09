@@ -67,6 +67,7 @@ db/
 test
 prompt
 local-*
+sandbox/
 
 # playwright
 /test-results/

@@ -44,16 +44,16 @@ export default async function AdminDashboardPage() {
   const supabase = await createClient();
 
   const [ngosRes, volsRes, reportsRes, campaignsRes, staffRes] = await Promise.all([
+    // ngos/volunteers have no created_at (join dates live on profiles) —
+    // the embedded profile's created_at is used for ordering below.
     supabase
       .from("ngos")
-      .select("*, profile:profiles!ngos_profile_id_fkey(id, name, location, suspended, created_at)")
-      .order("created_at", { ascending: true }),
+      .select("*, profile:profiles!ngos_profile_id_fkey(id, name, location, suspended, created_at)"),
     supabase
       .from("volunteers")
       .select(
         "*, profile:profiles!volunteers_profile_id_fkey(id, name, location, avatar_url, suspended, created_at)"
-      )
-      .order("created_at", { ascending: true }),
+      ),
     supabase
       .from("volunteer_reports")
       .select(
@@ -69,8 +69,12 @@ export default async function AdminDashboardPage() {
       .order("created_at", { ascending: true }),
   ]);
 
-  const ngos = (ngosRes.data ?? []) as unknown as Array<Ngo & { profile?: Profile }>;
-  const vols = (volsRes.data ?? []) as unknown as Array<Volunteer & { profile?: Profile }>;
+  const ngos = ((ngosRes.data ?? []) as unknown as Array<Ngo & { profile?: Profile }>).sort(
+    (a, b) => (a.profile?.created_at ?? "").localeCompare(b.profile?.created_at ?? "")
+  );
+  const vols = ((volsRes.data ?? []) as unknown as Array<Volunteer & { profile?: Profile }>).sort(
+    (a, b) => (a.profile?.created_at ?? "").localeCompare(b.profile?.created_at ?? "")
+  );
   const reports = (reportsRes.data ?? []) as VolunteerReport[];
   const campaigns = (campaignsRes.data ?? []) as Array<Pick<Campaign, "id" | "status">>;
   const staff = (staffRes.data ?? []) as unknown as Array<NgoStaff & { profile?: Profile | null }>;

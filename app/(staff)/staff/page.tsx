@@ -66,7 +66,7 @@ export default async function StaffDashboardPage() {
       .eq("user_id", user.id),
     supabase
       .from("chat_room_members")
-      .select("room_id, rooms!inner(id, name, campaign_id, campaigns!inner(title))")
+      .select("room_id, rooms:chat_rooms!inner(id, name, campaign_id, campaigns!inner(title))")
       .eq("user_id", user.id),
     supabase
       .from("fund_allocations")

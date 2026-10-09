@@ -192,7 +192,7 @@ begin
     where a.volunteer_id = new.volunteer_id
       and a.campaign_id = new.campaign_id
       and a.status in ('pending','accepted')
-      and (TG_OP = 'UPDATE' or a.id <> new.id)
+      and a.id <> new.id
   ) then
     raise exception 'DUPLICATE_APPLICATION';
   end if;

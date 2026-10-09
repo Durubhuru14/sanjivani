@@ -37,14 +37,17 @@ export default async function AdminVolunteersPage({
   ]);
 
   const supabase = await createClient();
+  // NOTE: volunteers/ngos have no created_at column (join dates live on
+  // profiles.created_at) — order by the embedded profile instead.
   const { data } = await supabase
     .from("volunteers")
     .select(
       "*, profile:profiles!volunteers_profile_id_fkey(id, name, location, avatar_url, suspended, created_at)"
-    )
-    .order("created_at", { ascending: true });
+    );
 
-  const vols = (data ?? []) as unknown as Array<Volunteer & { profile?: Profile }>;
+  const vols = ((data ?? []) as unknown as Array<Volunteer & { profile?: Profile }>).sort(
+    (a, b) => (a.profile?.created_at ?? "").localeCompare(b.profile?.created_at ?? "")
+  );
 
   const filtered = vols
     .filter((v) =>

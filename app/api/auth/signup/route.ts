@@ -64,12 +64,13 @@ export async function POST(req: NextRequest) {
 
   try {
     if (input.role === "staff") {
-      await admin.from("profiles").insert({
+      const { error: profileError } = await admin.from("profiles").insert({
         id: userId,
         role: "staff",
         name: input.name,
         location: input.location || null,
       });
+      if (profileError) throw profileError;
       // The profile row must exist before the invite can link to it, so the
       // link is the last write — surface its failure instead of leaving a
       // staff account with no NGO link (a dead-end dashboard). The invite
@@ -80,18 +81,20 @@ export async function POST(req: NextRequest) {
         .eq("id", staffInvite!.id);
       if (linkError) throw linkError;
     } else if (input.role === "ngo") {
-      await admin.from("profiles").insert({
+      const { error: profileError } = await admin.from("profiles").insert({
         id: userId,
         role: "ngo",
         name: input.name,
         location: input.location || null,
       });
-      await admin.from("ngos").insert({
+      if (profileError) throw profileError;
+      const { error: ngoError } = await admin.from("ngos").insert({
         profile_id: userId,
         org_name: input.orgName!.trim(),
         registration_number: input.registrationNumber!.trim(),
         verification_status: "pending",
       });
+      if (ngoError) throw ngoError;
     } else {
       const split = (s: string | undefined) =>
         (s ?? "")
@@ -99,19 +102,21 @@ export async function POST(req: NextRequest) {
           .map((v) => v.trim())
           .filter(Boolean)
           .slice(0, 10);
-      await admin.from("profiles").insert({
+      const { error: profileError } = await admin.from("profiles").insert({
         id: userId,
         role: "volunteer",
         name: input.name,
         location: input.location || null,
       });
-      await admin.from("volunteers").insert({
+      if (profileError) throw profileError;
+      const { error: volunteerError } = await admin.from("volunteers").insert({
         profile_id: userId,
         skills: split(input.skills),
         interests: split(input.interests),
         availability: input.availability || null,
         verification_status: "pending",
       });
+      if (volunteerError) throw volunteerError;
     }
   } catch (err) {
     console.error("[signup] profile bootstrap failed:", err);

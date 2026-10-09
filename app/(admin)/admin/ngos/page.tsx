@@ -38,14 +38,16 @@ export default async function AdminNgosPage({
 
   const supabase = await createClient();
   const [ngosRes, campaignsRes] = await Promise.all([
+    // ngos has no created_at (join date lives on profiles.created_at)
     supabase
       .from("ngos")
-      .select("*, profile:profiles!ngos_profile_id_fkey(id, name, location, suspended, created_at)")
-      .order("created_at", { ascending: true }),
+      .select("*, profile:profiles!ngos_profile_id_fkey(id, name, location, suspended, created_at)"),
     supabase.from("campaigns").select("ngo_id"),
   ]);
 
-  const ngos = (ngosRes.data ?? []) as unknown as Array<Ngo & { profile?: Profile }>;
+  const ngos = ((ngosRes.data ?? []) as unknown as Array<Ngo & { profile?: Profile }>).sort(
+    (a, b) => (a.profile?.created_at ?? "").localeCompare(b.profile?.created_at ?? "")
+  );
   const campaignCount = new Map<string, number>();
   for (const c of (campaignsRes.data ?? []) as Array<Pick<Campaign, "ngo_id">>) {
     if (c.ngo_id) campaignCount.set(c.ngo_id, (campaignCount.get(c.ngo_id) ?? 0) + 1);

@@ -39,6 +39,7 @@
   "exclude": [
     "node_modules",
     "skills",
+    "sandbox",
     "input_zip",
     "tool-results",
     "upload",

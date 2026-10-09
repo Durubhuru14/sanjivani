@@ -104,12 +104,14 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
   if (path === "/suspended") {
-    return skipRedirect ? response : NextResponse.redirect(home);
+    return skipRedirect ? response : NextResponse.redirect(new URL(home, request.url));
   }
 
   // Logged-in users never see the landing / auth pages.
   if (isPublicPage) {
-    return skipRedirect ? response : NextResponse.redirect(home);
+    // NextResponse.redirect requires an ABSOLUTE URL — ROLE_HOME values are
+    // paths like "/admin", so resolve them against the request first.
+    return skipRedirect ? response : NextResponse.redirect(new URL(home, request.url));
   }
 
   // Role-prefix guards.

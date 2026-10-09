@@ -630,6 +630,64 @@ with rating 0. The README gained a troubleshooting table for the five common
 local-setup failures.
 
 
+## 11b. Real-backend verification round — six bugs that only a live Supabase exposes
+
+Every prior round validated the SQL chain and the app logic separately; none of
+them ran the **actual app against the actual Supabase engines**. This round
+built that environment and let it break things for real. Since no Docker daemon
+is available in the sandbox, the stack was assembled from the genuine binaries:
+Postgres 16 + `pgcrypto` (grafted from the official image), the real **GoTrue
+v2.197.0** auth server (extracted from `supabase/gotrue`), the real
+**PostgREST v12.2.12** (extracted from `postgrest/postgrest`), a Kong-style
+gateway on `127.0.0.1:54321` (path routing + storage-file shim + phoenix-protocol
+websocket shim), and the real **Supabase CLI v2.120.0** applying the migrations
+via `supabase db push`. `supabase db reset` was then replayed from scratch and
+the full Playwright suite was run against the running app with a real browser.
+
+Findings — in the order the live stack surfaced them:
+
+1. **Seeded users could not log in at all** ("Invalid login credentials" on
+   every account). GoTrue scans `confirmation_token`, `recovery_token`,
+   `email_change`, and `email_change_token_new` as non-null Go strings; the
+   seed left them NULL, so every seeded `auth.users` row was **unloadable**
+   (`sql: Scan error ... converting NULL to string is unsupported`). The seed
+   now writes those columns exactly the way GoTrue itself does (`''` plus the
+   metadata JSONBs). Related trap documented in the seed: `confirmed_at` is a
+   **generated column** on current GoTrue and must not be inserted.
+2. **Signup could silently strand accounts.** `/api/auth/signup` awaited the
+   `profiles`/`ngos`/`volunteers` inserts without checking their `error`
+   results, so a rejected insert still returned success — the user then hit the
+   middleware's "incomplete profile" sign-out. Every insert in the route now
+   checks and surfaces its error.
+3. **Middleware 404 for logged-in users on `/`, `/login`, `/signup`.**
+   `NextResponse.redirect(home)` was called with the relative path `ROLE_HOME`
+   produces; Next.js requires an absolute URL and threw "URL is malformed".
+   Both call sites now resolve `new URL(home, request.url)`.
+4. **Admin directories rendered empty.** Three pages ordered
+   `volunteers`/`ngos` by `created_at`, a column those tables do not have
+   (join dates live on `profiles.created_at`); PostgREST answers `42703` and
+   the pages silently rendered nothing. They now sort in JS by the embedded
+   profile's `created_at`, which the query already selected.
+5. **No application could ever be accepted.** The `validate_application`
+   trigger's duplicate check read
+   `and (TG_OP = 'UPDATE' or a.id <> new.id)` — on UPDATE the self-exclusion
+   was skipped, so accepting/rejecting a pending application always matched
+   *itself* and raised `DUPLICATE_APPLICATION`. Fixed to the unconditional
+   `a.id <> new.id` (correct for INSERT too, since the new row can't pre-exist).
+6. **Staff/volunteer dashboards could not list chat rooms.** The embed
+   `rooms!inner(...)` referenced no existing relationship (the table is
+   `chat_rooms`), so PostgREST rejected the whole query with `PGRST200`.
+   Now `rooms:chat_rooms!inner(...)`.
+
+Verification after the fixes: `supabase db push` (real CLI) + seed replay from
+an empty database; all 12 seeded accounts log in through the real GoTrue; the
+full Playwright e2e suite — **14 tests across 12 specs — passes 14/14** against
+the live stack on a pristine reset; typecheck, ESLint, 62/62 unit tests, and
+the production build all stay green. The harness also reproduced two
+platform-layer requirements the CLI provides out of the box (service_role
+BYPASSRLS, auth-schema EXECUTE grants for API roles) — documented in the
+harness scripts, no app change needed.
+
 ## 12. Rule
 
 This file is updated alongside code changes. If a claim cannot be verified in the
