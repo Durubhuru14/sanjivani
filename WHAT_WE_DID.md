@@ -96,18 +96,19 @@ Checklist against the spec (§ = Sanjivani_Spec.md section):
 - [x] Profile pictures: avatars / NGO logos / campaign images upload from every form
       (Supabase Storage live; browser-resized data URLs in demo) and display across
       navbar, chat, rosters, cards, and profiles; seeded media included
-- [x] Demo mode as a separate opt-in runtime (`npm run demo`, NEXT_PUBLIC_DEMO_MODE=1);\n      normal dev/production requires Supabase env or shows `/setup`
+- [x] Demo mode as a separate opt-in runtime (`npm run demo`, NEXT_PUBLIC_DEMO_MODE=1) —
+      a deliberately **basic, ephemeral** in-memory backend for clicking around without
+      Supabase; normal dev/production requires Supabase env or shows `/setup`
 - [x] Loading skeletons on all four role dashboards (§11)
 - [x] `.env.example` present; no secrets committed
 - [x] `supabase/seed.sql` demo dataset (all actors + 4 campaigns + flows)
 - [x] README with setup steps + demo credentials
 - [x] Vitest unit/component tests: validation rules, fund arithmetic, rating
       eligibility, formatting/CSV helpers, RatingForm component, and demo-engine
-      business-rule guards + notification coverage (22 tests mirroring the
-      Postgres triggers)
+      smoke tests (query mechanics, insert defaults, the two live aggregates)
 - [x] Playwright E2E specs for all 10 critical flows (§19) + 3 server-action
   resilience regressions (stale session / role swap / suspension) — all green against
-      the demo server (`NEXT_PUBLIC_DEMO_MODE=1 npm run dev` + `npm run test:e2e`)
+      the demo server (`npm run test:e2e` boots it automatically)
 - [x] Supabase Storage bucket + policies (images ≤ 2 MB, image types only, own folder)
 
 **Descoped / not applicable in this environment**
@@ -221,22 +222,22 @@ Next.js route handlers (spec §8) — all return `{ success, data }` / `{ succes
 Everything else (campaign CRUD, applications, teams, hours, funds, ratings, profiles)
 runs through server actions under the user's Supabase session with RLS enforcement.
 
-## 6. Demo mode — the whole product without Supabase
+## 6. Demo mode — the whole product without Supabase (basic + ephemeral)
 
-For the viva/demo, the app boots into a **seeded in-memory backend** when no Supabase env
-vars are present (`lib/demo/`):
+The app can boot into a **basic in-memory backend** when explicitly asked for it
+(`npm run demo`, i.e. `NEXT_PUBLIC_DEMO_MODE=1`); `lib/demo/` implements it:
 
 - `store.ts` seeds the same dataset as `supabase/seed.sql` (12 accounts, 4 campaigns,
-  teams, chat, funds, ratings, report, notifications) onto `globalThis`.
-- `engine.ts` is a PostgREST-compatible executor: filters (`eq/neq/in/ilike/is/or`),
+  teams, chat, funds, ratings, report, notifications) onto `globalThis` — the store is
+  **ephemeral**: it lives in the server process and resets on every restart.
+- `engine.ts` is a small PostgREST-compatible executor: filters (`eq/neq/in/ilike/is/or`),
   ordering, `limit`, `single/maybeSingle`, exact counts, FK embed resolution
-  (`sender:sender_id(…)`, `rooms!inner(…)`, nested `ngo:ngos!fkey(…)`), plus the same
-  business-rule side effects as the Postgres triggers — the 20 notification events,
-  `avg_rating` / `remaining_budget` maintenance, the budget guard
-  (`FUND_EXCEEDS_REMAINING`), the full set of BEFORE-trigger validation guards
-  (fund immutability, invite-only applications, team eligibility, rating eligibility
-  including the NGO owner, hours-after-completion, campaign date/budget sanity,
-  take-down of suspended NGOs' campaigns) and unique-index violations.
+  (`sender:sender_id(…)`, `rooms!inner(…)`, nested `ngo:ngos!fkey(…)`), and
+  insert/update/delete with the column defaults the app relies on. The only maintained
+  aggregates are the two numbers the UI displays live (`remaining_budget`, `avg_rating`).
+  It deliberately does **not** emulate the Postgres triggers — business rules and
+  notification fan-out only exist in a real Supabase deployment; demo writes are
+  permissive and the bell shows the seeded notifications.
 - `client.ts` builds the fluent supabase-js-shaped builder; in the browser it serialises
   each operation and POSTs it to `/api/demo`, so every tab shares the one server store.
 - Demo auth is a cookie session (`sv-demo-user`) validated against the seeded users;
@@ -244,10 +245,10 @@ vars are present (`lib/demo/`):
 - Realtime falls back to polling (chat 4s, notifications 5s); image uploads are resized
   in the browser and kept as data URLs in the seeded store, so avatars/logos/campaign
   images round-trip exactly like they do against Supabase Storage.
-- Demo mode is **opt-in and separate from deployment**: it activates only when the app is
-  run with `NEXT_PUBLIC_DEMO_MODE=1` (`npm run demo`). A plain `npm run dev`/`npm start`
-  connects to real Supabase when env vars exist, and otherwise shows a `/setup` screen
-  with configuration instructions — production never silently serves seed data.
+- Demo mode is **opt-in and separate from deployment**. A plain `npm run dev`/
+  `npm start` connects to real Supabase when env vars exist, and otherwise shows a
+  `/setup` screen with configuration instructions — production never silently serves
+  seed data.
 
 ## 7. UI — Sanjivani green design system (spec §3)
 
@@ -395,11 +396,11 @@ buttons. Findings and fixes:
 - **Consistent invite acceptance**: the respond route rolls the invite back to
   pending if the companion application insert fails, so an invite can never end
   up "accepted" without the team-eligibility it implies.
-- **Demo production launcher fixed**: `scripts/demo.mjs build` now copies
-  `.next/static` + `public` into the standalone output (exactly like
-  `npm run build`) and `start` boots the standalone server — previously the
-  demo build emitted a standalone bundle that served 404s for every static
-  asset (no CSS/JS → no hydration → blank login form).
+- **Cross-platform scripts, simple deploy path**: `npm run dev/build/start` are plain
+  `next` commands (no `tee`, `cp -r`, env prefixes, or bun — identical on macOS, Linux,
+  and Windows); the standalone-output build step was dropped in favour of the standard
+  `next build` + `next start` pair Vercel expects, and `npm run test:e2e` boots the demo
+  server itself so the suite runs anywhere with zero prerequisites.
 - **Why testing missed it**: every e2e spec clicked with a fresh, valid session
   immediately after page load; the broken path needs a *stale* tab. New spec
   `tests/e2e/11-server-action-resilience.spec.ts` locks in all three scenarios
@@ -428,10 +429,10 @@ buttons. Findings and fixes:
 - **First mover on `chat_room_members`**: the room creator (NGO owner) is added as a
   member automatically; message RLS additionally allows the campaign owner.
 - **Deployment** steps are documented but were executed by the team, not in CI.
-- **Demo mode** is in-memory: data resets on server restart, realtime is simulated by
-  polling, uploads live as data URLs, and RLS is approximated by the same
-  route-level checks the real backend enforces. It is a demo vehicle, not a production
-  backend — do not deploy it with real user data.
+- **Demo mode** is basic and ephemeral: data resets on server restart, realtime is
+  simulated by polling, uploads live as data URLs, and the Postgres triggers / RLS are
+  NOT emulated (demo writes are permissive; the route guards still apply). It is a
+  look-around vehicle, not a production backend — do not deploy it with real user data.
 
 ## 9. Individual contribution
 

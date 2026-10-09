@@ -16,14 +16,15 @@ Replaces Excel sheets, WhatsApp groups, and physical notices with a single open-
 
 The app ships with a **built-in demo mode** that is **separate from a normal deployment**:
 it only starts when you explicitly ask for it. With the demo flag on, every data call is
-served by an **in-memory, seeded store** that mirrors the real Postgres schema (see
-`lib/demo/`) — queries, inserts, updates, the notification triggers, the budget guard,
-and role-based route guards all behave like the real backend.
+served by a **basic, ephemeral in-memory store** (see `lib/demo/`) — seeded with the
+accounts below, it lets you click through the whole product, but it is deliberately
+**not** a faithful backend: business rules and notification fan-out live in the Postgres
+triggers of a real Supabase deployment, and demo data **resets whenever the server
+restarts**.
 
 ```bash
 npm install
-npm run demo      # = NEXT_PUBLIC_DEMO_MODE=1 next dev (any OS)
-# or: bun install && bun run demo
+npm run demo      # = NEXT_PUBLIC_DEMO_MODE=1 next dev (works on any OS)
 ```
 
 Without the flag, `npm run dev` behaves like a normal deployment: it connects to Supabase
@@ -46,11 +47,14 @@ All demo accounts use the password **`Passw0rd!`**
 
 Demo-mode notes:
 
-- The seeded store lives in the dev server process — it resets when the server restarts.
+- The store lives in the server process — it is **ephemeral** and resets when the server
+  restarts.
 - Chat and notifications poll every few seconds instead of using Supabase Realtime.
 - **Image uploads work**: pictures are resized in the browser and kept as data URLs in the
   seeded store (avatars, NGO logos, and campaign images all round-trip). Seeded users,
   NGOs, and campaigns already carry profile pictures.
+- Writes are **permissive** — the unique/fund/invite/rating trigger rules are only
+  enforced by a real Supabase backend; the bell shows the seeded notifications.
 - Add real Supabase env vars and run without the demo flag — the demo layer stays out of
   the way entirely.
 
@@ -174,13 +178,13 @@ The admin dashboard is a full control room, not just a verification queue:
 
 | Command | What it does |
 |---|---|
-| `npm run demo` | Start the dev server in **demo mode** (seeded data, no Supabase) |
+| `npm run demo` | Start the dev server in **demo mode** (seeded ephemeral data, no Supabase) |
 | `npm run dev` | Start the dev server (real Supabase via env vars; `/setup` screen if unconfigured) |
-| `npm run build` / `npm start` | Production build / serve |
+| `npm run build` / `npm start` | Production build / serve (plain `next` commands — identical on Windows, macOS, Linux) |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript strict check |
 | `npm test` | Vitest unit + component tests |
-| `npm run test:e2e` | Playwright E2E — 13 specs (10 critical flows + server-action resilience); runs against the demo server (`NEXT_PUBLIC_DEMO_MODE=1 npm run dev`) or a reset local Supabase |
+| `npm run test:e2e` | Playwright E2E — 13 specs (10 critical flows + server-action resilience); boots the demo server itself, zero prerequisites (point `E2E_BASE_URL` + `E2E_NO_SERVER=1` at another backend to test that instead) |
 | `npm run db:reset` | Apply migrations + re-seed (local Supabase) |
 
 ## Dark & light mode
@@ -248,12 +252,17 @@ sanjivani/
 
 ## Deployment (Vercel + Supabase)
 
+The build is the Vercel-standard `next build` — no custom scripts, no shell helpers, no
+standalone bundling to wire up:
+
 1. Create a hosted Supabase project.
 2. Run the SQL in `supabase/migrations/` (in order) via the SQL editor, then `supabase/seed.sql`.
 3. In Auth → Providers → Email, disable **Confirm email**.
 4. Push this repo to GitHub and import it in Vercel; add the three environment variables
    from `.env.example`.
 5. Deploy — the app is fully serverless (no custom backend to host).
+
+Any other Node host works the same way: `npm run build && npm start`.
 
 ## What we did
 
