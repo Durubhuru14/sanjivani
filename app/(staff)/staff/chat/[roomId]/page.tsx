@@ -25,8 +25,8 @@ export default async function StaffRoomPage({
     .maybeSingle();
   if (!room) notFound();
 
-  // explicit membership guard — mirrors the chat_room_members RLS policy so
-  // demo mode (no RLS) blocks non-members exactly like live mode does
+  // explicit membership guard — mirrors the chat_room_members RLS policy
+  // so non-members are blocked here exactly like the policy blocks them
   const { count: memberCount } = await supabase
     .from("chat_room_members")
     .select("id", { count: "exact", head: true })

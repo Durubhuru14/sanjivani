@@ -1,11 +1,10 @@
 "use client";
 
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, LogIn } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { demoActive } from "@/lib/demo/flag";
 import { loginSchema } from "@/lib/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,22 +15,10 @@ import { LogoMark } from "@/components/Logo";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-const DEMO_ACCOUNTS = [
-  { email: "admin@sanjivani.test", label: "Platform admin" },
-  { email: "greenearth@sanjivani.test", label: "NGO · Green Earth" },
-  { email: "brightfutures@sanjivani.test", label: "NGO · Bright Futures" },
-  { email: "newhope@sanjivani.test", label: "NGO · pending review" },
-  { email: "meera@sanjivani.test", label: "Staff · Green Earth" },
-  { email: "priya@sanjivani.test", label: "Volunteer · verified" },
-  { email: "aisha@sanjivani.test", label: "Volunteer · pending" },
-  { email: "tarun@sanjivani.test", label: "Volunteer · suspended" },
-];
-
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const submitRef = useRef<HTMLButtonElement>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -78,23 +65,6 @@ function LoginForm() {
     } finally {
       setBusy(false);
     }
-  }
-
-  function fillDemo(accountEmail: string) {
-    setEmail(accountEmail);
-    setPassword("Passw0rd!");
-    setFormError(null);
-    setFieldErrors({});
-    // Keep the "Log in" submit clear of the sticky header on small screens —
-    // if it sits under (or below) the visible area, recentre it in view.
-    requestAnimationFrame(() => {
-      const btn = submitRef.current;
-      if (!btn) return;
-      const { top, bottom } = btn.getBoundingClientRect();
-      if (top < 72 || bottom > window.innerHeight) {
-        btn.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    });
   }
 
   return (
@@ -157,40 +127,11 @@ function LoginForm() {
               <p className="text-sm text-destructive" role="alert">{fieldErrors.password}</p>
             )}
           </div>
-          <Button ref={submitRef} type="submit" className="press w-full gap-2" disabled={busy}>
+          <Button type="submit" className="press w-full gap-2" disabled={busy}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <LogIn className="h-4 w-4" aria-hidden />}
             {busy ? "Logging in…" : "Log in"}
           </Button>
         </form>
-
-        {demoActive ? (
-          <div className="panel-tinted mt-6 space-y-4 rounded-xl p-6">
-            <div className="space-y-2">
-              <p className="flex items-center gap-2 font-mono text-[0.625rem] font-medium uppercase tracking-[0.14em] text-leaf">
-                <span className="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-current text-leaf" aria-hidden />
-                Demo mode · seeded data · no Supabase needed
-              </p>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Click an account to fill the form. Every account uses the password{" "}
-                <code className="rounded-sm bg-card px-1.5 py-0.5 font-mono text-[0.6875rem] text-foreground">Passw0rd!</code>
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {DEMO_ACCOUNTS.map((a) => (
-                <button
-                  key={a.email}
-                  type="button"
-                  onClick={() => fillDemo(a.email)}
-                  title={a.email}
-                  className="press flex min-h-9 items-center gap-2 rounded-md border border-border/70 bg-card px-3 py-2 text-left text-xs transition-colors hover:border-leaf/50 hover:bg-accent/50"
-                >
-                  <span className="shrink-0 font-medium text-foreground">{a.label}</span>
-                  <span className="min-w-0 flex-1 truncate text-muted-foreground">{a.email}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New to Sanjivani?{" "}

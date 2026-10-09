@@ -27,7 +27,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "@/components/UserAvatar";
-import { demoActive } from "@/lib/demo/flag";
 import type { Profile, Role } from "@/lib/types";
 
 /**
@@ -101,7 +100,6 @@ export function UserMenu({ profile, email }: { profile: Profile; email?: string 
               ) : null}
               <span className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-leaf/30 bg-tint px-2 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-[0.12em] text-leaf-deep dark:text-leaf-bright">
                 {roleLabel}
-                {demoActive ? " · demo" : ""}
               </span>
             </span>
           </span>

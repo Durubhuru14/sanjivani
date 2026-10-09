@@ -12,27 +12,34 @@ Replaces Excel sheets, WhatsApp groups, and physical notices with a single open-
 
 ---
 
-## Run the demo (no Supabase, no setup)
+## Quick start (local, Supabase CLI)
 
-The app ships with a **built-in demo mode** that is **separate from a normal deployment**:
-it only starts when you explicitly ask for it. With the demo flag on, every data call is
-served by a **basic, ephemeral in-memory store** (see `lib/demo/`) — seeded with the
-accounts below, it lets you click through the whole product, but it is deliberately
-**not** a faithful backend: business rules live in the Postgres triggers of a real
-Supabase deployment (demo writes are permissive), and demo data **resets whenever
-the server restarts**.
+Everything runs against one backend: **Supabase**. The free Supabase CLI (Docker-based)
+gives you a complete local stack — Postgres with all migrations, triggers, RLS policies,
+realtime, storage, and the seeded dataset — in about two minutes.
 
 ```bash
+# 1. Install dependencies
 npm install
-npm run demo      # = NEXT_PUBLIC_DEMO_MODE=1 next dev (works on any OS)
+
+# 2. Start the local Supabase stack (requires Docker)
+supabase start          # prints the project URL + keys when ready
+
+# 3. Configure the app
+cp .env.example .env.local
+# fill in the three values printed by `supabase start`:
+#   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+#   SUPABASE_SERVICE_ROLE_KEY=<service role key>
+
+# 4. Apply migrations + seed data
+supabase db reset
+
+# 5. Run the app
+npm run dev
 ```
 
-Without the flag, `npm run dev` behaves like a normal deployment: it connects to Supabase
-when env vars are configured, and otherwise shows a **setup screen** (`/setup`) with
-configuration instructions — it never silently falls back to demo data.
-
-Open http://localhost:3000 — the login screen lists every demo account, one click fills
-the form. Log in as any role and walk the whole product:
+Open http://localhost:3000 and log in with any seeded account (password **`Passw0rd!`**):
 
 | Try this | Log in as |
 |---|---|
@@ -43,39 +50,29 @@ the form. Log in as any role and walk the whole product:
 | Browse campaigns, respond to an invite, view hours + ratings | `priya@sanjivani.test` (volunteer) |
 | See the suspension screen | `tarun@sanjivani.test` |
 
-All demo accounts use the password **`Passw0rd!`**
+Without a configured `.env.local` the app shows a **setup screen** (`/setup`) with these
+same steps — it never boots half-configured.
 
-Demo-mode notes:
+> **⚠️ One dashboard setting (hosted projects only):** email confirmation is **disabled**
+> for this project. For **local** dev, `supabase/config.toml` already sets
+> `enable_confirmations = false`. For a **hosted** project, open
+> **Auth → Providers → Email → turn OFF "Confirm email"** — signup then logs the user in
+> immediately with no confirmation email (a deliberate choice, per the spec).
 
-- The store lives in the server process — it is **ephemeral** and resets when the server
-  restarts.
-- Chat and notifications poll every few seconds instead of using Supabase Realtime.
-- **Image uploads work**: pictures are resized in the browser and kept as data URLs in the
-  seeded store (avatars, NGO logos, and campaign images all round-trip). Seeded users,
-  NGOs, and campaigns already carry profile pictures.
-- Writes are **permissive** — the unique/fund/invite/rating trigger rules are only
-  enforced by a real Supabase backend. The notification bell, however, fans out a
-  **curated subset of the live triggers** (application decisions, invites, team
-  changes, campaign status, hours, ratings, funds, reports, verification,
-  suspension, staff claims, chat) with the live message strings, and is scoped to
-  the signed-in account (the demo transport emulates the notifications RLS
-  policies).
-- The demo transport (`/api/demo`) is **unauthenticated by design** (it only exists
-  while the demo flag is on and hard-404s once real Supabase env vars are configured) —
-  never point demo mode at real user data.
-- Add real Supabase env vars and run without the demo flag — the demo layer stays out of
-  the way entirely.
+Useful CLI commands while developing:
+
+```bash
+supabase db reset     # wipe + re-apply migrations and seed.sql (fresh data)
+supabase status       # show URLs, keys, and running services
+supabase stop         # stop the local stack (data persists in volumes)
+```
 
 ## Requirements & dependency health
 
-**Node.js 20.19+ (22.13+ recommended).** The lockfiles ship with the repo —
-`package-lock.json` for npm, `bun.lock` for bun — and pin a tree that installs
-with **zero engine warnings** on Node 22 and 24. To confirm your Node version is
-compatible before installing:
-
-```bash
-node scripts/check-engines.mjs        # checks every package against your Node
-```
+**Node.js 20.19+ (22.13+ recommended)**, plus the
+[Supabase CLI](https://supabase.com/docs/guides/cli/getting-started) and Docker for the
+local backend. The lockfiles ship with the repo — `package-lock.json` for npm, `bun.lock`
+for bun — and pin a tree that installs with **zero engine warnings** on Node 22 and 24.
 
 **Security posture:**
 
@@ -99,52 +96,16 @@ node scripts/check-engines.mjs        # checks every package against your Node
 | Frontend | Next.js 16 (App Router, Turbopack) + TypeScript 5 + Tailwind CSS 4 |
 | UI | shadcn/ui (New York) + Lucide icons, **Sanjivani green design system** (spec §3) with light + dark themes and botanical patterns |
 | Backend | Next.js API routes + server actions (most access via the Supabase client + RLS) |
-| Database | Supabase (Postgres) — or the built-in seeded demo store |
-| Auth | Supabase Auth (email + password) — cookie session in demo mode |
-| Realtime | Supabase Realtime (chat messages, notifications) — polling in demo mode |
+| Database | Supabase (Postgres) — migrations, triggers, RLS, realtime, storage |
+| Auth | Supabase Auth (email + password) |
+| Realtime | Supabase Realtime (chat messages, notifications) |
 | Storage | Supabase Storage (NGO logos, avatars, campaign images) |
 | Testing | Vitest + React Testing Library (unit), Playwright (E2E) |
 | Fonts | Alumni Sans (display) + Albert Sans (body), bundled locally as woff2 |
 
-## Local setup (real Supabase)
+## Seeded accounts
 
-**Prerequisites:** Node.js 20+ (or Bun), the [Supabase CLI](https://supabase.com/docs/guides/cli/getting-started), and Docker for local Supabase.
-
-```bash
-# 1. Install dependencies
-npm install          # or: bun install
-
-# 2. Configure environment
-cp .env.example .env.local
-```
-
-Get the keys for `.env.local`:
-
-- **Local dev:** run `supabase start` and copy the values it prints:
-  - `NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321`
-  - `NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>`
-  - `SUPABASE_SERVICE_ROLE_KEY=<service role key>`
-- **Hosted:** Supabase dashboard → Project Settings → API.
-
-```bash
-# 3. Apply migrations + seed demo data
-supabase db reset
-
-# 4. Start the dev server
-npm run dev
-```
-
-Open http://localhost:3000.
-
-> **⚠️ One dashboard setting (required):** email confirmation is **disabled** for this project.
-> For **local** dev, `supabase/config.toml` already sets `enable_confirmations = false`.
-> For a **hosted** project, open **Auth → Providers → Email → turn OFF "Confirm email"**.
-> This is a dashboard toggle, not a migration — signup then logs the user in immediately
-> with no confirmation email (a deliberate choice for the demo, per the spec).
-
-## Demo credentials (seeded)
-
-All seeded accounts use the password **`Passw0rd!`**
+All seeded accounts use the password **`Passw0rd!`** — created by `supabase/seed.sql`.
 
 | Role | Email |
 |---|---|
@@ -186,13 +147,12 @@ The admin dashboard is a full control room, not just a verification queue:
 
 | Command | What it does |
 |---|---|
-| `npm run demo` | Start the dev server in **demo mode** (seeded ephemeral data, no Supabase) |
-| `npm run dev` | Start the dev server (real Supabase via env vars; `/setup` screen if unconfigured) |
+| `npm run dev` | Start the dev server (Supabase via `.env.local`; `/setup` screen if unconfigured) |
 | `npm run build` / `npm start` | Production build / serve (plain `next` commands — identical on Windows, macOS, Linux) |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript strict check |
 | `npm test` | Vitest unit + component tests |
-| `npm run test:e2e` | Playwright E2E — 14 specs (10 critical flows + server-action resilience + admin oversight directories); boots the demo server itself, zero prerequisites (point `E2E_BASE_URL` + `E2E_NO_SERVER=1` at another backend to test that instead) |
+| `npm run test:e2e` | Playwright E2E — 14 specs (10 critical flows + server-action resilience + admin oversight directories). Needs the local Supabase stack running with migrations + seed applied; boots the dev server itself (point `E2E_BASE_URL` + `E2E_NO_SERVER=1` at another backend to test that instead) |
 | `npm run db:reset` | Apply migrations + re-seed (local Supabase) |
 
 ## Dark & light mode
@@ -224,12 +184,10 @@ account menu**; on public pages (landing / login / signup) it is a button in the
 
 - **Profile pictures** (volunteer / staff / admin avatars), **NGO logos**, and **campaign
   images** upload from every form that manages them (`ImageUpload` component).
-- Real backend: files go to the public `media` bucket in Supabase Storage (PNG/JPG/WEBP/GIF,
+- Files go to the public `media` bucket in Supabase Storage (PNG/JPG/WEBP/GIF,
   2 MB limit, per-user folder enforced by storage policies — spec §10).
-- Demo mode: pictures are resized in the browser and stored as data URLs in the seeded
-  store, so the full upload → save → display round-trip works with zero services.
 - Seeded accounts, NGOs, and campaigns already include profile pictures and banners
-  (`public/demo/`), used by both the demo store and `supabase/seed.sql`.
+  (`public/demo/`), referenced by `supabase/seed.sql`.
 
 ## Folder structure
 
@@ -241,13 +199,12 @@ sanjivani/
 │   ├── (ngo)/ngo/           # Dashboard, staff, campaigns, chat, profile
 │   ├── (staff)/staff/       # Dashboard, accept-invite, chat, profile
 │   ├── (volunteer)/volunteer/ # Dashboard, browse, invites, chat, profile
-│   ├── api/                 # Route handlers (spec §8) + auth bootstrap + /api/demo transport
-│   ├── setup/               # Shown when no backend + no demo flag is configured
+│   ├── api/                 # Route handlers (spec §8) + auth bootstrap
+│   ├── setup/               # Shown when no backend is configured
 │   └── suspended/           # Suspended-account screen
 ├── components/              # UI kit + chat/staff/funds/ratings/campaign components
 ├── lib/
-│   ├── supabase/            # Browser/server/admin clients (demo-aware)
-│   ├── demo/                # Seeded in-memory store + PostgREST-compatible engine
+│   ├── supabase/            # Browser/server/admin clients + route guards
 │   ├── validation.ts        # Zod schemas (spec §12)
 │   └── funds.ts / ratings.ts
 ├── supabase/

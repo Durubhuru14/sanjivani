@@ -5,8 +5,8 @@ import { expect, test, login } from "./helpers";
  * NGO creates a chat room with a subset of the team → only those members see
  * the room and can exchange a realtime message; a non-member cannot.
  *
- * Each actor runs in its own browser context — the demo session is a single
- * cookie, and the realtime step needs the NGO and Rahul signed in at the
+ * Each actor runs in its own browser context — the session is a single
+ * cookie set, and the realtime step needs the NGO and Rahul signed in at the
  * same time.
  */
 test("chat room is visible only to its selected members", async ({ browser }) => {

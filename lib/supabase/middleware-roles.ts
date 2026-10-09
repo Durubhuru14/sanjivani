@@ -1,5 +1,5 @@
 /**
- * Shared route-guard tables (used by both the Supabase and demo sessions).
+ * Shared route-guard tables (used by the session middleware).
  */
 export const ROLE_HOME: Record<string, string> = {
   admin: "/admin",

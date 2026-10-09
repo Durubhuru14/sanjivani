@@ -8,7 +8,6 @@ import { NotificationsBell } from "@/components/notifications/NotificationsBell"
 import { UserMenu } from "@/components/UserMenu";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { demoActive } from "@/lib/demo/flag";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types";
 
@@ -65,13 +64,6 @@ export function AppNavbar({ profile, email }: { profile: Profile; email?: string
         >
           <Logo compact />
         </Link>
-
-        {demoActive ? (
-          <span className="hidden items-center gap-1.5 rounded-full border border-leaf/35 bg-tint px-2.5 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-[0.14em] text-leaf sm:inline-flex">
-            <span className="animate-pulse-dot h-1 w-1 rounded-full bg-current text-leaf" aria-hidden />
-            Demo · seeded data
-          </span>
-        ) : null}
 
         {/* Desktop nav */}
         <nav className="ml-4 hidden items-center gap-1 md:flex" aria-label="Main">

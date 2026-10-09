@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { demoActive } from "@/lib/demo/flag";
 import { messageSchema } from "@/lib/validation";
 import type { Message, Profile } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -72,11 +71,6 @@ export function ChatRoom({
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch resolves after the effect body returns
     void load();
-    if (demoActive) {
-      // no realtime in demo mode — poll for new messages instead
-      const id = setInterval(() => void load(), 4000);
-      return () => clearInterval(id);
-    }
     const supabase = createClient();
     const channel = supabase
       .channel(`room:${roomId}`)

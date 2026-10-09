@@ -103,8 +103,8 @@ export async function updateCampaign(id: string, values: CampaignFormValues) {
   if (error || !data) return { ok: false, error: error ?? "Invalid data" };
 
   // Ownership + status-transition check: the edit form only offers legal
-  // targets, but the action itself must not trust the client (demo mode has
-  // no RLS; live mode additionally enforces ownership via policies).
+  // targets, but the action itself must not trust the client (RLS also
+  // enforces ownership, this keeps the guard server-side and explicit).
   const { data: current } = await supabase
     .from("campaigns")
     .select("id, ngo_id, status")

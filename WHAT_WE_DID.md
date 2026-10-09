@@ -597,7 +597,21 @@ design pass over all seven new pages (CLEAN). Live path: build green, `/` →
 | ALTRONtech | Admin area (verification, reports, suspension), chat system (rooms + realtime), fund ledger UI, ratings, CSV export |
 | OmMoreCodes | Volunteer area (browse/apply/invites/history), staff area + invite claim flow, notifications UI, design polish, README/WHAT_WE_DID |
 
-## 11. Rule
+## 11. Demo mode removed — Supabase CLI is the only local backend
+
+The opt-in demo runtime (in-memory seeded store in `lib/demo/`, the `/api/demo`
+transport, `npm run demo`, demo quick-login panel, demo badges/polling fallbacks,
+and the demo-engine unit tests) has been removed entirely. The app now has exactly
+one backend: **Supabase**, run locally with the official Supabase CLI
+(`supabase start` → `supabase db reset` → `npm run dev`, keys from `supabase start`
+into `.env.local`). With no env configured the app boots to the `/setup` screen,
+which now walks through the CLI steps. No product logic changed: every flow —
+auth, campaigns, teams, chat, funds, ratings, reports, notifications, admin
+oversight — runs against real Postgres with the full trigger/RLS/realtime stack.
+E2E specs log in through the real form with the seeded accounts (bcrypt users in
+`seed.sql`), so the whole suite runs against the local CLI backend.
+
+## 12. Rule
 
 This file is updated alongside code changes. If a claim cannot be verified in the
 repository, it does not belong here.

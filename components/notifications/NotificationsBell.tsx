@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { demoActive } from "@/lib/demo/flag";
 import { formatDateTime } from "@/lib/format";
 import type { Notification } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -34,11 +33,6 @@ export function NotificationsBell() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch resolves after the effect body returns
     void load();
-    if (demoActive) {
-      // no realtime in demo mode — poll the seeded store instead
-      const id = setInterval(() => void load(), 5000);
-      return () => clearInterval(id);
-    }
     const supabase = createClient();
     const channel = supabase
       .channel(`notifications:${crypto.randomUUID()}`)

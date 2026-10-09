@@ -1,19 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
-import { createDemoServerClient } from "@/lib/demo/server-client";
-import { demoActive } from "@/lib/demo/flag";
 
 /**
  * Server client (server components / route handlers / server actions).
- * Real Supabase when env is configured; otherwise the demo client that
- * executes directly against the in-memory seeded store.
+ * Talks to the Supabase backend configured in .env.local.
  */
 export async function createClient(): Promise<SupabaseClient> {
-  if (demoActive) {
-    return createDemoServerClient() as unknown as SupabaseClient;
-  }
-
   const cookieStore = await cookies();
 
   return createServerClient(

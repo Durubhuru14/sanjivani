@@ -63,13 +63,17 @@ test("server actions survive a stale session (expired cookie)", async ({ browser
 test("server actions survive a role swap (another tab's session)", async ({ browser }) => {
   test.setTimeout(90_000);
 
-  // sign in as admin once to learn their session value
+  // sign in as admin once to learn their session cookies
   const probeContext = await browser.newContext();
   const probe = await probeContext.newPage();
   await login(probe, { email: "admin@sanjivani.test", password: "Passw0rd!" });
-  const adminCookie = (await probeContext.cookies()).find((c) => c.name === "sv-demo-user");
+  const sessionCookies = (await probeContext.cookies())
+    .filter((c) => c.name.startsWith("sb-"))
+    .map(({ name, value, domain, path, expires, httpOnly, secure, sameSite }) => ({
+      name, value, domain, path, expires, httpOnly, secure, sameSite,
+    }));
   await probeContext.close();
-  expect(adminCookie?.value).toBeTruthy();
+  expect(sessionCookies.length).toBeGreaterThan(0);
 
   // NGO tab stays open with an NGO page rendered
   const context = await browser.newContext();
@@ -89,9 +93,7 @@ test("server actions survive a role swap (another tab's session)", async ({ brow
 
   // the user signs in as admin in another tab — the shared cookie changes
   await context.clearCookies();
-  await context.addCookies([
-    { name: "sv-demo-user", value: adminCookie!.value, url: "http://localhost:3000" },
-  ]);
+  await context.addCookies(sessionCookies);
 
   await clickStatusAction(page);
   // the action's guard bounces the admin back to their own home
@@ -126,8 +128,8 @@ test("server actions survive a mid-session suspension", async ({ browser }) => {
   const pageErrors: string[] = [];
   ngo.on("pageerror", (err) => pageErrors.push(String(err)));
   await login(ngo, { email: "greenearth@sanjivani.test", password: "Passw0rd!" });
-  // suspended sign-in lands on /suspended immediately — the demo login
-  // cannot reach a campaign page, which is exactly the protection working.
+  // suspended sign-in lands on /suspended immediately — the login cannot
+  // reach a campaign page, which is exactly the protection working.
   await expect(ngo).toHaveURL(/\/suspended/);
 
   // 3. restore: admin unsuspends so later specs find the seed intact
