@@ -3,13 +3,17 @@ project_id = "sanjivani"
 [api]
 enabled = true
 port = 54321
-schemas = ["public", "storage", "auth"]
+# The app queries only the public schema through PostgREST (storage goes
+# through the Storage API, auth through GoTrue) — expose exactly that.
+schemas = ["public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
 port = 54322
-shadow_port = 54329
+# Shadow DB port MUST differ from the pooler port below (54329) — a collision
+# makes db diff / dry-run commands fail with "port is already allocated".
+shadow_port = 54320
 major_version = 15
 
 [db.pooler]

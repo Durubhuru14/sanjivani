@@ -46,20 +46,22 @@ insert into public.profiles (id, role, name, location, avatar_url, suspended, cr
 on conflict (id) do nothing;
 
 -- ============ ngos ============
-insert into public.ngos (profile_id, org_name, registration_number, verification_status, logo_url, created_at) values
-  ('a0000000-0000-4000-8000-000000000002', 'Green Earth Foundation', 'GE-2019-114', 'approved', '/demo/logo-green-earth.svg',    now() - interval '148 days'),
-  ('a0000000-0000-4000-8000-000000000003', 'Bright Futures Trust',  'BF-2017-052', 'approved', '/demo/logo-bright-futures.svg', now() - interval '138 days'),
-  ('a0000000-0000-4000-8000-000000000004', 'New Hope Collective',   'NH-2026-003', 'pending',  '/demo/logo-new-hope.svg',      now() - interval '5 days')
+-- (join dates come from profiles.created_at — the ngos table has no timestamp column)
+insert into public.ngos (profile_id, org_name, registration_number, verification_status, logo_url) values
+  ('a0000000-0000-4000-8000-000000000002', 'Green Earth Foundation', 'GE-2019-114', 'approved', '/demo/logo-green-earth.svg'),
+  ('a0000000-0000-4000-8000-000000000003', 'Bright Futures Trust',  'BF-2017-052', 'approved', '/demo/logo-bright-futures.svg'),
+  ('a0000000-0000-4000-8000-000000000004', 'New Hope Collective',   'NH-2026-003', 'pending',  '/demo/logo-new-hope.svg')
 on conflict (profile_id) do nothing;
 
 -- ============ volunteers ============
-insert into public.volunteers (profile_id, skills, interests, availability, verification_status, created_at) values
-  ('a0000000-0000-4000-8000-000000000007', array['Teaching','First Aid','Event Coordination'], array['Education','Environment'], 'Weekends',     'approved', now() - interval '130 days'),
-  ('a0000000-0000-4000-8000-000000000008', array['Photography','Logistics'],                   array['Environment','Animals'],  'Evenings',     'approved', now() - interval '100 days'),
-  ('a0000000-0000-4000-8000-000000000009', array['Writing','Social Media'],                    array['Education','Health'],     'Weekends',     'pending',  now() - interval '40 days'),
-  ('a0000000-0000-4000-8000-00000000000a', array['Driving','Inventory Management'],            array['Community Kitchens'],     'Flexible',     'pending',  now() - interval '90 days'),
-  ('a0000000-0000-4000-8000-00000000000b', array['Graphic Design','Poster Making'],            array['Arts','Culture'],         'Weekends',     'rejected', now() - interval '80 days'),
-  ('a0000000-0000-4000-8000-00000000000c', array['General Volunteering'],                      array['Any Cause'],              'Unspecified',  'pending',  now() - interval '70 days')
+-- (verification dates come from profiles.created_at — the volunteers table has no timestamp column)
+insert into public.volunteers (profile_id, skills, interests, availability, verification_status) values
+  ('a0000000-0000-4000-8000-000000000007', array['Teaching','First Aid','Event Coordination'], array['Education','Environment'], 'Weekends',     'approved'),
+  ('a0000000-0000-4000-8000-000000000008', array['Photography','Logistics'],                   array['Environment','Animals'],  'Evenings',     'approved'),
+  ('a0000000-0000-4000-8000-000000000009', array['Writing','Social Media'],                    array['Education','Health'],     'Weekends',     'pending'),
+  ('a0000000-0000-4000-8000-00000000000a', array['Driving','Inventory Management'],            array['Community Kitchens'],     'Flexible',     'pending'),
+  ('a0000000-0000-4000-8000-00000000000b', array['Graphic Design','Poster Making'],            array['Arts','Culture'],         'Weekends',     'rejected'),
+  ('a0000000-0000-4000-8000-00000000000c', array['General Volunteering'],                      array['Any Cause'],              'Unspecified',  'pending')
 on conflict (profile_id) do nothing;
 
 -- ============ ngo_staff ============
@@ -116,10 +118,11 @@ insert into public.applications (volunteer_id, campaign_id, status, created_at) 
   ('a0000000-0000-4000-8000-000000000007', 'c0000000-0000-4000-8000-000000000004', 'accepted', now() - interval '3 days');
 
 -- ============ teams ============
-insert into public.teams (id, campaign_id, name, created_at) values
-  ('f0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000002', 'Educators', now() - interval '42 days'),
-  ('f0000000-0000-4000-8000-000000000002', 'c0000000-0000-4000-8000-000000000003', 'Core Team', now() - interval '90 days'),
-  ('f0000000-0000-4000-8000-000000000003', 'c0000000-0000-4000-8000-000000000004', 'Night Crew', now() - interval '2 days');
+-- (the teams table has no timestamp column)
+insert into public.teams (id, campaign_id, name) values
+  ('f0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000002', 'Educators'),
+  ('f0000000-0000-4000-8000-000000000002', 'c0000000-0000-4000-8000-000000000003', 'Core Team'),
+  ('f0000000-0000-4000-8000-000000000003', 'c0000000-0000-4000-8000-000000000004', 'Night Crew');
 
 -- ============ team_members ============
 insert into public.team_members (team_id, user_id, member_type, hours_logged) values

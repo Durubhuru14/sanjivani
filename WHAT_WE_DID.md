@@ -611,6 +611,25 @@ oversight — runs against real Postgres with the full trigger/RLS/realtime stac
 E2E specs log in through the real form with the seeded accounts (bcrypt users in
 `seed.sql`), so the whole suite runs against the local CLI backend.
 
+**Follow-up — the seed actually broke `supabase db reset` and is now fixed.** A
+validation harness (real Postgres + mocks of the Supabase platform: `auth`
+schema, `storage` schema, `supabase_realtime` publication, API-role grants)
+replayed the exact `db reset` sequence and caught three seed bugs that made
+local setup fail with `column "created_at" of relation "ngos" does not exist`:
+the seed inserted `created_at` into `ngos`, `volunteers`, and `teams`, none of
+which have that column (join dates come from `profiles.created_at`). Also
+fixed `supabase/config.toml`: the shadow-database port collided with the
+pgBouncer pooler port (both 54329 → shadow is now 54320), and the exposed
+PostgREST schemas were trimmed to `["public"]` (the only schema the app
+queries). After the fixes the harness passes end-to-end: all 8 migrations +
+seed apply cleanly, 12 auth users + identities + bcrypt round-trip, RLS read
+rules verified per role, write-guards verified (pending NGO cannot create
+campaigns, volunteers cannot self-approve verification, foreign NGO rows
+rejected), and the self-signup trigger forces new NGO rows to land `pending`
+with rating 0. The README gained a troubleshooting table for the five common
+local-setup failures.
+
+
 ## 12. Rule
 
 This file is updated alongside code changes. If a claim cannot be verified in the

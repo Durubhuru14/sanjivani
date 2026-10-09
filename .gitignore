@@ -11,6 +11,9 @@ node_modules
 # testing
 /coverage
 
+# supabase cli local state
+supabase/.temp/
+
 # next.js
 /.next/
 /out/

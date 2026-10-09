@@ -67,6 +67,32 @@ supabase status       # show URLs, keys, and running services
 supabase stop         # stop the local stack (data persists in volumes)
 ```
 
+
+## Troubleshooting the local setup
+
+Almost every local-setup problem is one of these five:
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `cannot connect to the Docker daemon` / `docker: command not found` | Docker isn't installed or isn't running | Install **Docker Desktop** (Windows/macOS: it must be *running* — check the whale icon) or `podman`. On Windows, Docker Desktop uses WSL 2; accept the default when it asks. |
+| `supabase start` prints nothing useful / you lost the keys | The keys are only printed once | Run `supabase status` — it re-prints the API URL and both keys every time. |
+| The app shows the **/setup screen** even after configuring | `.env.local` missing/wrong, or the dev server was started before the file existed | Check the file is named exactly `.env.local` (not `.env.local.txt`), has the three variables from `supabase status`, then **restart `npm run dev`**. |
+| **"Invalid login credentials"** with the seeded accounts | `supabase db reset` didn't run or failed partway | Run `supabase db reset` again and read its output — it must end without errors. The seed creates the users; without it, no account exists. |
+| `port is already allocated` (54321–54329) | Another Supabase project or service holds the port | `supabase stop` (stops this project's stack), or change the port in `supabase/config.toml`. |
+
+Useful recovery commands:
+
+```bash
+supabase status        # is the stack up? what are my keys?
+supabase db reset      # wipe + re-apply migrations + seed (fixes most data issues)
+supabase stop          # stop the local stack (your data stays)
+supabase stop --no-backup  # stop AND wipe local data volumes (full clean slate)
+```
+
+> **Windows notes:** the Supabase CLI runs natively, but Docker Desktop needs
+> WSL 2 — the installer enables it and asks for one reboot. After that,
+> everything above works in PowerShell exactly as written.
+
 ## Requirements & dependency health
 
 **Node.js 20.19+ (22.13+ recommended)**, plus the
