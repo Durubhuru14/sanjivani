@@ -1,31 +1,27 @@
 /**
- * Demo engine — business-rule guard + notification coverage tests.
+ * Demo engine — smoke tests for the basic, ephemeral demo store.
  *
- * The engine mirrors the Postgres BEFORE/AFTER triggers (00004 + 00007) so
- * demo mode rejects the same illegal writes and fires the same in-app
- * notifications as live mode. These tests pin that parity down against the
- * seeded store (spec §19: RLS-adjacent helper functions).
+ * Demo mode is intentionally NOT a faithful backend replica (see the header
+ * of lib/demo/engine.ts): business rules live in the Postgres triggers and
+ * RLS policies of a real Supabase deployment. These tests pin what demo
+ * mode DOES promise — the PostgREST query mechanics the pages rely on,
+ * insert defaults, and the two live aggregates the UI displays.
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { execute } from "@/lib/demo/engine";
-import { resetStore, getStore } from "@/lib/demo/store";
+import { resetStore } from "@/lib/demo/store";
 import type { DemoOp } from "@/lib/demo/types";
 
 // seeded ids (lib/demo/store.ts — mirrors supabase/seed.sql)
 const U = {
-  admin: "a0000000-0000-4000-8000-000000000001",
   greenearth: "a0000000-0000-4000-8000-000000000002",
-  brightfutures: "a0000000-0000-4000-8000-000000000003",
-  meera: "a0000000-0000-4000-8000-000000000005",
   priya: "a0000000-0000-4000-8000-000000000007",
-  rahul: "a0000000-0000-4000-8000-000000000008",
   aisha: "a0000000-0000-4000-8000-000000000009",
 };
 const C = {
   river: "c0000000-0000-4000-8000-000000000001", // upcoming, public, greenearth
   tutoring: "c0000000-0000-4000-8000-000000000002", // ongoing, public, brightfutures
   plantation: "c0000000-0000-4000-8000-000000000003", // completed, greenearth
-  shelter: "c0000000-0000-4000-8000-000000000004", // upcoming, invite, brightfutures
 };
 const T = { educators: "f0000000-0000-4000-8000-000000000001" }; // tutoring team
 
@@ -35,18 +31,6 @@ function run(op: DemoOp) {
 
 const eq = (col: string, val: unknown) => ({ col, op: "eq" as const, val });
 
-function notificationsFor(userId: string) {
-  return (
-    run({
-      t: "select",
-      table: "notifications",
-      columns: "type, message",
-      filters: [eq("user_id", userId)],
-      order: [{ col: "created_at", asc: false }],
-    }).data as Array<{ type: string; message: string }> ?? []
-  );
-}
-
 beforeEach(() => {
   resetStore();
 });
@@ -55,303 +39,197 @@ afterEach(() => {
   resetStore();
 });
 
-describe("campaign guards (00004 validate_campaign + sync_campaign_budget)", () => {
-  it("rejects an end date before the start date", () => {
-    const r = run({
-      t: "insert",
+describe("query mechanics", () => {
+  it("filters with eq / in / ilike and orders the result", () => {
+    const campaigns = run({
+      t: "select",
       table: "campaigns",
-      values: [
-        {
-          ngo_id: U.greenearth,
-          title: "Bad dates",
-          start_date: "2026-12-10",
-          end_date: "2026-12-01",
-          total_budget: 100,
-        },
-      ],
-    });
-    expect(r.error?.message).toBe("END_DATE_BEFORE_START");
+      columns: "title",
+      filters: [{ col: "status", op: "in", val: ["upcoming", "ongoing"] }],
+      order: [{ col: "created_at", asc: true }],
+    }).data as Array<{ title: string }>;
+    expect(campaigns.map((c) => c.title)).toEqual([
+      "After-School Tutoring Program",
+      "River Clean-Up Drive",
+      "Winter Shelter Support",
+    ]);
+
+    const search = run({
+      t: "select",
+      table: "campaigns",
+      columns: "title",
+      filters: [{ col: "title", op: "ilike", val: "%river%" }],
+      order: [],
+    }).data as Array<{ title: string }>;
+    expect(search).toHaveLength(1);
+    expect(search[0].title).toBe("River Clean-Up Drive");
   });
 
-  it("rejects a negative budget", () => {
-    const r = run({
-      t: "insert",
+  it("resolves forward and reverse embeds", () => {
+    // forward: campaign -> owning ngo
+    const withNgo = run({
+      t: "select",
       table: "campaigns",
-      values: [{ ngo_id: U.greenearth, title: "Negative", total_budget: -5 }],
-    });
-    expect(r.error?.message).toBe("BUDGET_NEGATIVE");
-  });
+      columns: "title, ngo:ngos(org_name)",
+      filters: [eq("id", C.river)],
+      order: [],
+      single: true,
+    }).data as { ngo: { org_name: string } } | null;
+    expect(withNgo?.ngo.org_name).toBe("Green Earth Foundation");
 
-  it("rejects lowering total_budget below what is already allocated", () => {
-    // tutoring has 3500 allocated (1500 + 2000)
-    const r = run({
-      t: "update",
+    // reverse: campaign -> its teams
+    const withTeams = run({
+      t: "select",
       table: "campaigns",
-      values: { total_budget: 3000 },
+      columns: "title, teams(name)",
       filters: [eq("id", C.tutoring)],
+      order: [],
+      single: true,
+    }).data as { teams: Array<{ name: string }> } | null;
+    expect(withTeams?.teams.map((t) => t.name)).toEqual(["Educators"]);
+  });
+
+  it("maybeSingle returns null for no rows, single errors", () => {
+    const maybe = run({
+      t: "select",
+      table: "campaigns",
+      columns: "*",
+      filters: [eq("id", "00000000-0000-0000-0000-000000000000")],
+      order: [],
+      single: true,
+      maybe: true,
     });
-    expect(r.error?.message).toBe("TOTAL_BELOW_ALLOCATED");
+    expect(maybe.data).toBeNull();
+    expect(maybe.error).toBeNull();
+
+    const single = run({
+      t: "select",
+      table: "campaigns",
+      columns: "*",
+      filters: [eq("id", "00000000-0000-0000-0000-000000000000")],
+      order: [],
+      single: true,
+    });
+    expect(single.error?.code).toBe("PGRST116");
   });
 });
 
-describe("fund allocation guards (00004 guard_fund_allocation_update)", () => {
-  it("rejects editing the amount of an existing allocation", () => {
-    const r = run({
-      t: "update",
-      table: "fund_allocations",
-      values: { amount: 999 },
-      filters: [eq("campaign_id", C.tutoring), eq("status", "pending")],
-    });
-    expect(r.error?.message).toBe("FUND_AMOUNT_IMMUTABLE");
-  });
-
-  it("rejects moving a paid allocation back to pending", () => {
-    const r = run({
-      t: "update",
-      table: "fund_allocations",
-      values: { status: "pending" },
-      filters: [eq("campaign_id", C.tutoring), eq("status", "paid")],
-    });
-    expect(r.error?.message).toBe("FUND_ALREADY_PAID");
-  });
-});
-
-describe("application + invite guards (00004 validate_application / invites)", () => {
-  it("rejects applying to an invite-only campaign without an accepted invite", () => {
+describe("writes are permissive and defaulted (no trigger emulation)", () => {
+  it("inserts with generated id, created_at and the status default", () => {
     const r = run({
       t: "insert",
       table: "applications",
-      values: [{ volunteer_id: U.rahul, campaign_id: C.shelter }],
+      values: [{ volunteer_id: U.aisha, campaign_id: C.river }],
+      columns: "*",
+      single: true,
     });
-    expect(r.error?.message).toBe("APPLICATION_REQUIRES_INVITE");
-  });
+    expect(r.error).toBeNull();
+    const row = r.data as Record<string, unknown>;
+    expect(row.id).toBeTruthy();
+    expect(row.created_at).toBeTruthy();
+    expect(row.status).toBe("pending");
 
-  it("blocks a pending invite from being answered twice", () => {
-    run({
-      t: "update",
-      table: "campaign_invites",
-      values: { status: "declined" },
-      filters: [eq("volunteer_id", U.aisha), eq("status", "pending")],
-    });
-    const r = run({
-      t: "update",
-      table: "campaign_invites",
-      values: { status: "accepted" },
-      filters: [eq("volunteer_id", U.aisha)],
-    });
-    expect(r.error?.message).toBe("INVITE_ALREADY_ANSWERED");
-  });
-});
-
-describe("team member guards (00004 validate_team_member / guard update)", () => {
-  it("rejects a volunteer without an accepted application", () => {
-    const r = run({
-      t: "insert",
-      table: "team_members",
-      values: [{ team_id: T.educators, user_id: U.aisha, member_type: "volunteer" }],
-    });
-    expect(r.error?.message).toBe("VOLUNTEER_MUST_BE_ACCEPTED");
-  });
-
-  it("rejects logging hours before the campaign completes", () => {
-    const r = run({
-      t: "update",
-      table: "team_members",
-      values: { hours_logged: 5 },
-      filters: [eq("team_id", T.educators), eq("user_id", U.priya)],
-    });
-    expect(r.error?.message).toBe("HOURS_ONLY_AFTER_COMPLETION");
-  });
-});
-
-describe("rating guards (00007 validate_rating — NGO owner is a participant)", () => {
-  it("rejects self-rating", () => {
-    const r = run({
-      t: "insert",
-      table: "ratings",
-      values: [
-        { campaign_id: C.plantation, from_user_id: U.priya, to_user_id: U.priya, score: 5 },
-      ],
-    });
-    expect(r.error?.message).toBe("NO_SELF_RATING");
-  });
-
-  it("rejects rating on a campaign that is not completed", () => {
-    const r = run({
-      t: "insert",
-      table: "ratings",
-      values: [
-        { campaign_id: C.tutoring, from_user_id: U.priya, to_user_id: U.brightfutures, score: 5 },
-      ],
-    });
-    expect(r.error?.message).toBe("RATING_REQUIRES_COMPLETED_CAMPAIGN");
-  });
-
-  it("rejects rating someone from outside the campaign", () => {
-    // aisha has no team membership on plantation and is not its owner
-    const r = run({
-      t: "insert",
-      table: "ratings",
-      values: [
-        { campaign_id: C.plantation, from_user_id: U.aisha, to_user_id: U.greenearth, score: 4 },
-      ],
-    });
-    expect(r.error?.message).toBe("RATING_REQUIRES_SHARED_TEAM");
-  });
-
-  it("allows volunteer → NGO and NGO → volunteer on a completed campaign", () => {
-    // meera is on the plantation team, no seed rating pairs her with greenearth
-    const toNgo = run({
-      t: "insert",
-      table: "ratings",
-      values: [
-        { campaign_id: C.plantation, from_user_id: U.meera, to_user_id: U.greenearth, score: 5 },
-      ],
-    });
-    expect(toNgo.error).toBeNull();
-
-    const fromNgo = run({
-      t: "insert",
-      table: "ratings",
-      values: [
-        { campaign_id: C.plantation, from_user_id: U.greenearth, to_user_id: U.meera, score: 4 },
-      ],
-    });
-    expect(fromNgo.error).toBeNull();
-  });
-});
-
-describe("suspension takes down the NGO's operation (00007 RLS parity)", () => {
-  it("blocks new applications to a suspended NGO's campaign", () => {
-    run({
-      t: "update",
-      table: "profiles",
-      values: { suspended: true },
-      filters: [eq("id", U.greenearth)],
-    });
-    // rahul has no existing application on river
-    const r = run({
+    // demo mode does NOT duplicate the unique-application trigger:
+    // the same insert again is accepted (a real backend would 409)
+    const again = run({
       t: "insert",
       table: "applications",
-      values: [{ volunteer_id: U.rahul, campaign_id: C.river }],
+      values: [{ volunteer_id: U.aisha, campaign_id: C.river }],
     });
-    expect(r.error?.message).toBe("NGO_SUSPENDED");
-  });
-});
-
-describe("notification coverage (00007 triggers, end to end)", () => {
-  it("notifies the NGO when a volunteer applies", () => {
-    run({
-      t: "insert",
-      table: "applications",
-      values: [{ volunteer_id: U.rahul, campaign_id: C.river }],
-    });
-    const types = notificationsFor(U.greenearth).map((n) => n.type);
-    expect(types).toContain("new_application");
+    expect(again.error).toBeNull();
   });
 
-  it("notifies every team member when a campaign status changes", () => {
-    run({
+  it("updates and deletes by filter", () => {
+    const upd = run({
       t: "update",
       table: "campaigns",
-      values: { status: "completed" },
-      filters: [eq("id", C.tutoring)],
+      values: { status: "ongoing" },
+      filters: [eq("id", C.river)],
+      columns: "status",
+      single: true,
     });
-    for (const uid of [U.meera, U.priya, U.rahul]) {
-      const types = notificationsFor(uid).map((n) => n.type);
-      expect(types).toContain("campaign_status");
-    }
-  });
+    expect((upd.data as { status: string }).status).toBe("ongoing");
 
-  it("notifies the rated user when a rating lands", () => {
-    run({
-      t: "insert",
-      table: "ratings",
-      values: [
-        { campaign_id: C.plantation, from_user_id: U.meera, to_user_id: U.greenearth, score: 5 },
-      ],
-    });
-    const types = notificationsFor(U.greenearth).map((n) => n.type);
-    expect(types).toContain("rating_received");
-  });
-
-  it("notifies admins when a report is filed and the NGO when it is answered", () => {
-    run({
-      t: "insert",
-      table: "volunteer_reports",
-      values: [
-        {
-          volunteer_id: U.rahul,
-          reported_by: U.brightfutures,
-          campaign_id: C.tutoring,
-          reason: "test reason",
-        },
-      ],
-    });
-    expect(notificationsFor(U.admin)[0]?.type).toBe("volunteer_report");
-
-    const report = getStore().tables.volunteer_reports.find(
-      (r) => r.reported_by === U.brightfutures
-    );
-    run({
-      t: "update",
-      table: "volunteer_reports",
-      values: { status: "reviewed" },
-      filters: [eq("id", report?.id)],
-    });
-    expect(notificationsFor(U.brightfutures)[0]?.type).toBe("report_status");
-  });
-
-  it("notifies the account on suspension and unsuspension", () => {
-    run({
-      t: "update",
-      table: "profiles",
-      values: { suspended: true },
-      filters: [eq("id", U.rahul)],
-    });
-    expect(notificationsFor(U.rahul).map((n) => n.type)).toContain("account_suspended");
-
-    run({
-      t: "update",
-      table: "profiles",
-      values: { suspended: false },
-      filters: [eq("id", U.rahul)],
-    });
-    expect(notificationsFor(U.rahul).map((n) => n.type)).toContain("account_unsuspended");
-  });
-
-  it("notifies the volunteer when hours are logged after completion", () => {
-    run({
-      t: "update",
-      table: "campaigns",
-      values: { status: "completed" },
-      filters: [eq("id", C.tutoring)],
-    });
-    run({
-      t: "update",
-      table: "team_members",
-      values: { hours_logged: 12 },
-      filters: [eq("team_id", T.educators), eq("user_id", U.priya)],
-    });
-    expect(notificationsFor(U.priya).map((n) => n.type)).toContain("hours_logged");
-  });
-
-  it("notifies the NGO when their invite is declined", () => {
-    run({
-      t: "update",
-      table: "campaign_invites",
-      values: { status: "declined" },
-      filters: [eq("volunteer_id", U.aisha), eq("status", "pending")],
-    });
-    expect(notificationsFor(U.brightfutures).map((n) => n.type)).toContain("invite_declined");
-  });
-
-  it("notifies a member when they are removed from a team", () => {
-    run({
+    const del = run({
       t: "delete",
       table: "team_members",
-      filters: [eq("team_id", T.educators), eq("user_id", U.rahul)],
+      filters: [eq("team_id", T.educators), eq("user_id", U.priya)],
     });
-    expect(notificationsFor(U.rahul)[0]?.type).toBe("team_removed");
+    expect(del.error).toBeNull();
+    const left = run({
+      t: "select",
+      table: "team_members",
+      columns: "user_id",
+      filters: [eq("team_id", T.educators)],
+      order: [],
+    }).data as Array<{ user_id: string }>;
+    expect(left.map((m) => m.user_id)).not.toContain(U.priya);
+  });
+});
+
+describe("the two live aggregates the UI displays", () => {
+  it("resyncs remaining_budget when fund allocations change", () => {
+    // tutoring: 50000 budget, 3500 allocated → 46500 remaining (seeded)
+    run({
+      t: "insert",
+      table: "fund_allocations",
+      values: [{ campaign_id: C.tutoring, member_id: U.priya, amount: 1500, note: "test" }],
+    });
+    const afterInsert = run({
+      t: "select",
+      table: "campaigns",
+      columns: "remaining_budget",
+      filters: [eq("id", C.tutoring)],
+      order: [],
+      single: true,
+    }).data as { remaining_budget: number };
+    expect(afterInsert.remaining_budget).toBe(45000);
+
+    run({
+      t: "delete",
+      table: "fund_allocations",
+      filters: [eq("campaign_id", C.tutoring), eq("amount", 1500), eq("status", "pending")],
+    });
+    const afterDelete = run({
+      t: "select",
+      table: "campaigns",
+      columns: "remaining_budget",
+      filters: [eq("id", C.tutoring)],
+      order: [],
+      single: true,
+    }).data as { remaining_budget: number };
+    expect(afterDelete.remaining_budget).toBe(46500);
+  });
+
+  it("recomputes avg_rating when a rating lands", () => {
+    // plantation is completed; meera is on its team (seed), no meera→greenearth rating yet
+    run({
+      t: "insert",
+      table: "ratings",
+      values: [
+        { campaign_id: C.plantation, from_user_id: "a0000000-0000-4000-8000-000000000005", to_user_id: U.greenearth, score: 1 },
+      ],
+    });
+    const ngo = run({
+      t: "select",
+      table: "ngos",
+      columns: "avg_rating",
+      filters: [eq("profile_id", U.greenearth)],
+      order: [],
+      single: true,
+    }).data as { avg_rating: number };
+    // seeded greenearth ratings: 5 + 4 + 4 = 13/3 ≈ 4.33; +1 → 14/4 = 3.5
+    expect(ngo.avg_rating).toBe(3.5);
+  });
+});
+
+describe("rpc", () => {
+  it("sums a volunteer's logged hours", () => {
+    const hours = run({
+      t: "rpc",
+      fn: "volunteer_total_hours",
+      args: { p_volunteer_id: U.priya },
+    }).data;
+    expect(hours).toBe(18); // 0 (educators) + 18 (core team)
   });
 });
