@@ -165,6 +165,40 @@ describe("writes are permissive and defaulted (no trigger emulation)", () => {
     }).data as Array<{ user_id: string }>;
     expect(left.map((m) => m.user_id)).not.toContain(U.priya);
   });
+
+  it("zero-row updates succeed quietly — PostgREST parity for idempotent retries", () => {
+    // a plain update that matches nothing returns an empty representation,
+    // not an error (double-clicked buttons, mark-all-read with nothing unread)
+    const plain = run({
+      t: "update",
+      table: "campaigns",
+      values: { status: "ongoing" },
+      filters: [eq("id", "00000000-0000-0000-0000-000000000000")],
+      columns: "status",
+    });
+    expect(plain.error).toBeNull();
+    expect(plain.data).toEqual([]);
+
+    // only .single() turns a zero-row update into PGRST116, like PostgREST
+    const single = run({
+      t: "update",
+      table: "campaigns",
+      values: { status: "ongoing" },
+      filters: [eq("id", "00000000-0000-0000-0000-000000000000")],
+      columns: "status",
+      single: true,
+    });
+    expect(single.error?.code).toBe("PGRST116");
+
+    // and a no-representation update matches nothing without erroring
+    const bare = run({
+      t: "update",
+      table: "campaigns",
+      values: { status: "ongoing" },
+      filters: [eq("id", "00000000-0000-0000-0000-000000000000")],
+    });
+    expect(bare.error).toBeNull();
+  });
 });
 
 describe("the two live aggregates the UI displays", () => {

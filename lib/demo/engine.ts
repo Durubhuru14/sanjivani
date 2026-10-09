@@ -390,7 +390,14 @@ function runUpdate(
 ): PostgrestLike<unknown> {
   if (!getStore().tables[t]) return err(`relation "public.${t}" does not exist`, "42P01", 404);
   const rows = applyFilters(table(t), filters);
-  if (rows.length === 0) return err("No rows found to update", "PGRST116", 406);
+  // PostgREST semantics: a zero-row UPDATE is a quiet success (200 + empty
+  // representation), not an error — only .single() turns it into PGRST116.
+  // Matching that keeps demo behaviour honest for idempotent retries
+  // (mark-all-read, double-clicked status buttons, fund re-syncs).
+  if (rows.length === 0) {
+    if (single) return err("JSON object requested, multiple (or no) rows returned", "PGRST116", 406);
+    return columns ? ok([]) : ok(null);
+  }
   const updated: Row[] = [];
   for (const row of rows) {
     Object.assign(row, values);

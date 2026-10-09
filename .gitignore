@@ -44,6 +44,11 @@ scripts/remove-dead-symbols.py
 .history-final/
 .history-stage/
 
+# local QA / audit tooling from the review rounds (kept out of the deliverable)
+scripts/qa/
+scripts/ux-audit/
+scripts/pack-deliverable.sh
+
 # local sandbox / environment-only artifacts (not part of the project)
 .zscripts/
 .claude

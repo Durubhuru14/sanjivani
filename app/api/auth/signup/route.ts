@@ -37,12 +37,14 @@ export async function POST(req: NextRequest) {
     if (input.role === "staff") {
       // Claim a pending invite matching this email (no public staff signup otherwise).
       const email = input.email.trim().toLowerCase();
+      // oldest pending invite wins, so a multi-invite email claims deterministically
       const { data: invite } = await admin
         .from("ngo_staff")
         .select("id, ngo_id")
         .ilike("invited_email", email)
         .is("profile_id", null)
         .eq("status", "invited")
+        .order("created_at", { ascending: true })
         .limit(1)
         .maybeSingle();
 
@@ -60,10 +62,15 @@ export async function POST(req: NextRequest) {
         name: input.name,
         location: input.location || null,
       });
-      await admin
+      // The profile row must exist before the invite can link to it, so the
+      // link is the last write — surface its failure instead of leaving a
+      // staff account with no NGO link (a dead-end dashboard). The invite
+      // stays unclaimed, so a retry of the signup succeeds cleanly.
+      const { error: linkError } = await admin
         .from("ngo_staff")
         .update({ profile_id: userId, status: "active" })
         .eq("id", invite.id);
+      if (linkError) throw linkError;
     } else if (input.role === "ngo") {
       await admin.from("profiles").insert({
         id: userId,

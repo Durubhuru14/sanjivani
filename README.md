@@ -55,6 +55,9 @@ Demo-mode notes:
   NGOs, and campaigns already carry profile pictures.
 - Writes are **permissive** — the unique/fund/invite/rating trigger rules are only
   enforced by a real Supabase backend; the bell shows the seeded notifications.
+- The demo transport (`/api/demo`) is **unauthenticated by design** (it only exists
+  while the demo flag is on and hard-404s once real Supabase env vars are configured) —
+  never point demo mode at real user data.
 - Add real Supabase env vars and run without the demo flag — the demo layer stays out of
   the way entirely.
 

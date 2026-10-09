@@ -19,9 +19,8 @@ const nextConfig: NextConfig = {
   },
   // Keep the dev UI clean: no floating dev-tools indicator in the corner.
   devIndicators: false,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  // No ignoreBuildErrors: `next build` is a real type gate (tsc --noEmit is
+  // kept clean, so production builds fail loudly on type regressions).
   reactStrictMode: false,
 };
 

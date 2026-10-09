@@ -5,12 +5,11 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
   volunteerProfileUpdateSchema,
-  ratingSchema,
 } from "@/lib/validation";
 import { friendlyDbError } from "@/lib/api";
 import { ROLE_HOME } from "@/lib/supabase/middleware";
 
-async function requireUserClient() {
+async function requireUserClient(volunteerOnly = false) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -20,12 +19,19 @@ async function requireUserClient() {
   if (!profile) redirect("/login?error=incomplete");
   // suspension blocks every write (same rule as the RLS not_suspended() policies)
   if (profile.suspended) redirect("/suspended");
+  // volunteer-only writes (applications, volunteer profile) mirror the live
+  // RLS policies — an NGO/staff/admin session crafting an action call is sent
+  // home instead of writing through the volunteer surface. claimStaffInvite
+  // deliberately stays role-agnostic: the invite claim page is cross-role.
+  if (volunteerOnly && profile.role !== "volunteer") {
+    redirect(ROLE_HOME[profile.role] ?? "/login");
+  }
   return { supabase, userId: user.id, profile };
 }
 
 /** Volunteer applies to a public campaign (spec §5 browse/apply). */
 export async function applyToCampaign(campaignId: string) {
-  const { supabase, userId } = await requireUserClient();
+  const { supabase, userId } = await requireUserClient(true);
   const { error } = await supabase
     .from("applications")
     .insert({ volunteer_id: userId, campaign_id: campaignId, status: "pending" });
@@ -44,7 +50,7 @@ export async function updateVolunteerProfile(values: {
   availability: string;
   avatarUrl: string;
 }) {
-  const { supabase, userId } = await requireUserClient();
+  const { supabase, userId } = await requireUserClient(true);
   const parsed = volunteerProfileUpdateSchema.safeParse({
     name: values.name,
     location: values.location,
@@ -80,24 +86,6 @@ export async function updateVolunteerProfile(values: {
   return { ok: true };
 }
 
-/** Volunteer rates the NGO after campaign completion (bidirectional ratings). */
-export async function rateNgo(campaignId: string, ngoId: string, score: number, comment: string) {
-  const { supabase, userId } = await requireUserClient();
-  const parsed = ratingSchema.safeParse({ score, comment });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
-  const { error } = await supabase.from("ratings").insert({
-    campaign_id: campaignId,
-    from_user_id: userId,
-    to_user_id: ngoId,
-    score: parsed.data.score,
-    comment: parsed.data.comment || null,
-  });
-  if (error) return { ok: false, error: friendlyDbError(error).message };
-  revalidatePath(`/volunteer/campaigns/${campaignId}`);
-  revalidatePath("/volunteer");
-  return { ok: true };
-}
-
 /** Staff (or invited user) claims their staff invite (spec §6 accept-invite). */
 export async function claimStaffInvite() {
   const { supabase, userId, profile } = await requireUserClient();
@@ -116,29 +104,41 @@ export async function claimStaffInvite() {
   const email = authUser?.email?.toLowerCase();
   if (!email) return { ok: false, error: "Could not read your account email." };
 
+  // oldest pending invite wins, so a multi-invite email claims deterministically
   const { data: invite } = await admin
     .from("ngo_staff")
     .select("id, ngo_id")
     .ilike("invited_email", email)
     .is("profile_id", null)
     .eq("status", "invited")
+    .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();
   if (!invite) {
     return { ok: false, error: "No pending staff invite found for your email." };
   }
 
-  const { error: roleError } = await admin
-    .from("profiles")
-    .update({ role: "staff" })
-    .eq("id", userId);
-  if (roleError) return { ok: false, error: friendlyDbError(roleError).message };
-
+  // Link the invite first, then flip the role: the link alone is inert (the
+  // staff surface requires role = staff), and if the role flip fails the link
+  // is reverted so the invite stays claimable. The reverse order could strand
+  // a staff account with no NGO link (a dead-end dashboard).
   const { error: inviteError } = await admin
     .from("ngo_staff")
     .update({ profile_id: userId, status: "active", invited_name: me?.name ?? undefined })
     .eq("id", invite.id);
   if (inviteError) return { ok: false, error: friendlyDbError(inviteError).message };
+
+  const { error: roleError } = await admin
+    .from("profiles")
+    .update({ role: "staff" })
+    .eq("id", userId);
+  if (roleError) {
+    await admin
+      .from("ngo_staff")
+      .update({ profile_id: null, status: "invited" })
+      .eq("id", invite.id);
+    return { ok: false, error: friendlyDbError(roleError).message };
+  }
 
   return { ok: true, redirect: ROLE_HOME.staff };
 }

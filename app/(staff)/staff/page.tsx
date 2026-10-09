@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Building2, CalendarCheck2, MessagesSquare } from "lucide-react";
+import { Building2, CalendarCheck2, MessagesSquare, UserMinus } from "lucide-react";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
@@ -32,7 +31,30 @@ export default async function StaffDashboardPage() {
         ngo?: { profile_id: string; org_name: string; verification_status: string };
       }
     | null;
-  if (!staff) notFound();
+  // A removed staff member (NGO deleted the link — spec-sanctioned) keeps
+  // role = staff with no ngo_staff row. That is a supported state, not a 404:
+  // show a friendly card instead of a dead-end error page. The link comes
+  // back if another NGO invites the same email and they claim it.
+  if (!staff) {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          className="animate-fade-up"
+          title="Staff dashboard"
+          subtitle="Everything your NGO assigned you to — campaigns, teams, and rooms."
+        />
+        <Card className="animate-fade-up stagger-1 shadow-soft">
+          <CardContent className="py-2">
+            <EmptyState
+              icon={UserMinus}
+              title="You are not linked to an NGO right now"
+              hint="Your NGO removed you from their staff list. Your account and history are kept — if another NGO invites your email, accepting it links you to them."
+            />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const [teamRes, roomsRes] = await Promise.all([
     supabase

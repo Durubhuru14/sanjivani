@@ -8,7 +8,6 @@ import {
   campaignStatusSchema,
   hoursSchema,
   ngoProfileUpdateSchema,
-  ratingSchema,
 } from "@/lib/validation";
 import { friendlyDbError } from "@/lib/api";
 import type { CampaignFormValues } from "@/components/campaigns/CampaignForm";
@@ -190,29 +189,6 @@ export async function logHours(campaignId: string, memberId: string, hours: numb
     .from("team_members")
     .update({ hours_logged: parsed.data.hours })
     .eq("id", memberId);
-  if (error) return { ok: false, error: friendlyDbError(error).message };
-  revalidatePath(`/ngo/campaigns/${campaignId}`);
-  return { ok: true };
-}
-
-/* ================= ratings (NGO → volunteer) ================= */
-
-export async function rateVolunteer(
-  campaignId: string,
-  volunteerId: string,
-  score: number,
-  comment: string
-) {
-  const { supabase, userId } = await requireApprovedNgoClient();
-  const parsed = ratingSchema.safeParse({ score, comment });
-  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
-  const { error } = await supabase.from("ratings").insert({
-    campaign_id: campaignId,
-    from_user_id: userId,
-    to_user_id: volunteerId,
-    score: parsed.data.score,
-    comment: parsed.data.comment || null,
-  });
   if (error) return { ok: false, error: friendlyDbError(error).message };
   revalidatePath(`/ngo/campaigns/${campaignId}`);
   return { ok: true };

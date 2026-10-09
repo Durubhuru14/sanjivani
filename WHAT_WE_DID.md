@@ -433,8 +433,66 @@ buttons. Findings and fixes:
   simulated by polling, uploads live as data URLs, and the Postgres triggers / RLS are
   NOT emulated (demo writes are permissive; the route guards still apply). It is a
   look-around vehicle, not a production backend — do not deploy it with real user data.
+  The demo transport (`/api/demo`) is likewise **unauthenticated by design** and
+  hard-404s the moment real Supabase env vars are configured.
 
-## 9. Individual contribution
+## 9. Final ship round — three-lens review (senior full-stack · UX/UI · QA)
+
+The last pass before delivery ran three independent lenses over the whole tree:
+
+1. **Senior full-stack code review** — verified with commit-diff evidence that the
+   demo slimming and cross-platform script rounds touched **only** demo-owned files
+   (exactly `lib/demo/engine.ts` + its unit test) and zero live-path code; then read
+   the entire live stack (17 API routes, 4 action files, 16-table RLS, the 00004+00007
+   trigger set, every role flow) against the spec. Verdict: **production intact,
+   ship-ready** — 4-layer authz holds (layout guard → action/route guard → RLS →
+   triggers), all 20 notification triggers present, take-down/restore correct.
+2. **UX/UI regression sweep** — every key page per role (admin incl. all four oversight
+   tabs + NGO detail, NGO incl. all campaign-detail tabs + per-campaign chat, staff,
+   volunteer, pending-NGO and suspended states, public pages), dark mode, and 390 px
+   mobile: zero horizontal overflow, every status chip colored via the semantic tokens,
+   every tab renders its table, no dead links/buttons, no console errors.
+3. **QA gates** — 71/71 unit tests, lint clean, `tsc --noEmit` clean, **13/13 e2e on
+   the dev server AND 13/13 on the compiled production build** (with `next build`'s
+   type gate re-enabled), plus the live-path build smoke: unconfigured boot redirects
+   `/` → `/setup` exactly as designed.
+
+Fixes that came out of the review (all verified by the gates above):
+
+- **Invite accept is now trigger-legal and self-healing** (`/api/campaigns/[id]/invites/[inviteId]/respond`):
+  the old "roll the invite back to pending" compensation was rejected by the live
+  `guard_campaign_invite_update` trigger (accepted → pending is illegal), so it only
+  ever worked in permissive demo mode. The route now pre-checks for an existing
+  application, inserts only when missing (mirroring the trigger's duplicate rule), and
+  turns re-accepting an already-accepted invite into an idempotent repair path. Every
+  failure leaves a consistent, retryable state — no write the live triggers would refuse.
+- **Staff invite claim is atomic-ish both ways**: `claimStaffInvite` links the
+  `ngo_staff` row first and flips the role second (reverting the link if the role write
+  fails — the old order could strand a staff account with no NGO link), the signup
+  staff path surfaces link failures instead of ignoring them, and both pick the
+  **oldest** pending invite deterministically.
+- **Volunteer-only writes are role-guarded in the app layer too**: `applyToCampaign` /
+  `updateVolunteerProfile` now reject non-volunteer sessions (mirroring the live RLS
+  intent); `claimStaffInvite` stays deliberately cross-role (the invite claim page is
+  explicit and warned — see the spec note below).
+- **Removed dead parallel implementations**: `rateVolunteer` / `rateNgo` server actions
+  (ratings go through the browser client, guarded by RLS + triggers) and the unused
+  `createNotification` helper (live notifications are 100% trigger-produced).
+- **Demo engine PostgREST parity for zero-row updates**: a no-match `update` now
+  returns a quiet success (only `.single()` raises PGRST116), so idempotent retries
+  behave the same in demo and live.
+- **Removed-staff dead-end fixed**: a staff member whose NGO deleted their link gets a
+  friendly "not linked to an NGO right now" card instead of a raw 404.
+- **`next build` is a real type gate again** (`typescript.ignoreBuildErrors` removed —
+  inherited scaffold config; both production builds pass it).
+
+Spec interpretation on record: the staff invite claim page converts an existing
+volunteer/NGO/admin account to the staff role. Spec §6's "no silent role change" is
+honored in spirit — the page states the consequence and requires an explicit accept —
+but the strictest reading (staff accounts only via fresh signup) would forbid it. This
+is a deliberate, documented deviation.
+
+## 10. Individual contribution
 
 | Member | Areas |
 |---|---|
@@ -442,7 +500,7 @@ buttons. Findings and fixes:
 | ALTRONtech | Admin area (verification, reports, suspension), chat system (rooms + realtime), fund ledger UI, ratings, CSV export |
 | OmMoreCodes | Volunteer area (browse/apply/invites/history), staff area + invite claim flow, notifications UI, design polish, README/WHAT_WE_DID |
 
-## 10. Rule
+## 11. Rule
 
 This file is updated alongside code changes. If a claim cannot be verified in the
 repository, it does not belong here.
