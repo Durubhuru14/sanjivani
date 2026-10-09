@@ -49,6 +49,8 @@ export interface UpdateOp {
   filters: Filter[];
   columns?: string;
   single?: boolean;
+  /** maybeSingle() on an update: zero-row updates resolve to null, not PGRST116 */
+  maybe?: boolean;
 }
 
 export interface DeleteOp {

@@ -267,3 +267,149 @@ describe("rpc", () => {
     expect(hours).toBe(18); // 0 (educators) + 18 (core team)
   });
 });
+
+describe("notification parity (curated live-trigger subset)", () => {
+  it("notifies the campaign owner on a new pending application", () => {
+    run({
+      t: "insert",
+      table: "applications",
+      values: [{ campaign_id: C.river, volunteer_id: U.aisha, status: "pending" }],
+    });
+    const notes = run({
+      t: "select",
+      table: "notifications",
+      columns: "user_id, type, message",
+      filters: [eq("user_id", U.greenearth), eq("type", "new_application")],
+      order: [{ col: "created_at", asc: false }],
+    }).data as Array<{ message: string }>;
+    expect(notes[0]?.message).toContain("Aisha Khan");
+    expect(notes[0]?.message).toContain("River Clean-Up Drive");
+  });
+
+  it("notifies the volunteer when their application is decided", () => {
+    const inserted = run({
+      t: "insert",
+      table: "applications",
+      values: [{ campaign_id: C.river, volunteer_id: U.aisha, status: "pending" }],
+      columns: "id",
+    }).data as Array<{ id: string }>;
+    run({
+      t: "update",
+      table: "applications",
+      values: { status: "accepted" },
+      filters: [eq("id", inserted[0].id)],
+    });
+    const notes = run({
+      t: "select",
+      table: "notifications",
+      columns: "user_id, type, message",
+      filters: [eq("user_id", U.aisha), eq("type", "application_status")],
+      order: [],
+    }).data as Array<{ message: string }>;
+    expect(notes.at(-1)?.message).toContain("was accepted");
+  });
+
+  it("notifies every team member when a campaign completes", () => {
+    run({
+      t: "update",
+      table: "campaigns",
+      values: { status: "completed" },
+      filters: [eq("id", C.tutoring)],
+    });
+    const notes = run({
+      t: "select",
+      table: "notifications",
+      columns: "user_id, message",
+      filters: [eq("type", "campaign_status")],
+      order: [],
+    }).data as Array<{ message: string }>;
+    expect(notes.length).toBeGreaterThan(0);
+    expect(notes[0].message).toContain("is now completed");
+    expect(notes[0].message).toContain("rate your teammates");
+  });
+
+  it("notifies the ratee when a rating lands", () => {
+    run({
+      t: "insert",
+      table: "ratings",
+      values: [{ campaign_id: C.plantation, from_user_id: U.greenearth, to_user_id: U.priya, score: 5 }],
+    });
+    const notes = run({
+      t: "select",
+      table: "notifications",
+      columns: "type, message",
+      filters: [eq("user_id", U.priya), eq("type", "rating_received")],
+      order: [],
+    }).data as Array<{ message: string }>;
+    expect(notes.at(-1)?.message).toContain("5-star rating");
+  });
+
+  it("notifies the member when hours are logged", () => {
+    const member = run({
+      t: "select",
+      table: "team_members",
+      columns: "id, user_id",
+      filters: [eq("team_id", T.educators)],
+      order: [],
+    }).data as Array<{ id: string; user_id: string }>;
+    run({
+      t: "update",
+      table: "team_members",
+      values: { hours_logged: 6 },
+      filters: [eq("id", member[0].id)],
+    });
+    const notes = run({
+      t: "select",
+      table: "notifications",
+      columns: "type, message",
+      filters: [eq("user_id", member[0].user_id), eq("type", "hours_logged")],
+      order: [],
+    }).data as Array<{ message: string }>;
+    expect(notes.at(-1)?.message).toContain("6 hours");
+  });
+
+  it("notifies the account on suspension flips", () => {
+    run({
+      t: "update",
+      table: "profiles",
+      values: { suspended: true },
+      filters: [eq("id", U.aisha)],
+    });
+    const notes = run({
+      t: "select",
+      table: "notifications",
+      columns: "type",
+      filters: [eq("user_id", U.aisha), eq("type", "account_suspended")],
+      order: [],
+    }).data as Array<{ type: string }>;
+    expect(notes).toHaveLength(1);
+  });
+});
+
+describe("PostgREST-quiet updates", () => {
+  it("zero-row update with maybeSingle resolves null, not PGRST116", () => {
+    const res = run({
+      t: "update",
+      table: "ngos",
+      values: { verification_status: "approved" },
+      filters: [eq("profile_id", "00000000-0000-4000-8000-00000000dead")],
+      columns: "profile_id",
+      single: true,
+      maybe: true,
+    });
+    expect(res.error).toBeNull();
+    expect(res.data).toBeNull();
+  });
+
+  it("zero-row update with single still raises PGRST116", () => {
+    const res = run({
+      t: "update",
+      table: "ngos",
+      values: { verification_status: "approved" },
+      filters: [eq("profile_id", "00000000-0000-4000-8000-00000000dead")],
+      columns: "profile_id",
+      single: true,
+    });
+    expect(res.error?.code).toBe("PGRST116");
+  });
+});

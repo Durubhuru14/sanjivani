@@ -156,7 +156,7 @@ class DemoBuilder {
 
   maybeSingle() {
     (this.op as { single?: boolean }).single = true;
-    if (this.op.t === "select") this.op.maybe = true;
+    if (this.op.t === "select" || this.op.t === "update") this.op.maybe = true;
     return this;
   }
 

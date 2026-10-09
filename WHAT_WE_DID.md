@@ -492,6 +492,103 @@ honored in spirit — the page states the consequence and requires an explicit a
 but the strictest reading (staff accounts only via fresh signup) would forbid it. This
 is a deliberate, documented deviation.
 
+## 9b. Last round — role UX/logic overhaul (admin IA + four-lens review)
+
+The final user-driven round restructured the admin section and closed every finding
+from a fresh four-lens review (senior full-stack · UX · UI · QA), with **production
+kept end-to-end intact** (the live build still passes the type gate and boots to the
+setup gate exactly as before).
+
+**Admin information architecture (the "oversight" rework).** The old dashboard
+crammed verification queues, reports, four oversight tabs, suspended accounts, and a
+duplicate stats row into one 600-line page. The section now has real structure:
+
+- **Section nav** (Overview · NGOs · Campaigns · Volunteers · Staff · Reports) in the
+  admin layout — every oversight surface is one click away.
+- **Overview** (`/admin`) — linked stat cards, the three decision queues (pending
+  NGOs, pending volunteers, open reports), and the suspended-accounts strip. Pure
+  "what needs me today".
+- **Directory pages** (`/admin/ngos`, `/admin/campaigns`, `/admin/volunteers`,
+  `/admin/staff`, `/admin/reports`) — URL-driven search (GET form, works without JS),
+  status filter chips with counts, pagination, inline actions, and empty states.
+  Filters are shareable, back-button-safe links.
+- **Drill-downs** — new `/admin/volunteers/[id]` (profile, hours, every team,
+  application, rating, and report — the full picture before suspending someone) and
+  `/admin/staff/[id]` (NGO link, invite state, campaign history). Reports link
+  straight to the volunteer detail page.
+
+**Logic fixes (from the senior full-stack review, all verified):**
+
+- **Campaign status machine enforced** — the edit form's status select was an
+  unconditional 4-way dropdown that could resurrect cancelled campaigns and skip
+  states; it now offers only the current status + legal successors (create always
+  starts `upcoming`), and `updateCampaign` re-validates ownership + the transition
+  table server-side.
+- **Post-completion application chain closed** — `decideApplication` rejects decides
+  on completed/cancelled campaigns (previously an NGO could accept → team-add →
+  earn ratings for work that was already over); the panel hides the buttons with an
+  explanation.
+- **Terminal campaigns lock team changes** — create/remove team + add/remove member
+  are blocked server-side and hidden in the UI for completed/cancelled campaigns
+  (removing a member destroyed their logged hours); hours logging stays open on
+  completed campaigns (that's what completion unlocks).
+- **Cancelled campaigns stop new fund allocations** (ledger + pending settlements
+  preserved); the cancel dialog copy now matches the actual lockdown.
+- **RLS gap closed** (migration `00008_oversight_hardening.sql`): the suspended-NGO
+  bypass on `applications_update_owner` / `messages_delete_sender_or_owner` (spec
+  §10 "even if they bypass the UI") plus the invite-**accepted** notification
+  trigger (declined already notified).
+- **Staff signup no longer bricks emails** — the invite lookup now runs *before*
+  `auth.signUp`, so a NO_STAFF_INVITE failure doesn't leave an orphan auth account
+  that blocks every retry with "User already registered".
+- **All six admin action routes verify the target row** (`.select().maybeSingle()` +
+  404) instead of reporting success on zero-row updates; demo engine matches
+  PostgREST `.maybeSingle()`-on-update semantics.
+- **Trust signals at the decision point** — the applications panel (and invite
+  search) now show skills, availability, verified badge, public rating, and applied
+  date, so accept/reject is an informed decision; application Reject and fund
+  Mark-paid ask for confirmation.
+- **Raw trigger codes gone** — RatingForm/FundLedger route through
+  `friendlyDbError` like every other write path.
+- **Live-mode hidden-embed fallbacks** — volunteer dashboard/invites rows for
+  taken-down campaigns render "Campaign unavailable" instead of
+  `/volunteer/campaigns/undefined` links and dead respond buttons.
+- **Campaign dates are required** (form + schema) — date-less campaign cards
+  rendered with blank date rows everywhere.
+
+**UX fixes (from the UX/UI review):**
+
+- **Notification bell is user-scoped in demo mode** — the demo transport now
+  emulates the notifications RLS policies (the bell showed every account's
+  notifications cross-role; mark-all-read crossed accounts).
+- **Demo notification parity** — the engine now fans out a curated subset of the
+  live trigger notifications (application decisions, invites incl. accepted, team
+  changes, campaign status, hours, ratings, funds, reports, verification,
+  suspension, staff claims, chat), with the live trigger strings, so every demo
+  click-through closes its loop.
+- **Staff are first-class** — the staff dashboard gained a "Funds allocated to me"
+  card (RLS already allowed it; the UI never queried it), and the seed now keeps
+  staff on their own NGO's campaigns/rooms/funds (Meera → Green Earth, Arvind →
+  Bright Futures, with a Green Earth crew room so both dashboards have real
+  content).
+- **Volunteer verification state is communicated** — pending volunteers get a
+  "Verification in progress" card instead of a silently absent badge.
+- **Rejection loop closed** — honest copy + a re-apply button on declined
+  applications (the live duplicate rule allows it); the accepted state says the NGO
+  will add you to a team and you'll be notified.
+- **Invites show dates**; **chat timestamps show the date for older messages**;
+  invite search shows ratings.
+
+**Gates:** `tsc` clean, ESLint clean, **79/79 unit tests** (8 new: notification
+parity + PostgREST-quiet updates + required dates), **14/14 e2e on the dev server
+AND 14/14 on the compiled production build** (new spec 12 pins the directories:
+search, filters, drill-downs, overview links), runtime sweep of every new admin
+route on the production build (15 checks incl. bell scoping + notification
+parity), UI sweep at 1440 px + 390 px (zero horizontal overflow, zero console
+errors — the volunteer/staff detail grids needed `min-w-0` cards), and a VLM
+design pass over all seven new pages (CLEAN). Live path: build green, `/` →
+`/setup` redirect intact.
+
 ## 10. Individual contribution
 
 | Member | Areas |

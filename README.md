@@ -18,9 +18,9 @@ The app ships with a **built-in demo mode** that is **separate from a normal dep
 it only starts when you explicitly ask for it. With the demo flag on, every data call is
 served by a **basic, ephemeral in-memory store** (see `lib/demo/`) — seeded with the
 accounts below, it lets you click through the whole product, but it is deliberately
-**not** a faithful backend: business rules and notification fan-out live in the Postgres
-triggers of a real Supabase deployment, and demo data **resets whenever the server
-restarts**.
+**not** a faithful backend: business rules live in the Postgres triggers of a real
+Supabase deployment (demo writes are permissive), and demo data **resets whenever
+the server restarts**.
 
 ```bash
 npm install
@@ -54,7 +54,12 @@ Demo-mode notes:
   seeded store (avatars, NGO logos, and campaign images all round-trip). Seeded users,
   NGOs, and campaigns already carry profile pictures.
 - Writes are **permissive** — the unique/fund/invite/rating trigger rules are only
-  enforced by a real Supabase backend; the bell shows the seeded notifications.
+  enforced by a real Supabase backend. The notification bell, however, fans out a
+  **curated subset of the live triggers** (application decisions, invites, team
+  changes, campaign status, hours, ratings, funds, reports, verification,
+  suspension, staff claims, chat) with the live message strings, and is scoped to
+  the signed-in account (the demo transport emulates the notifications RLS
+  policies).
 - The demo transport (`/api/demo`) is **unauthenticated by design** (it only exists
   while the demo flag is on and hard-404s once real Supabase env vars are configured) —
   never point demo mode at real user data.
@@ -187,7 +192,7 @@ The admin dashboard is a full control room, not just a verification queue:
 | `npm run lint` | ESLint |
 | `npm run typecheck` | TypeScript strict check |
 | `npm test` | Vitest unit + component tests |
-| `npm run test:e2e` | Playwright E2E — 13 specs (10 critical flows + server-action resilience); boots the demo server itself, zero prerequisites (point `E2E_BASE_URL` + `E2E_NO_SERVER=1` at another backend to test that instead) |
+| `npm run test:e2e` | Playwright E2E — 14 specs (10 critical flows + server-action resilience + admin oversight directories); boots the demo server itself, zero prerequisites (point `E2E_BASE_URL` + `E2E_NO_SERVER=1` at another backend to test that instead) |
 | `npm run db:reset` | Apply migrations + re-seed (local Supabase) |
 
 ## Dark & light mode

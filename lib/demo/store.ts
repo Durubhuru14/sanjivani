@@ -71,6 +71,7 @@ function seed(): DemoStore {
   const r = {
     planning: "11000000-0000-4000-8000-000000000001",
     field: "11000000-0000-4000-8000-000000000002",
+    crew: "11000000-0000-4000-8000-000000000003",
   };
 
   const users: DemoUser[] = [
@@ -181,7 +182,10 @@ function seed(): DemoStore {
       { id: t.night, campaign_id: c.shelter, name: "Night Crew", created_at: iso(2) },
     ],
     team_members: [
-      { id: uuid(), team_id: t.educators, user_id: u.meera, member_type: "staff", hours_logged: 0 },
+      // staff only ever sit on their own NGO's campaign teams (spec §1
+      // scoping) — Meera (Green Earth) on Core Team, Arvind (Bright
+      // Futures) on Educators
+      { id: uuid(), team_id: t.educators, user_id: u.arvind, member_type: "staff", hours_logged: 0 },
       { id: uuid(), team_id: t.educators, user_id: u.priya, member_type: "volunteer", hours_logged: 0 },
       { id: uuid(), team_id: t.educators, user_id: u.rahul, member_type: "volunteer", hours_logged: 0 },
       { id: uuid(), team_id: t.core, user_id: u.meera, member_type: "staff", hours_logged: 24 },
@@ -192,30 +196,37 @@ function seed(): DemoStore {
       { id: uuid(), team_id: t.night, user_id: u.priya, member_type: "volunteer", hours_logged: 0 },
     ],
     fund_allocations: [
-      { id: uuid(), campaign_id: c.tutoring, member_id: u.meera, amount: 1500, note: "Travel reimbursement for site visits", status: "paid", created_at: iso(20) },
+      { id: uuid(), campaign_id: c.tutoring, member_id: u.arvind, amount: 1500, note: "Travel reimbursement for site visits", status: "paid", created_at: iso(20) },
       { id: uuid(), campaign_id: c.tutoring, member_id: u.priya, amount: 2000, note: "Teaching materials for batch A", status: "pending", created_at: iso(5) },
     ],
     chat_rooms: [
       { id: r.planning, campaign_id: c.tutoring, name: "Planning Room", created_by: u.brightfutures, created_at: iso(40) },
       { id: r.field, campaign_id: c.tutoring, name: "Field Updates", created_by: u.brightfutures, created_at: iso(12) },
+      { id: r.crew, campaign_id: c.plantation, name: "Crew Coordination", created_by: u.greenearth, created_at: iso(85) },
     ],
     chat_room_members: [
       { id: uuid(), room_id: r.planning, user_id: u.brightfutures },
-      { id: uuid(), room_id: r.planning, user_id: u.meera },
+      { id: uuid(), room_id: r.planning, user_id: u.arvind },
       { id: uuid(), room_id: r.planning, user_id: u.priya },
       { id: uuid(), room_id: r.planning, user_id: u.rahul },
       { id: uuid(), room_id: r.field, user_id: u.brightfutures },
-      { id: uuid(), room_id: r.field, user_id: u.meera },
+      { id: uuid(), room_id: r.field, user_id: u.arvind },
       { id: uuid(), room_id: r.field, user_id: u.rahul },
+      { id: uuid(), room_id: r.crew, user_id: u.greenearth },
+      { id: uuid(), room_id: r.crew, user_id: u.meera },
+      { id: uuid(), room_id: r.crew, user_id: u.priya },
     ],
     messages: [
-      { id: uuid(), room_id: r.planning, sender_id: u.brightfutures, text: "Welcome everyone! Batch A starts Monday at 5 pm. Meera, can you confirm the centre is unlocked?", created_at: iso(39, 12) },
-      { id: uuid(), room_id: r.planning, sender_id: u.meera, text: "Confirmed. I will pick up the keys from the trust office by 4:30.", created_at: iso(39, 13) },
+      { id: uuid(), room_id: r.planning, sender_id: u.brightfutures, text: "Welcome everyone! Batch A starts Monday at 5 pm. Arvind, can you confirm the centre is unlocked?", created_at: iso(39, 12) },
+      { id: uuid(), room_id: r.planning, sender_id: u.arvind, text: "Confirmed. I will pick up the keys from the trust office by 4:30.", created_at: iso(39, 13) },
       { id: uuid(), room_id: r.planning, sender_id: u.priya, text: "I can bring the maths workbooks I prepared. 30 copies should be enough for Monday.", created_at: iso(38, 9) },
       { id: uuid(), room_id: r.planning, sender_id: u.rahul, text: "I will handle attendance and click photos for the monthly report.", created_at: iso(38, 10) },
       { id: uuid(), room_id: r.planning, sender_id: u.brightfutures, text: "Perfect. Priya, your material budget has been recorded in the fund ledger.", created_at: iso(5, 15) },
-      { id: uuid(), room_id: r.field, sender_id: u.meera, text: "Reminder: field visit tomorrow. Please reach the centre by 4 pm.", created_at: iso(11, 16) },
+      { id: uuid(), room_id: r.field, sender_id: u.arvind, text: "Reminder: field visit tomorrow. Please reach the centre by 4 pm.", created_at: iso(11, 16) },
       { id: uuid(), room_id: r.field, sender_id: u.rahul, text: "On my way with the projector. Traffic is heavy, may be 10 minutes late.", created_at: iso(11, 17) },
+      { id: uuid(), room_id: r.crew, sender_id: u.greenearth, text: "Crew leads — the sapling truck arrives at 6:30 am. Please collect your zone maps at the gate.", created_at: iso(84, 9) },
+      { id: uuid(), room_id: r.crew, sender_id: u.meera, text: "I will brief the buddy groups and hand out gloves and first-aid kits.", created_at: iso(84, 10) },
+      { id: uuid(), room_id: r.crew, sender_id: u.priya, text: "Got it. My group takes the ring road east stretch.", created_at: iso(83, 8) },
     ],
     ratings: [
       { id: uuid(), campaign_id: c.plantation, from_user_id: u.greenearth, to_user_id: u.priya, score: 5, comment: "Priya took charge of the care rota and kept every buddy group on track. Outstanding.", created_at: iso(18) },

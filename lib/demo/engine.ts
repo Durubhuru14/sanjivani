@@ -7,13 +7,16 @@
  * the server process and resets on restart — and intentionally NOT a
  * faithful copy of the real backend:
  *
- *   - No trigger emulation. Business rules (unique applications, immutable
- *     funds, invite-only joins, rating eligibility, …) are enforced by the
- *     Postgres triggers in supabase/migrations/ and only exist in a real
- *     deployment. Demo mode accepts writes permissively.
- *   - No notification fan-out. The bell shows the seeded notifications plus
- *     any row the app code inserts directly.
- *   - The only maintained aggregates are the two the UI displays live:
+ *   - No business-rule trigger emulation. Rules (unique applications,
+ *     immutable funds, invite-only joins, rating eligibility, …) are
+ *     enforced by the Postgres triggers in supabase/migrations/ and only
+ *     exist in a real deployment. Demo mode accepts writes permissively.
+ *   - Notification fan-out is a curated SUBSET of the live triggers — the
+ *     loops a demo click-through actually closes (application decisions,
+ *     invites, team changes, campaign status, ratings, funds, reports,
+ *     verification, suspension, staff claims, chat). Messages mirror the
+ *     live trigger strings so the bell behaves like production.
+ *   - The maintained aggregates are the ones the UI displays live:
  *     `campaigns.remaining_budget` and the `avg_rating` columns.
  *
  * Supported: filters (eq/neq/in/ilike/like/gt/gte/lt/lte/or/is), ordering,
@@ -254,8 +257,9 @@ function resolveRow(row: Row, parentTable: string, parsed: ParsedSelect): Row {
 }
 
 // ------------------------------------------------------- display aggregates
-// The only trigger behaviour kept: the two numbers the UI shows live, so a
-// click-through never displays stale math. Everything else is permissive.
+// The trigger behaviour kept beyond notifications: the two numbers the UI
+// shows live, so a click-through never displays stale math. Everything else
+// is permissive.
 
 function resyncBudget(campaignId: unknown): void {
   const c = table("campaigns").find((r) => r.id === campaignId);
@@ -278,6 +282,177 @@ function recomputeAvgRating(targetId: unknown): void {
   } else if (profile.role === "volunteer") {
     const v = table("volunteers").find((v) => v.profile_id === targetId);
     if (v) v.avg_rating = rounded;
+  }
+}
+
+// ------------------------------------------------------ demo notifications
+// A curated subset of the live triggers (supabase/migrations/00004 + 00007):
+// the notification loops a demo click-through closes. Messages mirror the
+// live trigger strings so the bell behaves like production. Recipients
+// without a profile row are skipped, exactly like notify_user's null guard.
+
+function notify(userId: unknown, type: string, message: string): void {
+  if (typeof userId !== "string" || !userId) return;
+  table("notifications").push({
+    id: randomUUID(),
+    user_id: userId,
+    type,
+    message,
+    read: false,
+    created_at: new Date().toISOString(),
+  });
+}
+
+function profileName(id: unknown): string {
+  const p = table("profiles").find((r) => r.id === id);
+  return typeof p?.name === "string" ? p.name : "Someone";
+}
+
+function campaignTitle(campaignId: unknown): string {
+  const c = table("campaigns").find((r) => r.id === campaignId);
+  return typeof c?.title === "string" ? c.title : "a campaign";
+}
+
+function teamCampaignId(teamId: unknown): unknown {
+  const t = table("teams").find((r) => r.id === teamId);
+  return t?.campaign_id;
+}
+
+/** after-insert notification hooks (mirror of the live triggers). */
+function afterInsertNotify(t: string, row: Row): void {
+  if (t === "applications" && row.status === "pending") {
+    const c = table("campaigns").find((r) => r.id === row.campaign_id);
+    if (c?.ngo_id) {
+      notify(
+        c.ngo_id,
+        "new_application",
+        `${profileName(row.volunteer_id)} applied to join "${campaignTitle(row.campaign_id)}".`
+      );
+    }
+  } else if (t === "campaign_invites") {
+    notify(
+      row.volunteer_id,
+      "campaign_invite",
+      `You have been invited to join "${campaignTitle(row.campaign_id)}".`
+    );
+  } else if (t === "team_members") {
+    notify(
+      row.user_id,
+      "team_assignment",
+      `You have been added to the team for "${campaignTitle(teamCampaignId(row.team_id))}".`
+    );
+  } else if (t === "ratings") {
+    notify(
+      row.to_user_id,
+      "rating_received",
+      `You received a ${row.score}-star rating on "${campaignTitle(row.campaign_id)}".`
+    );
+  } else if (t === "volunteer_reports") {
+    const msg = `A report was filed against ${profileName(row.volunteer_id)} by ${profileName(row.reported_by)}.`;
+    for (const p of table("profiles")) {
+      if (p.role === "admin") notify(p.id, "volunteer_report", msg);
+    }
+  } else if (t === "fund_allocations") {
+    notify(
+      row.member_id,
+      "fund_allocation",
+      `A fund allocation of Rs. ${row.amount} was recorded for you in "${campaignTitle(row.campaign_id)}".`
+    );
+  } else if (t === "messages") {
+    const room = table("chat_rooms").find((r) => r.id === row.room_id);
+    const msg = `New message in "${room?.name ?? "a room"}."`;
+    const members = new Set(
+      table("chat_room_members")
+        .filter((m) => m.room_id === row.room_id)
+        .map((m) => m.user_id)
+    );
+    for (const uid of members) {
+      if (uid !== row.sender_id) notify(uid, "chat_message", msg);
+    }
+    if (room?.campaign_id) {
+      const c = table("campaigns").find((r) => r.id === room.campaign_id);
+      if (c?.ngo_id && !members.has(c.ngo_id)) notify(c.ngo_id, "chat_message", msg);
+    }
+  }
+}
+
+/** after-update notification hooks. `before` is the pre-update row snapshot. */
+function afterUpdateNotify(t: string, before: Row, row: Row): void {
+  if (t === "applications" && before.status !== row.status) {
+    notify(
+      row.volunteer_id,
+      "application_status",
+      `Your application for "${campaignTitle(row.campaign_id)}" was ${row.status}.`
+    );
+  } else if (t === "campaign_invites" && before.status !== row.status) {
+    if (row.status === "declined") {
+      notify(
+        row.invited_by,
+        "invite_declined",
+        `${profileName(row.volunteer_id)} declined the invite to "${campaignTitle(row.campaign_id)}".`
+      );
+    } else if (row.status === "accepted") {
+      notify(
+        row.invited_by,
+        "invite_accepted",
+        `${profileName(row.volunteer_id)} accepted the invite to "${campaignTitle(row.campaign_id)}".`
+      );
+    }
+  } else if (t === "campaigns" && before.status !== row.status) {
+    let extra = "";
+    if (row.status === "completed") extra = " You can now rate your teammates and the NGO.";
+    else if (row.status === "cancelled") extra = " No further activity can happen on it.";
+    const msg = `"${row.title}" is now ${row.status}.${extra}`;
+    for (const tm of table("team_members")) {
+      const cid = teamCampaignId(tm.team_id);
+      if (cid === row.id) notify(tm.user_id, "campaign_status", msg);
+    }
+  } else if (t === "team_members" && before.hours_logged !== row.hours_logged) {
+    const hours = Number(row.hours_logged ?? 0);
+    notify(
+      row.user_id,
+      "hours_logged",
+      `${hours} hour${hours === 1 ? "" : "s"} were logged for you on "${campaignTitle(teamCampaignId(row.team_id))}".`
+    );
+  } else if (t === "volunteer_reports" && before.status !== row.status &&
+      (row.status === "reviewed" || row.status === "dismissed")) {
+    notify(
+      row.reported_by,
+      "report_status",
+      `Your report against ${profileName(row.volunteer_id)} was marked ${row.status}.`
+    );
+  } else if (t === "profiles" && before.suspended !== row.suspended) {
+    notify(
+      row.id,
+      row.suspended ? "account_suspended" : "account_unsuspended",
+      row.suspended
+        ? "Your account was suspended by the platform admin. Your data is preserved — contact support if you think this is a mistake."
+        : "Your account was unsuspended — welcome back. All your data is intact."
+    );
+  } else if (t === "ngos" && before.verification_status !== row.verification_status) {
+    notify(
+      row.profile_id,
+      "ngo_verification",
+      `Your NGO "${row.org_name}" was ${row.verification_status}.`
+    );
+  } else if (t === "volunteers" && before.verification_status !== row.verification_status) {
+    notify(
+      row.profile_id,
+      "volunteer_verification",
+      `Your volunteer verification was ${row.verification_status}.`
+    );
+  } else if (t === "ngo_staff" && before.profile_id == null && row.profile_id != null) {
+    notify(
+      row.ngo_id,
+      "staff_claimed",
+      `${row.invited_name ?? row.invited_email} has claimed their staff invite.`
+    );
+  } else if (t === "fund_allocations" && before.status !== row.status && row.status === "paid") {
+    notify(
+      row.member_id,
+      "fund_paid",
+      `Your fund allocation of Rs. ${row.amount} has been marked paid.`
+    );
   }
 }
 
@@ -313,7 +488,7 @@ export function execute(op: DemoOp): PostgrestLike<unknown> {
       case "insert":
         return runInsert(op.table, op.values, op.columns, op.single);
       case "update":
-        return runUpdate(op.table, op.values, op.filters, op.columns, op.single);
+        return runUpdate(op.table, op.values, op.filters, op.columns, op.single, op.maybe);
       case "delete":
         return runDelete(op.table, op.filters, op.columns);
       case "rpc":
@@ -372,6 +547,7 @@ function runInsert(t: string, values: Row[], columns?: string, single?: boolean)
     table(t).push(row);
     if (t === "fund_allocations") resyncBudget(row.campaign_id);
     if (t === "ratings") recomputeAvgRating(row.to_user_id);
+    afterInsertNotify(t, row);
     inserted.push(row);
   }
   if (columns) {
@@ -386,23 +562,28 @@ function runUpdate(
   values: Row,
   filters: Filter[],
   columns?: string,
-  single?: boolean
+  single?: boolean,
+  maybe?: boolean
 ): PostgrestLike<unknown> {
   if (!getStore().tables[t]) return err(`relation "public.${t}" does not exist`, "42P01", 404);
   const rows = applyFilters(table(t), filters);
   // PostgREST semantics: a zero-row UPDATE is a quiet success (200 + empty
-  // representation), not an error — only .single() turns it into PGRST116.
-  // Matching that keeps demo behaviour honest for idempotent retries
-  // (mark-all-read, double-clicked status buttons, fund re-syncs).
+  // representation), not an error — only .single() turns it into PGRST116
+  // (.maybeSingle() stays null-quiet). Matching that keeps demo behaviour
+  // honest for idempotent retries (mark-all-read, double-clicked status
+  // buttons, fund re-syncs) and for existence checks that read the update's
+  // returned row.
   if (rows.length === 0) {
-    if (single) return err("JSON object requested, multiple (or no) rows returned", "PGRST116", 406);
-    return columns ? ok([]) : ok(null);
+    if (single && !maybe) return err("JSON object requested, multiple (or no) rows returned", "PGRST116", 406);
+    return columns ? ok(single ? null : []) : ok(null);
   }
   const updated: Row[] = [];
   for (const row of rows) {
+    const before = { ...row };
     Object.assign(row, values);
     if (t === "campaigns") resyncBudget(row.id);
     if (t === "fund_allocations") resyncBudget(row.campaign_id);
+    afterUpdateNotify(t, before, row);
     updated.push(row);
   }
   if (columns) {
@@ -422,6 +603,16 @@ function runDelete(t: string, filters: Filter[], columns?: string): PostgrestLik
   }
   if (t === "fund_allocations") {
     for (const r of rows) resyncBudget(r.campaign_id);
+  }
+  if (t === "team_members") {
+    // removal notification — the member deserves to know (live trigger 00007)
+    for (const r of rows) {
+      notify(
+        r.user_id,
+        "team_removed",
+        `You were removed from the team for "${campaignTitle(teamCampaignId(r.team_id))}".`
+      );
+    }
   }
   if (columns) return ok(resolveParsed(rows, t, columns));
   return ok(null);
