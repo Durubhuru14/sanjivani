@@ -1,0 +1,135 @@
+```json
+{
+  "audit": [
+    {
+      "image": "Image 1",
+      "page": "NGO Dashboard (Green Earth Foundation)",
+      "issues": [
+        {
+          "severity": "moderate",
+          "location": "Top stat cards row — all four cards",
+          "issue": "Stat cards have equal outer dimensions but inconsistent internal padding rhythm. The numeric values ('1', '2', '₹50,000', '4.33') sit at different vertical positions relative to their labels. The 'Funds Left' and 'Rating' cards appear to have more breathing room between the icon and the value than 'Campaigns' and 'Applications'.",
+          "why": "Breaks vertical rhythm — the eye expects stat values to align on a common baseline across the row, creating a jittery scan line."
+        },
+        {
+          "severity": "minor",
+          "location": "Stat card icons (top-right of each card)",
+          "issue": "Icons are not perfectly aligned to the same coordinate grid. The megaphone (Campaigns), inbox (Applications), currency (Funds), and star (Rating) icons sit at slightly different vertical offsets within their containers.",
+          "why": "Micro-alignment inconsistency breaks the polished feel of a dashboard stat row."
+        },
+        {
+          "severity": "minor",
+          "location": "'Applications waiting for you' section — list items",
+          "issue": "The two application rows (Aisha Khan, Vikram Joshi) have a divider line between them, but the padding above the first item and below the last item appears slightly unequal (top padding looks ~4px larger than bottom).",
+          "why": "Asymmetric internal padding in list containers creates subtle visual imbalance."
+        },
+        {
+          "severity": "minor",
+          "location": "'Reports you filed' section — status badge",
+          "issue": "The 'OPEN' badge uses an amber/orange background color, while the 'UPCOMING' badges in the Applications section use blue. This is acceptable semantically, but the pill shape has noticeably more horizontal padding than the 'UPCOMING' badges above, making it look like a different component variant.",
+          "why": "Inconsistent badge sizing for the same visual role (status indicator) breaks component consistency."
+        },
+        {
+          "severity": "minor",
+          "location": "'Your campaigns' section — campaign cards",
+          "issue": "The two campaign cards have identical width but the internal content doesn't share a strict baseline grid: the badge row, title, metadata line, and progress bar are at matching heights (good), but the card on the left ('River Clean-Up Drive') has an 'UPCOMING' + 'PUBLIC' badge pair while the right has 'COMPLETED' + 'PUBLIC'. The 'UPCOMING' badge is blue with a dot; 'COMPLETED' is gray with a dot — color language is consistent here, but the blue feels slightly more visually heavy than the gray, creating minor asymmetry.",
+          "why": "Acceptable given semantic difference, but worth noting that completed/upcoming visual weight differs."
+        },
+        {
+          "severity": "minor",
+          "location": "Page header area — 'Welcome back' title vs 'New campaign' button",
+          "issue": "The 'New campaign' button is vertically centered relative to the title text, but there's approximately 16-18px more space above the title than below it before the stat cards begin. The subtitle 'Here is what is happening...' has generous line-height that pushes the stat cards further down, creating a large whitespace block.",
+          "why": "Slightly top-heavy header spacing; could be tightened by 8-12px for better rhythm."
+        }
+      ],
+      "verdict": "Mostly clean with minor padding inconsistencies in stat cards and lists."
+    },
+    {
+      "image": "Image 2",
+      "page": "NGO Campaigns List Page",
+      "issues": [
+        {
+          "severity": "moderate",
+          "location": "Campaign cards grid — both cards",
+          "issue": "The two campaign cards are displayed in what appears to be a 2-column grid, but they are not of equal height. The left card ('River Clean-Up Drive') and right card ('Tree Plantation Marathon') have image areas of identical aspect ratio, but the total card height from top edge to bottom edge differs by approximately 2-4 pixels, or the bottom padding after the progress bar is uneven.",
+          "why": "Sibling cards in the same row must be pixel-equal in height for grid integrity; any visible difference looks like a layout bug."
+        },
+        {
+          "severity": "minor",
+          "location": "Page title 'Campaigns' vs Image 1 title 'Welcome back...'",
+          "issue": "The 'Campaigns' heading uses the same font size/weight as the Dashboard welcome heading (good consistency), but the subtitle 'Everything your organisation is running...' has different line-height or font-size rhythm compared to the Dashboard subtitle, making the header block feel like a different template.",
+          "why": "Cross-page typographic hierarchy should match for sibling pages under the same navigation."
+        },
+        {
+          "severity": "minor",
+          "location": "Whitespace below cards",
+          "issue": "There is a large expanse of empty space (approximately 300-400px) below the two campaign cards with no content, no footer, and no pagination. The page ends abruptly.",
+          "why": "Orphaned whitespace makes the page look unfinished; either add content, a footer, or reduce the container max-width/centering to avoid a gaping hole."
+        },
+        {
+          "severity": "minor",
+          "location": "Card internal spacing — badge to title gap",
+          "issue": "The gap between the status badges ('UPCOMING'/'COMPLETED') and the campaign title ('River Clean-Up Drive') is approximately 12px, which is good, but the gap between the title and the metadata line (location/date) is only ~8px, while the gap between metadata and the budget/progress line is ~16px. This creates a compressed-then-loose rhythm within each card.",
+          "why": "Inconsistent vertical rhythm inside the card content area — should follow a consistent 8px baseline grid."
+        }
+      ],
+      "verdict": "Clean card design but suffers from unequal card heights and excessive bottom whitespace."
+    },
+    {
+      "image": "Image 3",
+      "page": "NGO Create Campaign Form",
+      "issues": [
+        {
+          "severity": "critical",
+          "location": "Form layout — Location / Total budget row",
+          "issue": "The 'Location' input field and 'Total budget (₹)' input field are placed side-by-side in a 2-column layout, but they are NOT of equal width. The 'Location' field is visibly wider (approximately 55-58% of container width) than the 'Total budget' field (approximately 40-42%).",
+          "why": "Broken grid symmetry — when placing two fields in a split row, they must be exactly 50/50 or follow a clear ratio (e.g., 2:1). The current asymmetry looks like a miscalculated flex or grid column span."
+        },
+        {
+          "severity": "critical",
+          "location": "Form layout — Start date / End date row",
+          "issue": "Same issue as above: 'Start date' and 'End date' fields are side-by-side but the Start date field is visibly wider than the End date field by the same margin as the Location/Budget row.",
+          "why": "Compounds the grid inconsistency — now two consecutive rows have mismatched column widths, creating a jagged right-edge alignment down the form."
+        },
+        {
+          "severity": "moderate",
+          "location": "Form layout — Visibility / Status row",
+          "issue": "The 'Visibility' dropdown ('Public — anyone can apply') and 'Status' dropdown ('Upcoming') are also in a 2-column layout and suffer from the same width asymmetry — left field wider than right.",
+          "why": "Three consecutive form rows with the same misalignment error suggests a systematic CSS grid/flex issue (e.g., labels of different lengths pushing columns, or col-span not set correctly)."
+        },
+        {
+          "severity": "moderate",
+          "location": "Right-edge alignment of form fields",
+          "issue": "Because the left fields (Location, Start date, Visibility) are wider than their right-side siblings, the right edges of all form controls do NOT align vertically. There is a staggered 'staircase' effect on the right side of the form.",
+          "why": "Destroys the clean vertical axis that forms rely upon for scannability and polish."
+        },
+        {
+          "severity": "minor",
+          "location": "Textarea fields — Description and Objectives",
+          "issue": "Both textareas have the same width (full-width, good), but the vertical sizing is ambiguous — they appear to have a fixed height of ~80-100px which may not be enough for 'Objectives' which typically contains list content. More importantly, the label-to-field gap differs slightly between the textareas and the input fields above.",
+          "why": "Minor spacing inconsistency between input types."
+        },
+        {
+          "severity": "minor",
+          "location": "Form action buttons — Cancel / Create campaign",
+          "issue": "The 'Cancel' button (ghost/outline style) and 'Create campaign' button (primary green filled) are positioned at the bottom-right of the form card. They are aligned to the right edge, but there is no left-aligned element to balance them, and the gap between the two buttons (~12px) is smaller than the gap between the last form field (Campaign image) and the buttons (~32px).",
+          "why": "The large whitespace gap before the action buttons creates a disconnected feeling — the actions float too far from the last input."
+        },
+        {
+          "severity": "minor",
+          "location": "Campaign image uploader",
+          "issue": "The upload placeholder box (square with icon) and the 'Upload image' button/text are aligned horizontally, but the helper text 'PNG, JPG, WEBP or GIF · up to 2 MB' sits below with very tight spacing (~4px) to the button, while the upload box itself has generous padding inside.",
+          "why": "The helper text is too close to the interactive element, reducing touch/click safety and looking cramped."
+        }
+      ],
+      "verdict": "Has a systematic grid-column width bug affecting three form rows (critical for visual rhythm). Otherwise clean component usage."
+    }
+  ],
+  "summary": {
+    "critical_issues": 3,
+    "moderate_issues": 6,
+    "minor_issues": 10,
+    "overall_assessment": "The design system execution is strong — warm green palette, rounded-xl cards, soft shadows, and typography hierarchy are well-established across pages. However, Image 3 (Create Campaign form) has a **systematic 2-column grid width imbalance** that must be fixed before shipping (left columns ~10% wider than right columns in three consecutive rows). Image 1 and 2 show minor padding rhythm inconsistencies in stat cards and list items. Image 2 also has problematic orphaned whitespace at the viewport bottom. Recommend: fix form grid to true 50/50 or defined ratio; standardize internal card padding to an 8px baseline grid; add footer or reduce max-width on Campaigns list page."
+  }
+}
+```

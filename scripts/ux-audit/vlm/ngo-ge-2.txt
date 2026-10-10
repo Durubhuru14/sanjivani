@@ -1,0 +1,117 @@
+```json
+{
+  "audit": [
+    {
+      "image": "Image 1",
+      "page": "NGO Campaign Detail (River Clean-Up Drive) — Team & Hours Tab",
+      "issues": [
+        {
+          "severity": "moderate",
+          "location": "Action button row, right side of campaign header",
+          "issue": "Four buttons ('Export CSV', 'Chat rooms', 'Cancel campaign', 'Delete') have inconsistent visual weight and styling: two are outline/ghost, one is red-outline, one is text-only with icon. They sit at slightly different vertical alignments.",
+          "why": "Breaks component consistency — primary vs destructive vs secondary actions are not visually differentiated by a clear hierarchy. The red 'Cancel' and text-only 'Delete' look like they belong to different design systems."
+        },
+        {
+          "severity": "minor",
+          "location": "'Mark ongoing' button (left) vs action buttons (right)",
+          "issue": "The solid green 'Mark ongoing' button on the left is visually heavier than the entire group of four buttons on the right, creating an unbalanced header composition.",
+          "why": "Visual weight is lopsided; the left-side CTA dominates while the right-side actions feel like an afterthought."
+        },
+        {
+          "severity": "minor",
+          "location": "Tab navigation bar ('Team & hours', 'Applications (2)', 'Funds', 'Edit')",
+          "issue": "Tabs use a very subtle/low-contrast style that makes the active state nearly indistinguishable from inactive tabs. The '(2)' badge on Applications has no background container — it's just inline text.",
+          "why": "Weak tab affordance; users may not clearly perceive which tab is active. The notification count lacks the pill/badge treatment used elsewhere in the system."
+        },
+        {
+          "severity": "minor",
+          "location": "Empty state container ('No teams yet')",
+          "issue": "The empty state area has a very light border and ample whitespace, which is good, but the icon + text block appears slightly high vertically within the container — more padding at bottom than top.",
+          "why": "Minor optical centering issue breaks the visual balance of the empty state card."
+        },
+        {
+          "severity": "minor",
+          "location": "'New team name' input field row",
+          "issue": "The input field and '+ Add team' button are not perfectly baseline-aligned — the button text sits slightly higher than the input field text baseline.",
+          "why": "Micro-misalignment in the form row disrupts visual rhythm when scanning horizontally."
+        }
+      ],
+      "verdict": "Mostly clean with moderate action-button inconsistency."
+    },
+    {
+      "image": "Image 2",
+      "page": "NGO Staff Management Page",
+      "issues": [
+        {
+          "severity": "critical",
+          "location": "Staff roster card — Name and Email input fields",
+          "issue": "The 'Name' and 'Email' input fields are NOT equal width. The Name field is visibly wider than the Email field, leaving uneven gaps before the 'Invite' button.",
+          "why": "Breaks grid consistency — sibling form fields in the same row should share equal or proportionally consistent widths (e.g., 1fr 1fr or 2fr 1fr). The current asymmetry looks unintentional."
+        },
+        {
+          "severity": "moderate",
+          "location": "Staff list items (Kavita Rao, Meera Deshpande)",
+          "issue": "The two staff rows have different internal spacing/heights. Kavita's row shows 'Not yet claimed' subtext making it taller; Meera's row lacks this subtext so it's shorter. The Remove buttons are vertically misaligned relative to each other across rows.",
+          "why": "Inconsistent row heights in a list create jagged edges and make scanning difficult. The Remove buttons don't align horizontally across rows."
+        },
+        {
+          "severity": "minor",
+          "location": "Status badges ('INVITED' vs 'ACTIVE')",
+          "issue": "Both badges use different color treatments (blue-ish for INVITED, green for ACTIVE) which is correct semantically, but their internal padding/horizontal size differs slightly.",
+          "why": "Minor inconsistency in badge sizing — status pills should have fixed min-width or consistent padding regardless of text length."
+        },
+        {
+          "severity": "minor",
+          "location": "Avatar circles (KR, MD)",
+          "issue": "Avatar sizes appear consistent (good), but the initials text inside may have slight font-weight or positioning variation. The avatar for 'MD' (Meera) has a darker green background than 'KR' (Kavita) which has a lighter sage green.",
+          "why": "Inconsistent avatar background colors for the same role (staff members) breaks the color language — should be uniform or follow a deterministic pattern."
+        }
+      ],
+      "verdict": "Critical input width asymmetry needs fixing; list row heights need normalization."
+    },
+    {
+      "image": "Image 3",
+      "page": "NGO Organisation Profile Page",
+      "issues": [
+        {
+          "severity": "moderate",
+          "location": "Details card — Form fields grid (Registration number vs Contact person)",
+          "issue": "Two-column form fields ('Registration number' and 'Contact person / display name') have unequal widths. The left field is wider than the right field, and the gap between them is not centered under the full-width fields above/below.",
+          "why": "Grid inconsistency — if using a 2-column layout, fields should be equal (1fr 1fr) or follow a clear ratio. Current layout looks like the right column was squeezed."
+        },
+        {
+          "severity": "moderate",
+          "location": "'Save profile' button placement",
+          "issue": "The green 'Save profile' button is right-aligned at the bottom of the Details card, but it sits below only the 'Location' field (which is full-width), making it appear disconnected from the form group above it. There's excessive whitespace to its left.",
+          "why": "Awkward button positioning — either center it, align it with the right edge of the last form field, or make it full-width. Current placement creates orphaned space."
+        },
+        {
+          "severity": "minor",
+          "location": "Recent ratings received — Star ratings alignment",
+          "issue": "The star rating groups (5.00, 4.00, 4.00) are right-aligned but not aligned to a consistent vertical axis because the review cards have different text lengths. The numbers themselves don't tab-align.",
+          "why": "The numeric scores (5.00, 4.00) should align on the decimal point or right-edge for easy comparison. Currently they float based on card content width."
+        },
+        {
+          "severity": "minor",
+          "location": "Verification card — Star rating row",
+          "issue": "The 4-star display (4 filled, 1 empty) has the empty star barely visible (very low contrast against white background). The number '4.33' and label text have tight line-height.",
+          "why": "Accessibility/contrast concern on the empty star. Also, the star component here uses a different size/treatment than the Recent ratings section below — inconsistency in the same rating concept."
+        },
+        {
+          "severity": "minor",
+          "location": "Organisation logo section — Action buttons",
+          "issue": "'Change image' and 'Remove' buttons are different styles (one outline with icon, one ghost/text with icon). They have different paddings.",
+          "why": "Sibling action buttons for the same object (logo) should share consistent styling — both should likely be ghost or both outline."
+        },
+        {
+          "severity": "minor",
+          "location": "Card stack vertical rhythm",
+          "issue": "The gap between the Verification card and Details card is smaller than the gap between Details card and Recent ratings card.",
+          "why": "Inconsistent section spacing breaks the vertical rhythm of the page — all major cards should have uniform margin-bottom."
+        }
+      ],
+      "verdict": "Clean overall but form grid proportions and button placement need attention."
+    }
+  ]
+}
+```
