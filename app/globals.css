@@ -41,46 +41,59 @@
   --color-leaf-bright: var(--primary-bright);
   --color-leaf-deep: var(--primary-deep);
   --color-tint: var(--tint);
-  /* warm companions — community warmth, growth, and optimism.
-     terracotta = human warmth (kickers, accents); marigold = sunny
-     highlight (decorative underlines, washes, chart accents). */
+  /* warm companions — community warmth, growth, and optimism */
   --color-terracotta: var(--terracotta);
   --color-marigold: var(--marigold);
-  --radius-sm: calc(var(--radius) - 2px);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
+  /* forest band — the deep-green exclamation-point section */
+  --color-band: var(--band);
+  --color-band-ink: var(--band-ink);
+  --color-band-ink-soft: var(--band-ink-soft);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  /* soft, warm shadows — brown-black ink, never colored glow */
+  /* letterpress elevation — soft warm shadows with a paper highlight edge.
+     Values come from :root/.dark so both themes get their own ink. */
   --shadow-soft: 0 1px 2px rgb(58 47 26 / 0.07), 0 8px 24px rgb(58 47 26 / 0.09);
-  --shadow-lift: 0 2px 6px rgb(58 47 26 / 0.09), 0 18px 44px rgb(58 47 26 / 0.15);
+  --shadow-card: var(--elev-card);
+  --shadow-lift: var(--elev-lift);
+  --shadow-btn: var(--elev-btn);
+  --shadow-btn-press: var(--elev-btn-press);
 }
 
 /* ------------------------------------------------------------------
-   Sanjivani design system — "warm community" identity
-   The feel of a well-loved field notebook and a community notice-board:
-   the spec green (#2E7D32 leaf / #66BB6A new leaf / #E8F5E9 surface
-   tint — Sanjivini_Spec.md) presented on warm paper, with terracotta +
-   marigold companions, soft serif display type (Fraunces), rounded
-   corners, generous whitespace.
-   Light is the default; .dark swaps to a warm earth-night ground
-   (brown-black, never neon) with the same green ramp brightened
-   (green 300/200/700). Patterns are quiet organic textures —
-   paper grain, seed trays, morning-sun washes — rendered from CSS
-   vars so both themes agree.
+   Sanjivani design system — "the hand-crafted ledger"
+   A community field journal meets storybook editorial: the spec green
+   (#2E7D32 leaf / #66BB6A new leaf / #E8F5E9 surface tint —
+   Sanjivini_Spec.md) used as INK on warm paper, with terracotta and
+   marigold as the human-warmth accents. Green stamps, borders and
+   numerals; marigold behaves like a marker highlight.
+   Principles:
+   - round everything (Duolingo rule: no pointy shapes) — pill buttons,
+     squircle chips, generous radii
+   - letterpress depth: hairline border + warm shadow + a 1px paper
+     highlight inset at the top edge
+   - one illustration language: organic Béziers, tapered strokes,
+     stroke-linecap round everywhere (GardenArt.tsx)
+   - a named motion vocabulary of care: things sprout, sway, breathe,
+     and pop — all transform/opacity, all behind reduced-motion guards
+   Light is the default; .dark swaps to a warm earth-night ground with
+   the same green ramp at higher luminance.
 ------------------------------------------------------------------- */
 :root {
   --radius: 1rem;
 
-  /* surfaces — warm paper, never clinical white */
-  --background: #faf7ef;
-  --foreground: #2a2d22;
+  /* surfaces — warm paper ground, card one step brighter (the ledger page
+     vs the desk it rests on), borders visible enough to read as ink lines */
+  --background: #f7f2e5;
+  --foreground: #2b2d21;
   --card: #fffdf7;
-  --card-foreground: #2a2d22;
+  --card-foreground: #2b2d21;
   --popover: #fffdf7;
-  --popover-foreground: #2a2d22;
-  --muted: #f1ebdc;
-  --muted-foreground: #6e6c5c;
-  --accent: #f0ead7;
+  --popover-foreground: #2b2d21;
+  --muted: #efe7d2;
+  --muted-foreground: #6b6753;
+  --accent: #f0e8d3;
   --accent-foreground: #1b5e20;
 
   /* brand — the spec green (Sanjivini_Spec.md: #2E7D32 primary,
@@ -90,16 +103,21 @@
   --primary-deep: #1b5e20; /* forest floor — spec green, one step deeper */
   --primary-foreground: #ffffff;
   --tint: #e8f5e9; /* spec surface tint — fresh green wash for chips/bands */
-  --secondary: #efe7d4; /* warm sand */
-  --secondary-foreground: #4f4735;
+  --secondary: #ede2c8; /* warm sand */
+  --secondary-foreground: #4a4331;
+
+  /* forest band — the stat section flips to deep green with paper ink */
+  --band: #1b5e20;
+  --band-ink: #f7f1de;
+  --band-ink-soft: rgb(247 241 222 / 0.72);
 
   /* warm companions */
   --terracotta: #aa542e; /* clay — human warmth, kickers */
-  --marigold: #dfa737; /* sun — decorative highlights only */
+  --marigold: #dfa737; /* sun — marker highlights, decorative only */
 
   /* lines and state */
-  --border: #e5ddc9;
-  --input: #d6cdb2;
+  --border: #dcd1b3;
+  --input: #cfc3a3;
   --ring: #2e7d32;
   --destructive: #b3432f;
   --destructive-foreground: #ffffff;
@@ -110,53 +128,93 @@
   --chart-4: #66bb6a;
   --chart-5: #1b5e20;
 
+  /* letterpress elevation (light) */
+  --elev-card:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 1px 2px rgb(58 47 26 / 0.05),
+    0 8px 24px rgb(58 47 26 / 0.08);
+  --elev-lift:
+    inset 0 1px 0 rgb(255 255 255 / 0.65),
+    0 2px 6px rgb(58 47 26 / 0.08),
+    0 18px 44px rgb(58 47 26 / 0.16);
+  --elev-btn:
+    inset 0 1px 0 rgb(255 255 255 / 0.24),
+    0 2px 4px rgb(27 94 32 / 0.26),
+    0 10px 24px -8px rgb(46 125 50 / 0.42);
+  --elev-btn-press:
+    inset 0 2px 5px rgb(27 94 32 / 0.32),
+    0 1px 2px rgb(27 94 32 / 0.2);
+
   /* status semantics — positive=done/live, info=planned/invited,
      warning=awaiting, danger=blocked, neutral=archived */
   --status-positive: #2e7d32;
   --status-info: #2e6f74;
-  --status-warning: #a3660a;
+  --status-warning: #8f5b08;
   --status-danger: #b3432f;
   --status-neutral: #6e6c5c;
 }
 
 .dark {
   /* earth night — warm brown-black, never neon or pure black */
-  --background: #16140f;
+  --background: #171410;
   --foreground: #ece5d3;
-  --card: #201d16;
+  --card: #221e17;
   --card-foreground: #ece5d3;
-  --popover: #201d16;
+  --popover: #221e17;
   --popover-foreground: #ece5d3;
-  --muted: #2a2620;
-  --muted-foreground: #a8a28d;
-  --accent: #2e2a21;
-  --accent-foreground: #ddd3b6;
+  --muted: #2c2720;
+  --muted-foreground: #a9a28c;
+  --accent: #2f2a20;
+  --accent-foreground: #ded3b4;
 
-  --primary: #81c784; /* the spec green, brightened for the dark ground (green 300) */
-  --primary-bright: #a5d6a7;
-  --primary-deep: #388e3c;
+  /* the spec green, lifted for luminance on the dark ground (green 200/300
+     territory — the old 300 read bruised-olive next to the warm brown) */
+  --primary: #8ecf93;
+  --primary-bright: #abdca6;
+  --primary-deep: #57a45c;
   --primary-foreground: #10230f;
-  --tint: #253826; /* deep green wash on the earth-night ground */
-  --secondary: #2e2a21;
-  --secondary-foreground: #ddd3b6;
+  --tint: #26371f; /* deep green wash on the earth-night ground */
+  --secondary: #2f2a20;
+  --secondary-foreground: #ded3b4;
+
+  --band: #243521;
+  --band-ink: #e9f0dc;
+  --band-ink-soft: rgb(233 240 220 / 0.72);
 
   --terracotta: #d98f6a;
   --marigold: #e3b862;
 
-  --border: #383427;
-  --input: #443f30;
-  --ring: #81c784;
+  --border: #3b3427;
+  --input: #463f2f;
+  --ring: #8ecf93;
   --destructive: #e08570;
   --destructive-foreground: #2a120c;
 
-  --chart-1: #81c784;
+  --chart-1: #8ecf93;
   --chart-2: #e3b862;
   --chart-3: #d98f6a;
-  --chart-4: #a5d6a7;
-  --chart-5: #4c8c50;
+  --chart-4: #abdca6;
+  --chart-5: #57a45c;
+
+  /* letterpress elevation (dark — the highlight edge all but disappears) */
+  --elev-card:
+    inset 0 1px 0 rgb(255 255 255 / 0.045),
+    0 1px 2px rgb(0 0 0 / 0.28),
+    0 10px 28px rgb(0 0 0 / 0.32);
+  --elev-lift:
+    inset 0 1px 0 rgb(255 255 255 / 0.04),
+    0 2px 6px rgb(0 0 0 / 0.3),
+    0 20px 48px rgb(0 0 0 / 0.42);
+  --elev-btn:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 2px 4px rgb(0 0 0 / 0.32),
+    0 10px 24px -8px rgb(0 0 0 / 0.5);
+  --elev-btn-press:
+    inset 0 2px 5px rgb(0 0 0 / 0.42),
+    0 1px 2px rgb(0 0 0 / 0.3);
 
   /* brightened status semantics for the dark ground */
-  --status-positive: #81c784;
+  --status-positive: #8ecf93;
   --status-info: #85c6ca;
   --status-warning: #e3b862;
   --status-danger: #e59681;
@@ -187,15 +245,20 @@
 }
 
 @layer utilities {
-  /* warm kicker label — sans semibold, never mono: reads like a tag on
-     a jam jar / field notebook, not a terminal. */
+  /* warm kicker label — small caps sans, reads like a tag on a jam jar */
   .eyebrow {
-    @apply font-sans text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground;
+    @apply font-sans text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-muted-foreground;
   }
 
-  /* terracotta variant for section kickers above display headings */
+  /* terracotta variant for section kickers */
   .eyebrow-warm {
     @apply text-terracotta;
+  }
+
+  /* kicker chip — the hero/section label as a stamped pill with a leaf
+     tick; friendlier than a floating small-caps line */
+  .kicker-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-terracotta/25 bg-tint/70 px-3.5 py-1.5 text-[0.76rem] font-semibold uppercase tracking-[0.08em] text-terracotta;
   }
 
   /* Primary text block of a flex-wrap list row (avatar/name/meta + trailing
@@ -212,8 +275,7 @@
 
   /* ---- Patterns (organic, quiet, var-driven) -------------------- */
 
-  /* paper grain — a faint seed-tray dot grid for hero ground and bands.
-     (Replaces the old hairline grid, which read as engineering paper.) */
+  /* paper grain — a faint seed-tray dot grid for hero ground and bands */
   .pattern-grid {
     background-image: radial-gradient(
       color-mix(in oklab, var(--primary) 14%, transparent) 1px,
@@ -229,8 +291,7 @@
     background-size: 14px 14px;
   }
 
-  /* morning sun — a soft warm glow instead of the old concentric
-     "growth rings", which read as a tech radar. Breathes very slowly. */
+  /* morning sun — a soft warm glow (used sparingly, never stacked) */
   .pattern-rings {
     background-image: radial-gradient(
       circle at 50% 50%,
@@ -259,6 +320,15 @@
     );
   }
 
+  /* seed rows on the forest band — stitched texture for the stat section */
+  .pattern-seeds {
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--band-ink) 20%, transparent) 1px,
+      transparent 1.2px
+    );
+    background-size: 22px 22px;
+  }
+
   /* ---- Brand furniture ------------------------------------------- */
 
   /* meadow seam — functional divider (hero edges, footers); a strand of
@@ -277,11 +347,21 @@
     );
   }
 
-  /* raised card panel — hairline frame + soft warm shadow */
+  /* stitched divider — a hand-sewn column seam for the forest stat band */
+  .stitch-col {
+    width: 1px;
+    background: repeating-linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--band-ink) 38%, transparent) 0 6px,
+      transparent 6px 14px
+    );
+  }
+
+  /* raised card panel — hairline frame + letterpress shadow */
   .panel-raised {
     background: var(--card);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 2px rgb(58 47 26 / 0.06), 0 10px 30px rgb(58 47 26 / 0.08);
+    box-shadow: var(--elev-card);
   }
 
   /* deep tinted panel — section bands, sidebars, chat rails */
@@ -290,14 +370,29 @@
     border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
   }
 
+  /* forest band panel — the deep-green exclamation section */
+  .band-forest {
+    background: var(--band);
+    border-block: 1px solid color-mix(in oklab, var(--band-ink) 14%, transparent);
+  }
+
+  /* sticker tilt — scrapbook lean for hero proof cards and testimonials;
+     straightens and lifts on hover like picking it up off the desk */
+  .sticker {
+    transform: rotate(-1.2deg);
+    transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+  .sticker:hover {
+    transform: rotate(0deg) translateY(-3px);
+  }
+
   /* small leaf tick used as a list marker */
   .leaf-tick {
     @apply inline-block h-3 w-px shrink-0 align-middle;
     background: color-mix(in oklab, var(--primary) 70%, transparent);
   }
 
-  /* stat ink — solid deep leaf (gradient text read as SaaS); pair with
-     .underline-sun for the hand-drawn marigold highlight */
+  /* stat ink — solid deep leaf (gradient text reads as SaaS) */
   .text-grow {
     color: var(--primary-deep);
   }
@@ -305,19 +400,31 @@
     color: var(--primary-bright);
   }
 
-  /* hand-drawn sun underline — a wavy marigold stroke, like a marker
-     highlighting a word on a printed poster */
-  .underline-sun {
-    text-decoration-line: underline;
-    text-decoration-style: wavy;
-    text-decoration-color: color-mix(in oklab, var(--marigold) 90%, transparent);
-    text-decoration-thickness: 0.05em;
-    text-underline-offset: 0.16em;
+  /* ---- Hand-drawn marker underline (components/GardenArt <Swash/>).
+     The path carries pathLength="1", so dash 1→0 draws the stroke. */
+  .swash path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw-stroke 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.35s forwards;
   }
 
-  /* ---- Motion system (calm, human) -------------------------------- */
-  /* Entrances run once on paint; pair with .stagger-* for sequencing. */
+  /* vine connector (how-it-works) — draws itself when a [data-reveal]
+     ancestor becomes .is-visible */
+  .vine-draw path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+  }
+  .is-visible .vine-draw path {
+    stroke-dashoffset: 0;
+  }
 
+  /* ---- Motion system — a vocabulary of care ---------------------- */
+  /* Every animation below means something: growth, breathing, gratitude,
+     settling. All are transform/opacity (GPU-safe) and every one is
+     flattened by the print + reduced-motion blocks at the end of the file. */
+
+  /* entrances run once on paint; pair with .stagger-* for sequencing */
   .animate-fade-up {
     animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
@@ -333,6 +440,46 @@
   .stagger-4 { animation-delay: 0.28s; }
   .stagger-5 { animation-delay: 0.35s; }
   .stagger-6 { animation-delay: 0.42s; }
+
+  /* sprout — things grow into place from the ground up (spring overshoot;
+     the signature entrance for cards, steps, and vignettes) */
+  .animate-sprout {
+    animation: sprout-in 0.48s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transform-origin: 50% 100%;
+  }
+
+  /* bloom — verified/helpful moments pop open like a flower */
+  .animate-bloom {
+    animation: bloom-pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* bob — the empty-state vignette says hello, once */
+  .animate-bob {
+    animation: bob 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* harvest — numbers settle onto the shelf with a soft focus pull */
+  .animate-harvest {
+    animation: harvest 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ambient loops — breathe (Headspace pacing) and sway (breeze) */
+  .animate-breathe {
+    animation: breathe 4s ease-in-out infinite;
+  }
+  .animate-sway {
+    transform-origin: 50% 92%;
+    animation: sway 3.4s ease-in-out infinite alternate;
+  }
+  .animate-sway-soft {
+    transform-origin: 50% 95%;
+    animation: sway-soft 4.2s ease-in-out infinite alternate;
+  }
+
+  /* heart-beat — live dots and gratitude pulses */
+  .animate-heart {
+    animation: heart-beat 1.8s ease-in-out infinite;
+  }
 
   @keyframes fade-up {
     from {
@@ -358,6 +505,82 @@
       transform: scale(1);
     }
   }
+  @keyframes sprout-in {
+    0% {
+      opacity: 0;
+      transform: scaleY(0.72) scaleX(0.96);
+    }
+    70% {
+      opacity: 1;
+      transform: scaleY(1.03) scaleX(1);
+    }
+    100% {
+      opacity: 1;
+      transform: scaleY(1) scaleX(1);
+    }
+  }
+  @keyframes bloom-pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes bob {
+    0% {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(-5px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes harvest {
+    from {
+      opacity: 0;
+      filter: blur(3px);
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0);
+    }
+  }
+  @keyframes breathe {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  @keyframes sway {
+    from { transform: rotate(-2.4deg); }
+    to { transform: rotate(2.4deg); }
+  }
+  @keyframes sway-soft {
+    from { transform: rotate(-1.5deg); }
+    to { transform: rotate(1.5deg); }
+  }
+  @keyframes heart-beat {
+    0%, 100% { transform: scale(1); }
+    12% { transform: scale(1.28); }
+    24% { transform: scale(1); }
+    36% { transform: scale(1.16); }
+    48% { transform: scale(1); }
+  }
+  @keyframes draw-stroke {
+    to { stroke-dashoffset: 0; }
+  }
 
   /* scroll-reveal (components/Reveal.tsx drives [data-reveal]) */
   [data-reveal] {
@@ -373,23 +596,16 @@
     transform: translateY(0);
   }
 
-  /* living ground — patterns drift almost imperceptibly */
+  /* living ground — the hero grid drifts almost imperceptibly */
   .pattern-drift {
     animation: drift 64s linear infinite;
-  }
-  .pattern-drift-rings {
-    animation: sun-breathe 90s ease-in-out infinite;
   }
   @keyframes drift {
     from { background-position: 0 0; }
     to { background-position: 26px 26px; }
   }
-  @keyframes sun-breathe {
-    0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.08); opacity: 1; }
-  }
 
-  /* live-status dot — breathing ring */
+  /* live-status dot — breathing ring with a heartbeat */
   .animate-pulse-dot {
     position: relative;
   }
@@ -429,33 +645,6 @@
     }
   }
 
-  /* floating leaves — decorative hero layer (components/FallingLeaves) */
-  .animate-leaf {
-    animation-name: leaf-fall;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    will-change: transform;
-  }
-  @keyframes leaf-fall {
-    0% {
-      transform: translate3d(0, -4%, 0) rotate(0deg);
-      opacity: 0;
-    }
-    8% {
-      opacity: var(--leaf-opacity, 0.5);
-    }
-    50% {
-      transform: translate3d(22px, 48%, 0) rotate(160deg);
-    }
-    92% {
-      opacity: var(--leaf-opacity, 0.5);
-    }
-    100% {
-      transform: translate3d(-12px, 102%, 0) rotate(320deg);
-      opacity: 0;
-    }
-  }
-
   /* logo/NGO marquee band */
   .marquee-mask {
     -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
@@ -475,34 +664,54 @@
     to { transform: translateX(-50%); }
   }
 
-  /* card micro-interaction — gentle lift + warm hairline tint.
-     (The old diagonal sheen sweep read as a SaaS landing-page trick.) */
+  /* card micro-interaction — a gentle lift with a warm hairline tint and
+     the paper highlight strengthening, like a card lifted off the desk */
   .interactive {
     transition:
-      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+      box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
       border-color 0.25s ease;
   }
   .interactive:hover {
     transform: translateY(-3px);
     border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
-    box-shadow: var(--shadow-lift);
+    box-shadow: var(--elev-lift);
   }
 
-  /* button press feedback */
+  /* button press feedback — pressed into the paper */
   .press {
     transition: transform 0.12s ease;
   }
   .press:active {
-    transform: scale(0.975);
+    transform: scale(0.975) translateY(1px);
   }
 
-  /* arrow nudge inside grouped CTAs */
+  /* CTA icon personality — the arrow nudges forward, and friendly icons
+     (hearts, hands, sprouts) give a little wave as you reach for them */
   .group-cta .group-cta-arrow {
     transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .group-cta:hover .group-cta-arrow {
     transform: translateX(3px);
+  }
+  .group-cta .group-cta-icon {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .group-cta:hover .group-cta-icon {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  /* paper grain — the whole canvas gets a whisper of tooth, like rag
+     paper. One fixed overlay above everything at ~3% black noise; the
+     alpha is baked into the SVG matrix so both themes read identically. */
+  .paper-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    opacity: 0.55;
   }
 
   /* scrollbars — quiet */
@@ -515,18 +724,35 @@
 /* Printing / Save-as-PDF must show all content: scroll-reveal sections
    (opacity 0 until intersected) and animated entrances are flattened. */
 @media print {
+  .paper-grain {
+    display: none !important;
+  }
   .pattern-drift,
-  .pattern-drift-rings,
-  .animate-leaf,
   .marquee-track,
   .animate-msg-in,
-  .animate-pulse-dot::after {
+  .animate-pulse-dot::after,
+  .animate-sway,
+  .animate-sway-soft,
+  .animate-breathe,
+  .animate-heart {
     animation: none !important;
   }
   .animate-fade-up,
   .animate-fade-in,
-  .animate-scale-in {
+  .animate-scale-in,
+  .animate-sprout,
+  .animate-bloom,
+  .animate-bob,
+  .animate-harvest {
     animation: none !important;
+  }
+  .swash path {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+  .vine-draw path {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
   }
   [data-reveal] {
     opacity: 1 !important;
@@ -534,25 +760,39 @@
     transition: none !important;
   }
   .interactive,
+  .sticker,
   .press:active {
     transition: none !important;
+    transform: none !important;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pattern-drift,
-  .pattern-drift-rings,
-  .animate-leaf,
   .marquee-track,
   .animate-msg-in,
-  .animate-pulse-dot::after {
+  .animate-pulse-dot::after,
+  .animate-sway,
+  .animate-sway-soft,
+  .animate-breathe,
+  .animate-heart {
     animation: none !important;
   }
   .animate-fade-up,
   .animate-fade-in,
-  .animate-scale-in {
+  .animate-scale-in,
+  .animate-sprout,
+  .animate-bloom,
+  .animate-bob,
+  .animate-harvest {
     animation-duration: 0.01s !important;
     animation-delay: 0s !important;
+  }
+  .swash path,
+  .vine-draw path {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+    transition: none !important;
   }
   [data-reveal] {
     opacity: 1;
@@ -561,8 +801,11 @@
   }
   .interactive,
   .interactive:hover,
+  .sticker,
+  .sticker:hover,
   .press:active,
-  .group-cta .group-cta-arrow {
+  .group-cta .group-cta-arrow,
+  .group-cta .group-cta-icon {
     transition: none;
     transform: none;
   }
@@ -576,5 +819,8 @@ html.dark .pattern-seedling {
   opacity: 0.25;
 }
 html.dark .pattern-rings {
+  opacity: 0.5;
+}
+html.dark .pattern-seeds {
   opacity: 0.5;
 }

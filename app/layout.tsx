@@ -57,8 +57,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAF7EF" },
-    { media: "(prefers-color-scheme: dark)", color: "#16140F" },
+    { media: "(prefers-color-scheme: light)", color: "#F7F2E5" },
+    { media: "(prefers-color-scheme: dark)", color: "#171410" },
   ],
 };
 
@@ -82,6 +82,8 @@ export default function RootLayout({
       <body
         className={`${display.variable} ${body.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
       >
+        {/* rag-paper tooth over the whole canvas (see .paper-grain) */}
+        <div className="paper-grain" aria-hidden />
         {children}
         <Toaster />
         <RejectionSafetyNet />

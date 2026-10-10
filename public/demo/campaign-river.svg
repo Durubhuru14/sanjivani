@@ -1,18 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" role="img" aria-label="River clean-up">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#00695C"/><stop offset="1" stop-color="#26A69A"/>
-    </linearGradient>
-  </defs>
-  <rect width="640" height="240" fill="url(#bg)"/>
-  <!-- shared motif: concentric arcs, top-right -->
-  <circle cx="520" cy="96" r="40" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
-  <circle cx="520" cy="96" r="74" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
-  <circle cx="520" cy="96" r="108" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"/>
-  <!-- campaign glyph, same slot every time -->
-  <g transform="translate(520, 96) scale(0.85)" fill="#ffffff" fill-opacity="0.22" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2" stroke-linejoin="round">
-    <path d="M 0 -28 C 14 -8 22 2 22 12 A 22 22 0 0 1 -22 12 C -22 2 -14 -8 0 -28 Z"/>
+  <!-- warm tint ground -->
+  <rect width="640" height="240" fill="#E8F5E9"/>
+  <!-- soft sun wash -->
+  <circle cx="112" cy="64" r="88" fill="#DFA737" opacity="0.12"/>
+  <circle cx="112" cy="64" r="15" fill="#DFA737" opacity="0.75"/>
+  <g stroke="#DFA737" stroke-width="3.6" stroke-linecap="round" opacity="0.55">
+    <line x1="112" y1="38" x2="112" y2="30"/>
+    <line x1="86" y1="47" x2="80" y2="41"/>
+    <line x1="138" y1="47" x2="144" y2="41"/>
+    <line x1="84" y1="76" x2="76" y2="80"/>
+    <line x1="140" y1="76" x2="148" y2="80"/>
   </g>
-  <!-- shared ground line -->
-  <path d="M 0 214 C 120 204 220 222 340 214 C 460 206 560 220 640 212 L 640 240 L 0 240 Z" fill="#ffffff" opacity="0.08"/>
+  <!-- water — three lazy waves -->
+  <g fill="none" stroke="#2E7D32" stroke-linecap="round">
+    <path d="M20 168 C 70 158, 120 176, 175 168 C 230 160, 268 176, 320 168 C 372 160, 410 176, 462 168 C 514 160, 560 176, 612 168" stroke-width="4" opacity="0.5"/>
+    <path d="M20 190 C 76 180, 126 198, 182 190 C 238 182, 284 198, 338 190 C 392 182, 448 198, 502 190 C 556 182, 596 198, 624 190" stroke-width="4" opacity="0.32"/>
+    <path d="M40 212 C 96 204, 146 220, 202 212 C 258 204, 322 220, 378 212 C 434 204, 500 220, 556 212" stroke-width="3.4" opacity="0.2"/>
+  </g>
+  <!-- cattail reeds, right side -->
+  <g>
+    <path d="M486 176 C 484 148, 488 122, 486 100" fill="none" stroke="#1B5E20" stroke-width="4.4" stroke-linecap="round"/>
+    <ellipse cx="486" cy="88" rx="7.5" ry="18" fill="#AA542E"/>
+    <path d="M486 84 C 481 90, 480 98, 482 106" fill="none" stroke="#E8F5E9" stroke-width="1.8" stroke-linecap="round" opacity="0.7"/>
+    <path d="M486 132 C 476 130, 470 122, 469 112 C 479 114, 485 122, 486 132 Z" fill="#66BB6A"/>
+    <path d="M536 176 C 535 154, 538 132, 536 114" fill="none" stroke="#1B5E20" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="536" cy="103" rx="6.5" ry="15" fill="#AA542E"/>
+    <path d="M536 140 C 546 138, 552 130, 553 121 C 543 123, 537 130, 536 140 Z" fill="#2E7D32"/>
+    <path d="M576 176 C 575 160, 577 146, 576 134" fill="none" stroke="#1B5E20" stroke-width="3.6" stroke-linecap="round"/>
+    <ellipse cx="576" cy="124" rx="5.5" ry="12.5" fill="#AA542E" opacity="0.9"/>
+    <path d="M576 148 C 567 146, 562 140, 561 132 C 569 134, 575 140, 576 148 Z" fill="#66BB6A"/>
+  </g>
+  <!-- dragonfly -->
+  <g stroke="#AA542E" stroke-width="2.6" stroke-linecap="round" fill="none">
+    <path d="M232 84 C 224 76, 216 74, 208 78"/>
+    <path d="M232 84 C 240 76, 248 74, 256 78"/>
+    <path d="M232 90 C 225 84, 217 83, 210 87"/>
+    <path d="M232 90 C 239 84, 247 83, 254 87"/>
+    <line x1="232" y1="82" x2="232" y2="100"/>
+    <circle cx="232" cy="78" r="4.5" fill="#AA542E" stroke="none"/>
+  </g>
+  <!-- floating seeds -->
+  <g fill="#2E7D32" opacity="0.3">
+    <circle cx="320" cy="120" r="2.6"/>
+    <circle cx="388" cy="92" r="2"/>
+    <circle cx="416" cy="136" r="2.2"/>
+  </g>
 </svg>

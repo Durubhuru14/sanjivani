@@ -1,18 +1,54 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" role="img" aria-label="Tree plantation">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#33691E"/><stop offset="1" stop-color="#7CB342"/>
-    </linearGradient>
-  </defs>
-  <rect width="640" height="240" fill="url(#bg)"/>
-  <!-- shared motif: concentric arcs, top-right -->
-  <circle cx="520" cy="96" r="40" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
-  <circle cx="520" cy="96" r="74" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
-  <circle cx="520" cy="96" r="108" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"/>
-  <!-- campaign glyph, same slot every time -->
-  <g transform="translate(520, 96) scale(0.85)" fill="#ffffff" fill-opacity="0.22" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2" stroke-linejoin="round">
-    <path d="M 0 -30 L 22 4 L 10 4 L 24 24 L -24 24 L -10 4 L -22 4 Z M -4 24 L -4 34 L 4 34 L 4 24 Z"/>
+  <!-- warm tint ground -->
+  <rect width="640" height="240" fill="#E8F5E9"/>
+  <!-- soft sun wash, top-left -->
+  <circle cx="104" cy="58" r="84" fill="#DFA737" opacity="0.12"/>
+  <circle cx="104" cy="58" r="14" fill="#DFA737" opacity="0.75"/>
+  <g stroke="#DFA737" stroke-width="3.4" stroke-linecap="round" opacity="0.55">
+    <line x1="104" y1="34" x2="104" y2="26"/>
+    <line x1="80" y1="42" x2="74" y2="36"/>
+    <line x1="128" y1="42" x2="134" y2="36"/>
+    <line x1="78" y1="68" x2="70" y2="72"/>
+    <line x1="130" y1="68" x2="138" y2="72"/>
   </g>
-  <!-- shared ground line -->
-  <path d="M 0 214 C 120 204 220 222 340 214 C 460 206 560 220 640 212 L 640 240 L 0 240 Z" fill="#ffffff" opacity="0.08"/>
+  <!-- rolling ground -->
+  <path d="M0 176 C 90 162, 180 172, 268 176 C 360 180, 448 164, 540 168 C 580 170, 614 174, 640 170 L 640 240 L 0 240 Z" fill="#66BB6A" opacity="0.22"/>
+  <path d="M0 200 C 120 190, 260 204, 380 196 C 500 188, 570 200, 640 194 L 640 240 L 0 240 Z" fill="#2E7D32" opacity="0.12"/>
+  <!-- sapling one — tall, left-center -->
+  <g>
+    <path d="M236 186 C 233 160, 239 136, 236 114 L 246 113 C 243 136, 249 160, 246 186 Z" fill="#AA542E"/>
+    <path d="M240 148 C 231 145, 225 138, 224 129 C 233 131, 239 138, 240 148 Z" fill="#2E7D32"/>
+    <path d="M242 144 C 251 141, 257 134, 258 125 C 249 127, 243 134, 242 144 Z" fill="#66BB6A"/>
+    <path d="M240 120 C 220 118, 206 106, 203 89 C 221 92, 236 103, 240 120 Z" fill="#2E7D32"/>
+    <path d="M242 118 C 262 115, 276 103, 279 86 C 261 89, 246 100, 242 118 Z" fill="#66BB6A"/>
+    <path d="M241 92 C 228 90, 219 82, 217 70 C 229 72, 238 80, 241 92 Z" fill="#66BB6A" opacity="0.9"/>
+    <path d="M243 90 C 256 87, 265 79, 267 67 C 255 69, 246 77, 243 90 Z" fill="#2E7D32" opacity="0.9"/>
+  </g>
+  <!-- sapling two — younger, right -->
+  <g>
+    <path d="M452 188 C 450 170, 454 154, 452 140 L 460 139 C 458 154, 462 170, 460 188 Z" fill="#AA542E"/>
+    <path d="M455 158 C 447 156, 442 150, 441 143 C 449 144, 454 150, 455 158 Z" fill="#66BB6A"/>
+    <path d="M457 155 C 465 153, 470 147, 471 140 C 463 141, 458 147, 457 155 Z" fill="#2E7D32"/>
+    <path d="M456 132 C 442 130, 433 121, 431 108 C 444 110, 453 119, 456 132 Z" fill="#2E7D32"/>
+    <path d="M458 130 C 472 127, 481 118, 483 105 C 470 107, 461 116, 458 130 Z" fill="#66BB6A"/>
+  </g>
+  <!-- sapling three — a seedling just planted, far right -->
+  <g>
+    <ellipse cx="566" cy="196" rx="26" ry="8" fill="#AA542E" opacity="0.25"/>
+    <path d="M566 194 C 565.4 186, 565.4 180, 566.3 172" fill="none" stroke="#1B5E20" stroke-width="4" stroke-linecap="round"/>
+    <path d="M566 180 C 558.5 178.5, 553.5 172.5, 552.5 165 C 560 166.5, 565 172.5, 566 180 Z" fill="#66BB6A"/>
+    <path d="M566.7 179 C 574 177, 579 171, 580 164 C 572.5 165.5, 567.5 171.5, 566.7 179 Z" fill="#2E7D32"/>
+  </g>
+  <!-- birds -->
+  <g fill="none" stroke="#AA542E" stroke-linecap="round">
+    <path d="M330 56 q 7 -8 14 0 q 7 -8 14 0" stroke-width="3.4"/>
+    <path d="M386 78 q 5.5 -7 11 0 q 5.5 -7 11 0" stroke-width="2.8" opacity="0.8"/>
+  </g>
+  <!-- seeds in the soil -->
+  <g fill="#1B5E20" opacity="0.22">
+    <circle cx="160" cy="212" r="2.4"/>
+    <circle cx="350" cy="206" r="2"/>
+    <circle cx="520" cy="214" r="2.2"/>
+    <circle cx="80" cy="206" r="2"/>
+  </g>
 </svg>

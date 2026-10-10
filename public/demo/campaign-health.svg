@@ -1,18 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" role="img" aria-label="Health camps">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2E7D32"/><stop offset="1" stop-color="#66BB6A"/>
-    </linearGradient>
-  </defs>
-  <rect width="640" height="240" fill="url(#bg)"/>
-  <!-- shared motif: concentric arcs, top-right -->
-  <circle cx="520" cy="96" r="40" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
-  <circle cx="520" cy="96" r="74" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
-  <circle cx="520" cy="96" r="108" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"/>
-  <!-- campaign glyph, same slot every time -->
-  <g transform="translate(520, 96) scale(0.85)" fill="#ffffff" fill-opacity="0.22" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2" stroke-linejoin="round">
-    <path d="M -8 -26 h 16 v 18 h 18 v 16 h -18 v 18 h -16 v -18 h -18 v -16 h 18 Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" role="img" aria-label="Health camp">
+  <!-- warm tint ground -->
+  <rect width="640" height="240" fill="#E8F5E9"/>
+  <!-- soft sun wash, top-left -->
+  <circle cx="108" cy="60" r="84" fill="#DFA737" opacity="0.12"/>
+  <circle cx="108" cy="60" r="14" fill="#DFA737" opacity="0.75"/>
+  <g stroke="#DFA737" stroke-width="3.4" stroke-linecap="round" opacity="0.55">
+    <line x1="108" y1="36" x2="108" y2="28"/>
+    <line x1="84" y1="44" x2="78" y2="38"/>
+    <line x1="132" y1="44" x2="138" y2="38"/>
+    <line x1="82" y1="70" x2="74" y2="74"/>
+    <line x1="134" y1="70" x2="142" y2="74"/>
   </g>
-  <!-- shared ground line -->
-  <path d="M 0 214 C 120 204 220 222 340 214 C 460 206 560 220 640 212 L 640 240 L 0 240 Z" fill="#ffffff" opacity="0.08"/>
+  <!-- the heart — care, drawn with two leaves -->
+  <g>
+    <path
+      d="M320 172 C 262 146, 244 108, 262 84 C 278 62, 308 66, 320 90 C 332 66, 362 62, 378 84 C 396 108, 378 146, 320 172 Z"
+      fill="#FFFDF7" stroke="#AA542E" stroke-width="4" stroke-linejoin="round"
+    />
+    <!-- a leaf inside the heart — growth from care -->
+    <path d="M320 148 C 320 128, 320 112, 320 98" fill="none" stroke="#1B5E20" stroke-width="3.6" stroke-linecap="round"/>
+    <path d="M319.6 124 C 306 122.5, 297 114, 294.5 102 C 307 104, 316 112, 319.6 124 Z" fill="#2E7D32"/>
+    <path d="M320.4 120 C 334 118, 343 109.5, 345.5 97.5 C 333 99.5, 324 107.5, 320.4 120 Z" fill="#66BB6A"/>
+    <path d="M320 98 C 316.5 92, 316.5 85, 320 79 C 323.5 85, 323.5 92, 320 98 Z" fill="#66BB6A" opacity="0.9"/>
+  </g>
+  <!-- the pulse line — a steady heartbeat -->
+  <g fill="none" stroke="#2E7D32" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M156 118 h44 l12 -22 l16 44 l14 -34 l10 12 h40" stroke-width="4" opacity="0.55"/>
+    <path d="M448 118 h36 l10 -18 l14 36 l12 -28 l8 10 h32" stroke-width="3.4" opacity="0.35"/>
+  </g>
+  <!-- small crosses of care -->
+  <g stroke="#AA542E" stroke-width="2.8" stroke-linecap="round" opacity="0.6">
+    <path d="M452 66 v10 M447 71 h10"/>
+    <path d="M196 168 v8 M192 172 h8" opacity="0.45"/>
+  </g>
+  <!-- floating seeds -->
+  <g fill="#2E7D32" opacity="0.3">
+    <circle cx="248" cy="52" r="2.4"/>
+    <circle cx="540" cy="132" r="2"/>
+    <circle cx="388" cy="204" r="2.2"/>
+    <circle cx="96" cy="150" r="2"/>
+  </g>
+  <!-- ground shadow -->
+  <ellipse cx="320" cy="186" rx="120" ry="8" fill="#1B5E20" opacity="0.07"/>
 </svg>
