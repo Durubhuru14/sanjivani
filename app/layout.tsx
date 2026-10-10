@@ -5,17 +5,18 @@ import { Toaster } from "@/components/ui/toaster";
 import { RejectionSafetyNet } from "@/components/RejectionSafetyNet";
 
 /**
- * Sanjivani type system:
- * - Display: Alumni Sans (geometric, calm) for hero and section heads
+ * Sanjivani type system (warm-community identity):
+ * - Display: Fraunces (soft humanist serif) for hero and section heads —
+ *   the editorial warmth of an NGO annual report, not a SaaS landing page
  * - Body/UI: Albert Sans (humanist, friendly for non-technical staff)
- * - Mono: system stack for eyebrows and tracked labels
+ * - Mono: system stack, reserved for real code snippets only
  * All faces are bundled locally (woff2) — zero network dependency.
  */
 const display = localFont({
   src: [
-    { path: "./fonts/AlumniSans-100.woff2", weight: "100", style: "normal" },
-    { path: "./fonts/AlumniSans-300.woff2", weight: "300", style: "normal" },
-    { path: "./fonts/AlumniSans-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Fraunces-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Fraunces-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/Fraunces-600.woff2", weight: "600", style: "normal" },
   ],
   variable: "--font-display",
   display: "swap",
@@ -56,8 +57,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F4F8F4" },
-    { media: "(prefers-color-scheme: dark)", color: "#0E1712" },
+    { media: "(prefers-color-scheme: light)", color: "#FAF7EF" },
+    { media: "(prefers-color-scheme: dark)", color: "#16140F" },
   ],
 };
 

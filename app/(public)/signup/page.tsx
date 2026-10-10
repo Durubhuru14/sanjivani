@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LogoMark } from "@/components/Logo";
+import { GardenBed } from "@/components/GardenArt";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -353,6 +354,8 @@ export default function SignupPage() {
           </p>
         </CardContent>
       </Card>
+      {/* garden horizon grounding the signup card */}
+      <GardenBed className="mx-auto mt-10 w-full max-w-md" />
     </div>
   );
 }

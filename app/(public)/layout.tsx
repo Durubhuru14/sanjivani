@@ -24,8 +24,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           <p className="text-muted-foreground">
             © {new Date().getFullYear()} Sanjivani · open-source community platform
           </p>
-          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
-            built for NGOs, staff, and volunteers
+          <p className="text-sm text-muted-foreground">
+            Built for NGOs, staff, and volunteers
           </p>
         </div>
       </footer>

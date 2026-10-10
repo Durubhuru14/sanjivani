@@ -1,14 +1,16 @@
 /**
- * Decorative layer of leaf silhouettes drifting down through the hero.
- * Pure CSS animation (see .animate-leaf in globals.css); fully hidden
- * from assistive tech and switched off under prefers-reduced-motion.
+ * Decorative layer of leaf silhouettes drifting down through the hero —
+ * mostly new-leaf green with a couple of marigold sun flecks, like a
+ * garden breeze. Pure CSS animation (see .animate-leaf in globals.css);
+ * fully hidden from assistive tech and switched off under
+ * prefers-reduced-motion.
  */
 const LEAVES = [
-  { left: "8%", size: 13, duration: 20, delay: 0, opacity: 0.26 },
-  { left: "26%", size: 9, duration: 26, delay: 7, opacity: 0.2 },
-  { left: "47%", size: 16, duration: 17, delay: 3, opacity: 0.28 },
-  { left: "69%", size: 10, duration: 24, delay: 11, opacity: 0.22 },
-  { left: "88%", size: 12, duration: 21, delay: 5, opacity: 0.24 },
+  { left: "8%", size: 13, duration: 20, delay: 0, opacity: 0.26, tone: "leaf" },
+  { left: "26%", size: 9, duration: 26, delay: 7, opacity: 0.2, tone: "sun" },
+  { left: "47%", size: 16, duration: 17, delay: 3, opacity: 0.28, tone: "leaf" },
+  { left: "69%", size: 10, duration: 24, delay: 11, opacity: 0.22, tone: "leaf" },
+  { left: "88%", size: 12, duration: 21, delay: 5, opacity: 0.24, tone: "sun" },
 ] as const;
 
 function Leaf({ size }: { size: number }) {
@@ -25,11 +27,11 @@ function Leaf({ size }: { size: number }) {
 
 export function FallingLeaves() {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden text-leaf" aria-hidden>
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       {LEAVES.map((leaf, i) => (
         <span
           key={i}
-          className="animate-leaf absolute -top-6 block"
+          className={`animate-leaf absolute -top-6 block ${leaf.tone === "sun" ? "text-marigold" : "text-leaf"}`}
           style={
             {
               left: leaf.left,

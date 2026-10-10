@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
-"""Download latin woff2 subsets for Alumni Sans (100/300/400) + Albert Sans (400/500/600/700)
-into app/fonts/ with friendly names for next/font/local."""
+"""Download latin woff2 subsets for the Sanjivani type system into app/fonts/
+with friendly names for next/font/local.
+
+Warm-community retheme (NGO/social-work identity):
+  Display: Fraunces (400/500/600) — soft humanist serif, editorial warmth
+  Body/UI: Albert Sans (400/500/600/700) — humanist, friendly for staff
+Alumni Sans (the old condensed display face) was retired with this change.
+"""
 import re, pathlib, subprocess
 
 CSS_DIR = pathlib.Path("/tmp/fonts")
@@ -8,7 +14,7 @@ OUT = pathlib.Path("/home/z/my-project/app/fonts")
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0 Safari/537.36"
 
 FAMILIES = [
-    ("Alumni Sans", ["100", "300", "400"]),
+    ("Fraunces", ["400", "500", "600"]),
     ("Albert Sans", ["400", "500", "600", "700"]),
 ]
 

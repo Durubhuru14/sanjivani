@@ -16,6 +16,7 @@ import { LogoMark } from "@/components/Logo";
 import { CountUp } from "@/components/CountUp";
 import { FallingLeaves } from "@/components/FallingLeaves";
 import { Reveal } from "@/components/Reveal";
+import { GardenBed, GardenSprig } from "@/components/GardenArt";
 
 export const dynamic = "force-dynamic";
 
@@ -105,10 +106,10 @@ export default async function LandingPage() {
         <div className="seam absolute inset-x-0 top-0" aria-hidden />
         <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10 lg:px-8">
           <div className="max-w-xl">
-            <p className="eyebrow animate-fade-up">Community operations, grown carefully</p>
+            <p className="eyebrow eyebrow-warm animate-fade-up">Community operations, grown carefully</p>
             <h1 className="animate-fade-up stagger-1 mt-4 font-display text-[clamp(3rem,6.5vw,5rem)] font-normal leading-[1.04] tracking-[-0.01em] text-foreground">
               Run every campaign, team, and{" "}
-              <span className="text-grow">rupee</span> in one place
+              <span className="text-grow underline-sun">rupee</span> in one place
             </h1>
             <p className="animate-fade-up stagger-2 mt-7 max-w-[62ch] text-base leading-relaxed text-foreground/80">
               Sanjivani replaces Excel sheets, WhatsApp groups, and paper notices with one simple
@@ -143,12 +144,17 @@ export default async function LandingPage() {
               card forces the text layer to re-rasterise every frame, which
               reads as flicker (especially on Windows subpixel text). */}
           <div className="animate-scale-in stagger-2 flex justify-center lg:justify-end">
-            <div className="panel-raised relative w-full max-w-md rounded-xl p-6 sm:p-8">
-              <div className="pattern-dots pointer-events-none absolute inset-0 rounded-xl opacity-30" aria-hidden />
-              <div className="relative">
+            <div className="relative w-full max-w-md">
+              {/* garden sprigs peeking from behind the card corners — hidden
+                  below sm so the 320px hero stays uncluttered */}
+              <GardenSprig variant="sun" className="absolute -left-10 -top-10 z-0 hidden h-24 w-24 sm:block" />
+              <GardenSprig variant="butterfly" className="absolute -bottom-9 -right-7 z-0 hidden h-20 w-20 sm:block" />
+              <div className="panel-raised relative z-10 rounded-xl p-6 sm:p-8">
+                <div className="pattern-dots pointer-events-none absolute inset-0 rounded-xl opacity-30" aria-hidden />
+                <div className="relative">
                 <div className="flex items-center justify-between border-b border-border/70 pb-4">
                   <span className="eyebrow">Field overview</span>
-                  <span className="flex items-center gap-1.5 font-mono text-[0.625rem] uppercase tracking-[0.14em] text-leaf">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold text-leaf">
                     <span
                       className="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-current text-leaf"
                       aria-hidden
@@ -178,16 +184,17 @@ export default async function LandingPage() {
                       />
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-foreground">{row.k}</p>
-                        <p className="mt-1 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+                        <p className="mt-1 text-xs font-medium text-muted-foreground">
                           {row.v}
                         </p>
                       </div>
                     </li>
                   ))}
                 </ul>
-                <p className="mt-4 border-t border-border/60 pt-4 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="mt-4 border-t border-border/60 pt-4 text-xs font-medium text-muted-foreground">
                   hours · ratings · funds — one ledger
                 </p>
+              </div>
               </div>
             </div>
           </div>
@@ -199,7 +206,7 @@ export default async function LandingPage() {
         <section className="relative overflow-hidden border-b border-border">
           <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
             <Reveal className="text-center">
-              <p className="eyebrow">Growing with Sanjivani</p>
+              <p className="eyebrow eyebrow-warm">Growing with Sanjivani</p>
             </Reveal>
             <Reveal className="marquee-mask mt-5 overflow-hidden pb-10" delay={0.1}>
               <div className="marquee-track">
@@ -234,7 +241,7 @@ export default async function LandingPage() {
                 <p className="text-grow mt-3 font-display text-5xl font-medium leading-none tabular-nums">
                   <CountUp value={s.v} duration={1100} />
                 </p>
-                <p className="mt-2.5 font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-muted-foreground">
+                <p className="mt-2.5 text-sm font-medium text-muted-foreground">
                   {s.k}
                 </p>
               </Reveal>
@@ -252,7 +259,7 @@ export default async function LandingPage() {
         <div className="pattern-dots pointer-events-none absolute inset-0 opacity-[0.16]" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <Reveal className="mx-auto max-w-2xl text-center">
-            <p className="eyebrow">The kit</p>
+            <p className="eyebrow eyebrow-warm">The kit</p>
             <h2 className="mt-3 font-display text-[clamp(2.2rem,4vw,3rem)] font-normal leading-[1.08] text-foreground">
               Everything a small NGO actually needs
             </h2>
@@ -266,7 +273,7 @@ export default async function LandingPage() {
               <Reveal key={f.title} delay={(i % 3) * 0.09}>
                 <Card className="interactive group h-full border-border bg-card shadow-soft">
                   <CardContent className="p-6">
-                    <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-tint text-leaf transition-all duration-200 group-hover:scale-105 group-hover:bg-leaf group-hover:text-primary-foreground">
+                    <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-tint text-leaf transition-all duration-200 group-hover:scale-105 group-hover:bg-leaf group-hover:text-primary-foreground">
                       <f.icon className="h-4.5 w-4.5" aria-hidden />
                     </span>
                     <h3 className="text-base font-semibold text-foreground">{f.title}</h3>
@@ -284,7 +291,7 @@ export default async function LandingPage() {
         <div className="pattern-rings pattern-drift-rings pointer-events-none absolute -left-52 bottom-[-180px] hidden h-[520px] w-[520px] opacity-50 lg:block" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <Reveal className="mx-auto max-w-2xl text-center">
-            <p className="eyebrow">How it works</p>
+            <p className="eyebrow eyebrow-warm">How it works</p>
             <h2 className="mt-3 font-display text-[clamp(2.2rem,4vw,3rem)] font-normal leading-[1.08] text-foreground">
               Two sides, one ledger
             </h2>
@@ -318,7 +325,7 @@ export default async function LandingPage() {
                 <ol className="mt-6 space-y-5">
                   {col.steps.map((step, j) => (
                     <li key={step} className="flex gap-4">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-tint font-mono text-[0.6875rem] font-semibold text-leaf">
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-tint text-xs font-semibold text-leaf">
                         {j + 1}
                       </span>
                       <p className="text-sm leading-relaxed text-muted-foreground">{step}</p>
@@ -350,6 +357,10 @@ export default async function LandingPage() {
                 Create your account <ArrowRight className="group-cta-arrow h-4 w-4" aria-hidden />
               </Link>
             </Button>
+          </Reveal>
+          {/* garden horizon — the growing bed this whole section rests on */}
+          <Reveal delay={0.18} className="mt-14 w-full max-w-2xl">
+            <GardenBed className="w-full" />
           </Reveal>
         </div>
       </section>

@@ -98,7 +98,7 @@ export function UserMenu({ profile, email }: { profile: Profile; email?: string 
               {email ? (
                 <span className="block truncate text-xs font-normal text-muted-foreground">{email}</span>
               ) : null}
-              <span className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-leaf/30 bg-tint px-2 py-0.5 font-mono text-[0.625rem] font-medium uppercase tracking-[0.12em] text-leaf-deep dark:text-leaf-bright">
+              <span className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-leaf/30 bg-tint px-2.5 py-0.5 text-[0.6875rem] font-semibold text-leaf-deep dark:text-leaf-bright">
                 {roleLabel}
               </span>
             </span>
@@ -125,7 +125,7 @@ export function UserMenu({ profile, email }: { profile: Profile; email?: string 
         {quickLinks.length > 0 ? (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="pb-1 pt-1.5 font-mono text-[0.625rem] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            <DropdownMenuLabel className="pb-1 pt-1.5 text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
               Workspace
             </DropdownMenuLabel>
             {quickLinks.map((link) => (

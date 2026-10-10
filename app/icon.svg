@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sanjivani">
   <!-- Favicon: solid two-tone leaf-S on a soft tint tile (16–48px) -->
-  <rect x="2" y="2" width="60" height="60" rx="14" fill="#E8F5E9"/>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#EBF1E0"/>
   <g transform="translate(5.5 5.5) scale(0.83)">
     <path
       d="M 31 34 C 20 33 13 27 13 19 C 13 10 21 4 31 5 C 39 6 46 10 48 17 C 44 13 38 11 32 12 C 24 13 20 17 20 22 C 20 27 25 31 31 34 Z"
-      fill="#2E7D32"
+      fill="#2A5A31"
     />
     <path
       d="M 31 34 C 20 33 13 27 13 19 C 13 10 21 4 31 5 C 39 6 46 10 48 17 C 44 13 38 11 32 12 C 24 13 20 17 20 22 C 20 27 25 31 31 34 Z"
-      fill="#66BB6A"
+      fill="#7CB56A"
       transform="rotate(180 32 32)"
     />
   </g>

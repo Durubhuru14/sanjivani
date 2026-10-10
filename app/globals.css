@@ -36,113 +36,131 @@
   --color-status-warning: var(--status-warning);
   --color-status-danger: var(--status-danger);
   --color-status-neutral: var(--status-neutral);
-  /* Sanjivani brand ramp (spec §3) — semantic names for direct use */
+  /* Sanjivani brand ramp — semantic names for direct use */
   --color-leaf: var(--primary);
   --color-leaf-bright: var(--primary-bright);
   --color-leaf-deep: var(--primary-deep);
   --color-tint: var(--tint);
+  /* warm companions — community warmth, growth, and optimism.
+     terracotta = human warmth (kickers, accents); marigold = sunny
+     highlight (decorative underlines, washes, chart accents). */
+  --color-terracotta: var(--terracotta);
+  --color-marigold: var(--marigold);
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
-  /* soft, warm shadows (spec §3) — never colored glow */
-  --shadow-soft: 0 1px 2px rgb(16 40 24 / 0.06), 0 8px 24px rgb(16 40 24 / 0.08);
-  --shadow-lift: 0 2px 6px rgb(16 40 24 / 0.08), 0 18px 44px rgb(16 40 24 / 0.14);
+  /* soft, warm shadows — brown-black ink, never colored glow */
+  --shadow-soft: 0 1px 2px rgb(58 47 26 / 0.07), 0 8px 24px rgb(58 47 26 / 0.09);
+  --shadow-lift: 0 2px 6px rgb(58 47 26 / 0.09), 0 18px 44px rgb(58 47 26 / 0.15);
 }
 
 /* ------------------------------------------------------------------
-   Sanjivani design system (Sanjivani_Spec.md §3)
-   Warm green #2E7D32 + #E8F5E9 tint, clean, minimal, card-based,
-   rounded-xl, soft shadows, generous whitespace, welcoming.
-   Light is the default; .dark swaps to a deep garden-night ground.
-   Patterns are quiet botanical geometry — growth rings, leaf dots,
-   hairline grids — rendered from CSS vars so both themes agree.
+   Sanjivani design system — "warm community" identity
+   The feel of a well-loved field notebook and a community notice-board:
+   the spec green (#2E7D32 leaf / #66BB6A new leaf / #E8F5E9 surface
+   tint — Sanjivini_Spec.md) presented on warm paper, with terracotta +
+   marigold companions, soft serif display type (Fraunces), rounded
+   corners, generous whitespace.
+   Light is the default; .dark swaps to a warm earth-night ground
+   (brown-black, never neon) with the same green ramp brightened
+   (green 300/200/700). Patterns are quiet organic textures —
+   paper grain, seed trays, morning-sun washes — rendered from CSS
+   vars so both themes agree.
 ------------------------------------------------------------------- */
 :root {
-  --radius: 0.75rem;
+  --radius: 1rem;
 
-  /* surfaces */
-  --background: #f4f8f4;
-  --foreground: #17251b;
-  --card: #ffffff;
-  --card-foreground: #17251b;
-  --popover: #ffffff;
-  --popover-foreground: #17251b;
-  --muted: #edf3ed;
-  --muted-foreground: #5a6e5f;
-  --accent: #e8f5e9; /* spec surface tint */
+  /* surfaces — warm paper, never clinical white */
+  --background: #faf7ef;
+  --foreground: #2a2d22;
+  --card: #fffdf7;
+  --card-foreground: #2a2d22;
+  --popover: #fffdf7;
+  --popover-foreground: #2a2d22;
+  --muted: #f1ebdc;
+  --muted-foreground: #6e6c5c;
+  --accent: #f0ead7;
   --accent-foreground: #1b5e20;
 
-  /* brand */
-  --primary: #2e7d32; /* spec accent green */
-  --primary-bright: #66bb6a; /* spec lighter tint accent */
-  --primary-deep: #1b5e20;
+  /* brand — the spec green (Sanjivini_Spec.md: #2E7D32 primary,
+     #66BB6A lighter tint), kept warm by the paper ground around it */
+  --primary: #2e7d32; /* leaf — the spec green */
+  --primary-bright: #66bb6a; /* new leaf — spec lighter tint */
+  --primary-deep: #1b5e20; /* forest floor — spec green, one step deeper */
   --primary-foreground: #ffffff;
-  --tint: #e8f5e9;
-  --secondary: #e8f5e9;
-  --secondary-foreground: #1b5e20;
+  --tint: #e8f5e9; /* spec surface tint — fresh green wash for chips/bands */
+  --secondary: #efe7d4; /* warm sand */
+  --secondary-foreground: #4f4735;
+
+  /* warm companions */
+  --terracotta: #aa542e; /* clay — human warmth, kickers */
+  --marigold: #dfa737; /* sun — decorative highlights only */
 
   /* lines and state */
-  --border: #d9e5db;
-  --input: #c8d8cc;
+  --border: #e5ddc9;
+  --input: #d6cdb2;
   --ring: #2e7d32;
-  --destructive: #c62828;
+  --destructive: #b3432f;
   --destructive-foreground: #ffffff;
 
   --chart-1: #2e7d32;
-  --chart-2: #66bb6a;
-  --chart-3: #a5d6a7;
-  --chart-4: #43a047;
+  --chart-2: #dfa737;
+  --chart-3: #c2653f;
+  --chart-4: #66bb6a;
   --chart-5: #1b5e20;
 
   /* status semantics — positive=done/live, info=planned/invited,
      warning=awaiting, danger=blocked, neutral=archived */
   --status-positive: #2e7d32;
-  --status-info: #1d6a96;
-  --status-warning: #a05e03;
-  --status-danger: #c62828;
-  --status-neutral: #5a6e5f;
+  --status-info: #2e6f74;
+  --status-warning: #a3660a;
+  --status-danger: #b3432f;
+  --status-neutral: #6e6c5c;
 }
 
 .dark {
-  /* garden night — deep green-black, never pure black */
-  --background: #0e1712;
-  --foreground: #e6efe8;
-  --card: #17231c;
-  --card-foreground: #e6efe8;
-  --popover: #17231c;
-  --popover-foreground: #e6efe8;
-  --muted: #1d2b23;
-  --muted-foreground: #a2b5a8;
-  --accent: #203227;
-  --accent-foreground: #cbe7d0;
+  /* earth night — warm brown-black, never neon or pure black */
+  --background: #16140f;
+  --foreground: #ece5d3;
+  --card: #201d16;
+  --card-foreground: #ece5d3;
+  --popover: #201d16;
+  --popover-foreground: #ece5d3;
+  --muted: #2a2620;
+  --muted-foreground: #a8a28d;
+  --accent: #2e2a21;
+  --accent-foreground: #ddd3b6;
 
-  --primary: #66bb6a; /* brightened for contrast on dark ground */
+  --primary: #81c784; /* the spec green, brightened for the dark ground (green 300) */
   --primary-bright: #a5d6a7;
-  --primary-deep: #2e7d32;
-  --primary-foreground: #0a1a0d;
-  --tint: #203227;
-  --secondary: #203227;
-  --secondary-foreground: #cbe7d0;
+  --primary-deep: #388e3c;
+  --primary-foreground: #10230f;
+  --tint: #253826; /* deep green wash on the earth-night ground */
+  --secondary: #2e2a21;
+  --secondary-foreground: #ddd3b6;
 
-  --border: #2a4033;
-  --input: #31463a;
-  --ring: #66bb6a;
-  --destructive: #e57373;
-  --destructive-foreground: #2a0f0f;
+  --terracotta: #d98f6a;
+  --marigold: #e3b862;
 
-  --chart-1: #66bb6a;
-  --chart-2: #a5d6a7;
-  --chart-3: #43a047;
-  --chart-4: #2e7d32;
-  --chart-5: #c8e6c9;
+  --border: #383427;
+  --input: #443f30;
+  --ring: #81c784;
+  --destructive: #e08570;
+  --destructive-foreground: #2a120c;
+
+  --chart-1: #81c784;
+  --chart-2: #e3b862;
+  --chart-3: #d98f6a;
+  --chart-4: #a5d6a7;
+  --chart-5: #4c8c50;
 
   /* brightened status semantics for the dark ground */
-  --status-positive: #85cf90;
-  --status-info: #8ccbe8;
-  --status-warning: #f7bd66;
-  --status-danger: #f09393;
-  --status-neutral: #aec2b4;
+  --status-positive: #81c784;
+  --status-info: #85c6ca;
+  --status-warning: #e3b862;
+  --status-danger: #e59681;
+  --status-neutral: #b3ac94;
 }
 
 @layer base {
@@ -169,9 +187,15 @@
 }
 
 @layer utilities {
-  /* mono tracked label — eyebrows, meta markers */
+  /* warm kicker label — sans semibold, never mono: reads like a tag on
+     a jam jar / field notebook, not a terminal. */
   .eyebrow {
-    @apply font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-muted-foreground;
+    @apply font-sans text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground;
+  }
+
+  /* terracotta variant for section kickers above display headings */
+  .eyebrow-warm {
+    @apply text-terracotta;
   }
 
   /* Primary text block of a flex-wrap list row (avatar/name/meta + trailing
@@ -186,15 +210,17 @@
     @apply min-w-32 flex-1;
   }
 
-  /* ---- Patterns (botanical, quiet, var-driven) ------------------- */
+  /* ---- Patterns (organic, quiet, var-driven) -------------------- */
 
-  /* fine hairline grid — hero ground, section bands */
+  /* paper grain — a faint seed-tray dot grid for hero ground and bands.
+     (Replaces the old hairline grid, which read as engineering paper.) */
   .pattern-grid {
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 44px 44px;
-    opacity: 0.35;
+    background-image: radial-gradient(
+      color-mix(in oklab, var(--primary) 14%, transparent) 1px,
+      transparent 1.1px
+    );
+    background-size: 26px 26px;
+    opacity: 0.4;
   }
 
   /* leaf-dot lattice — subtle polka texture for panels/badges */
@@ -203,23 +229,23 @@
     background-size: 14px 14px;
   }
 
-  /* growth rings — concentric arcs, the botanical signature */
+  /* morning sun — a soft warm glow instead of the old concentric
+     "growth rings", which read as a tech radar. Breathes very slowly. */
   .pattern-rings {
-    background-image: repeating-radial-gradient(
+    background-image: radial-gradient(
       circle at 50% 50%,
-      transparent 0,
-      transparent 34px,
-      color-mix(in oklab, var(--primary) 12%, transparent) 34px,
-      color-mix(in oklab, var(--primary) 12%, transparent) 35px
+      color-mix(in oklab, var(--marigold) 24%, transparent) 0%,
+      color-mix(in oklab, var(--primary-bright) 13%, transparent) 36%,
+      transparent 66%
     );
   }
 
-  /* soft green wash — layered radial tint for the hero */
+  /* warm garden wash — layered green/sun/clay radials for the hero */
   .pattern-wash {
     background-image:
-      radial-gradient(60% 50% at 18% 12%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 70%),
-      radial-gradient(48% 42% at 88% 4%, color-mix(in oklab, var(--primary-bright) 18%, transparent), transparent 70%),
-      radial-gradient(70% 60% at 50% 110%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 75%);
+      radial-gradient(60% 50% at 18% 12%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 70%),
+      radial-gradient(48% 42% at 88% 4%, color-mix(in oklab, var(--marigold) 16%, transparent), transparent 70%),
+      radial-gradient(70% 60% at 50% 110%, color-mix(in oklab, var(--terracotta) 9%, transparent), transparent 75%);
   }
 
   /* seedling rows — diagonal leaf ticks for narrow strips */
@@ -235,15 +261,18 @@
 
   /* ---- Brand furniture ------------------------------------------- */
 
-  /* green seam — functional divider (hero edges, footers) */
+  /* meadow seam — functional divider (hero edges, footers); a strand of
+      leaf green with a marigold heart, like a thread through khadi cloth */
   .seam {
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in oklab, var(--primary) 55%, transparent) 18%,
-      var(--primary) 50%,
-      color-mix(in oklab, var(--primary) 55%, transparent) 82%,
+      color-mix(in oklab, var(--primary) 55%, transparent) 16%,
+      var(--primary) 42%,
+      color-mix(in oklab, var(--marigold) 70%, var(--primary)) 50%,
+      var(--primary) 58%,
+      color-mix(in oklab, var(--primary) 55%, transparent) 84%,
       transparent
     );
   }
@@ -252,7 +281,7 @@
   .panel-raised {
     background: var(--card);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 2px rgb(16 40 24 / 0.05), 0 10px 30px rgb(16 40 24 / 0.07);
+    box-shadow: 0 1px 2px rgb(58 47 26 / 0.06), 0 10px 30px rgb(58 47 26 / 0.08);
   }
 
   /* deep tinted panel — section bands, sidebars, chat rails */
@@ -267,15 +296,26 @@
     background: color-mix(in oklab, var(--primary) 70%, transparent);
   }
 
-  /* stat gradient text for big numbers */
+  /* stat ink — solid deep leaf (gradient text read as SaaS); pair with
+     .underline-sun for the hand-drawn marigold highlight */
   .text-grow {
-    background: linear-gradient(120deg, var(--primary-deep), var(--primary) 45%, var(--primary-bright));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--primary-deep);
+  }
+  html.dark .text-grow {
+    color: var(--primary-bright);
   }
 
-  /* ---- Motion system (SaaS-grade, calm) -------------------------- */
+  /* hand-drawn sun underline — a wavy marigold stroke, like a marker
+     highlighting a word on a printed poster */
+  .underline-sun {
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: color-mix(in oklab, var(--marigold) 90%, transparent);
+    text-decoration-thickness: 0.05em;
+    text-underline-offset: 0.16em;
+  }
+
+  /* ---- Motion system (calm, human) -------------------------------- */
   /* Entrances run once on paint; pair with .stagger-* for sequencing. */
 
   .animate-fade-up {
@@ -338,16 +378,15 @@
     animation: drift 64s linear infinite;
   }
   .pattern-drift-rings {
-    animation: drift-rings 90s linear infinite;
+    animation: sun-breathe 90s ease-in-out infinite;
   }
   @keyframes drift {
     from { background-position: 0 0; }
-    to { background-position: 44px 44px; }
+    to { background-position: 26px 26px; }
   }
-  @keyframes drift-rings {
-    from { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(1.06); }
-    to { transform: rotate(360deg) scale(1); }
+  @keyframes sun-breathe {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.08); opacity: 1; }
   }
 
   /* live-status dot — breathing ring */
@@ -436,9 +475,9 @@
     to { transform: translateX(-50%); }
   }
 
-  /* card micro-interaction — lift + hairline tint + sheen sweep */
+  /* card micro-interaction — gentle lift + warm hairline tint.
+     (The old diagonal sheen sweep read as a SaaS landing-page trick.) */
   .interactive {
-    position: relative;
     transition:
       transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
@@ -448,24 +487,6 @@
     transform: translateY(-3px);
     border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
     box-shadow: var(--shadow-lift);
-  }
-  .interactive::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(
-      115deg,
-      transparent 30%,
-      color-mix(in oklab, var(--primary-bright) 16%, transparent) 48%,
-      transparent 64%
-    );
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.45s ease;
-  }
-  .interactive:hover::before {
-    opacity: 1;
   }
 
   /* button press feedback */
@@ -549,11 +570,11 @@
 
 /* dark mode: patterns recede further so panels stay the focus */
 html.dark .pattern-grid {
-  opacity: 0.18;
+  opacity: 0.2;
 }
 html.dark .pattern-seedling {
   opacity: 0.25;
 }
 html.dark .pattern-rings {
-  opacity: 0.4;
+  opacity: 0.5;
 }

@@ -1,11 +1,11 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Sanjivani leaf-S mark (Sanjivani_Spec.md §3):
+ * Sanjivani leaf-S mark (warm-community identity):
  * two layered leaves sweeping into an "S" — the NGO arm and the
- * volunteer arm forming one continuous growth path. Deep green
- * #2E7D32 with the lighter #66BB6A accent; solid two-tone cut so
- * it stays crisp from 24px (navbar) to 512px (app icon).
+ * volunteer arm forming one continuous growth path. Forest-floor
+ * green #2A5A31 with the new-leaf #7CB56A accent; solid two-tone
+ * cut so it stays crisp from 24px (navbar) to 512px (app icon).
  */
 export function LogoMark({ className, detailed = false }: { className?: string; detailed?: boolean }) {
   return (
@@ -13,12 +13,12 @@ export function LogoMark({ className, detailed = false }: { className?: string; 
       {/* upper leaf (deep green) */}
       <path
         d="M 31 34 C 20 33 13 27 13 19 C 13 10 21 4 31 5 C 39 6 46 10 48 17 C 44 13 38 11 32 12 C 24 13 20 17 20 22 C 20 27 25 31 31 34 Z"
-        fill="#2E7D32"
+        fill="#2A5A31"
       />
       {/* lower leaf (bright green, layered over the upper at the crossing) */}
       <path
         d="M 31 34 C 20 33 13 27 13 19 C 13 10 21 4 31 5 C 39 6 46 10 48 17 C 44 13 38 11 32 12 C 24 13 20 17 20 22 C 20 27 25 31 31 34 Z"
-        fill="#66BB6A"
+        fill="#7CB56A"
         transform="rotate(180 32 32)"
       />
       {/* midrib veins — leaf texture, only when rendered large */}
@@ -27,7 +27,7 @@ export function LogoMark({ className, detailed = false }: { className?: string; 
           <path
             d="M 45 13 C 37 8 27 7.5 19.5 12.5"
             fill="none"
-            stroke="#E8F5E9"
+            stroke="#EBF1E0"
             strokeWidth="2"
             strokeLinecap="round"
             opacity="0.6"
@@ -35,7 +35,7 @@ export function LogoMark({ className, detailed = false }: { className?: string; 
           <path
             d="M 45 13 C 37 8 27 7.5 19.5 12.5"
             fill="none"
-            stroke="#E8F5E9"
+            stroke="#EBF1E0"
             strokeWidth="2"
             strokeLinecap="round"
             opacity="0.6"

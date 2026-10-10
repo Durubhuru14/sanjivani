@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LogoMark } from "@/components/Logo";
+import { GardenBed } from "@/components/GardenArt";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -176,6 +177,8 @@ export default function LoginPage() {
               </li>
             ))}
           </ul>
+          {/* garden horizon — growth, from seedling to bloom */}
+          <GardenBed className="mt-12 w-full" />
         </div>
       </div>
 
