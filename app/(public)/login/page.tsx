@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LogoMark } from "@/components/Logo";
-import { GardenBed } from "@/components/GardenArt";
+import { HandsSprout } from "@/components/GardenArt";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -69,10 +69,10 @@ function LoginForm() {
   }
 
   return (
-    <Card className="animate-scale-in w-full max-w-md border-border bg-card shadow-lift">
+    <Card className="animate-scale-in w-full max-w-md rounded-xl border-border bg-card shadow-lift">
       <CardHeader className="items-center text-center">
         <LogoMark detailed className="mx-auto mb-1 h-14 w-14" />
-        <CardTitle className="font-display text-3xl font-medium tracking-wide text-foreground">
+        <CardTitle className="font-display text-3xl font-medium text-foreground">
           Welcome back
         </CardTitle>
         <CardDescription>Log in to your Sanjivani account</CardDescription>
@@ -148,28 +148,27 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="relative grid min-h-[calc(100vh-4rem)] overflow-hidden lg:grid-cols-[1.05fr_1fr]">
-      {/* Brand panel — botanical patterns, quiet motion, proof bullets */}
+      {/* Brand panel — one illustration, one mission line, proof bullets.
+          A pair of hands raising a sprout: what this platform is for. */}
       <div className="relative hidden overflow-hidden border-r border-border lg:block">
         <div className="pattern-wash pointer-events-none absolute inset-0" aria-hidden />
-        <div className="pattern-rings pattern-drift-rings pointer-events-none absolute -left-40 -bottom-44 h-[520px] w-[520px] opacity-50" aria-hidden />
-        <div className="pattern-dots pointer-events-none absolute inset-0 opacity-20" aria-hidden />
         <div className="relative mx-auto flex h-full max-w-lg flex-col justify-center px-10 py-16">
           <LogoMark detailed className="animate-fade-up h-12 w-12" />
-          <h2 className="animate-fade-up stagger-1 mt-6 font-display text-4xl font-normal leading-[1.08] text-foreground">
+          <h2 className="animate-fade-up stagger-1 mt-6 font-display text-4xl font-medium leading-[1.08] tracking-[-0.01em] text-foreground">
             One platform for every campaign, team, and rupee
           </h2>
-          <p className="animate-fade-up stagger-2 mt-4 leading-relaxed text-muted-foreground">
-            Replace the spreadsheets, WhatsApp groups, and paper notices with a single ledger
-            your whole team can trust.
+          <p className="animate-fade-up stagger-2 mt-4 font-display text-base italic leading-relaxed text-muted-foreground">
+            Built for the people who show up — so the paperwork never gets in their way.
           </p>
-          <ul className="mt-8 space-y-4">
+          <HandsSprout className="animate-sprout stagger-2 mx-auto my-8 h-64 w-80" />
+          <ul className="space-y-3.5">
             {[
               { title: "Campaigns & teams", text: "Applications, rosters, and hours in one place." },
               { title: "Scoped chat rooms", text: "Pick who joins each conversation — nothing leaks." },
               { title: "Fund ledger + CSV export", text: "Allocations, payments, and clean summaries." },
             ].map((item, i) => (
               <li key={item.title} className={cn("animate-fade-up flex gap-3", `stagger-${i + 3}`)}>
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-leaf" aria-hidden />
+                <span className="leaf-tick mt-2.5" aria-hidden />
                 <div>
                   <p className="text-sm font-semibold text-foreground">{item.title}</p>
                   <p className="text-sm text-muted-foreground">{item.text}</p>
@@ -177,8 +176,6 @@ export default function LoginPage() {
               </li>
             ))}
           </ul>
-          {/* garden horizon — growth, from seedling to bloom */}
-          <GardenBed className="mt-12 w-full" />
         </div>
       </div>
 

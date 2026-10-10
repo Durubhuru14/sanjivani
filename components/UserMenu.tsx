@@ -161,11 +161,11 @@ export function UserMenu({ profile, email }: { profile: Profile; email?: string 
 
 export function SignInLinks() {
   return (
-    <div className="flex items-center gap-2">
-      <Button variant="ghost" asChild>
+    <div className="flex items-center gap-1 sm:gap-2">
+      <Button variant="ghost" className="px-3 text-[13px] sm:px-4 sm:text-sm" asChild>
         <Link href="/login">Log in</Link>
       </Button>
-      <Button asChild>
+      <Button className="px-3.5 text-[13px] sm:px-4 sm:text-sm" asChild>
         <Link href="/signup">Sign up</Link>
       </Button>
     </div>

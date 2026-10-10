@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LogoMark } from "@/components/Logo";
 import { CountUp } from "@/components/CountUp";
-import { FallingLeaves } from "@/components/FallingLeaves";
 import { Reveal } from "@/components/Reveal";
-import { GardenBed, GardenSprig } from "@/components/GardenArt";
+import { GardenBed, GardenSprig, StepFlora, Swash, VineLine, FloraMark } from "@/components/GardenArt";
+import type { FloraStage } from "@/components/GardenArt";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +80,8 @@ const FEATURES = [
   },
 ];
 
+const STAGES: FloraStage[] = ["seed", "sprout", "plant", "bloom"];
+
 export default async function LandingPage() {
   const stats = await getStats();
 
@@ -94,22 +96,24 @@ export default async function LandingPage() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero — layered botanical patterns over the green wash */}
+      {/* Hero — one warm wash, one confident headline, one proof object */}
       <section className="relative overflow-hidden border-b border-border">
         <div className="pattern-grid pattern-drift pointer-events-none absolute inset-0" aria-hidden />
         <div className="pattern-wash pointer-events-none absolute inset-0" aria-hidden />
-        <div
-          className="pattern-rings pattern-drift-rings pointer-events-none absolute -right-40 -top-48 hidden h-[540px] w-[540px] opacity-60 lg:block"
-          aria-hidden
-        />
-        <FallingLeaves />
         <div className="seam absolute inset-x-0 top-0" aria-hidden />
         <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10 lg:px-8">
           <div className="max-w-xl">
-            <p className="eyebrow eyebrow-warm animate-fade-up">Community operations, grown carefully</p>
-            <h1 className="animate-fade-up stagger-1 mt-4 font-display text-[clamp(3rem,6.5vw,5rem)] font-normal leading-[1.04] tracking-[-0.01em] text-foreground">
+            <p className="animate-fade-up kicker-chip">
+              <span className="leaf-tick" aria-hidden />
+              Community operations, grown carefully
+            </p>
+            <h1 className="animate-fade-up stagger-1 mt-6 font-display text-[clamp(2.7rem,5.5vw,4.5rem)] font-semibold leading-[1.04] tracking-[-0.015em] text-foreground">
               Run every campaign, team, and{" "}
-              <span className="text-grow underline-sun">rupee</span> in one place
+              <span className="relative inline-block">
+                rupee
+                <Swash className="pointer-events-none absolute -bottom-2 left-0 h-[0.28em] w-full" />
+              </span>{" "}
+              in one place
             </h1>
             <p className="animate-fade-up stagger-2 mt-7 max-w-[62ch] text-base leading-relaxed text-foreground/80">
               Sanjivani replaces Excel sheets, WhatsApp groups, and paper notices with one simple
@@ -117,7 +121,7 @@ export default async function LandingPage() {
               they are proud of.
             </p>
             <div className="animate-fade-up stagger-3 mt-9 flex flex-wrap items-center gap-3">
-              <Button size="lg" className="group-cta press gap-2 px-8 text-base shadow-soft" asChild>
+              <Button size="lg" className="group-cta press gap-2 rounded-full px-8 text-base shadow-btn" asChild>
                 <Link href="/signup">
                   Sign up as an NGO <ArrowRight className="group-cta-arrow h-4 w-4" aria-hidden />
                 </Link>
@@ -125,7 +129,7 @@ export default async function LandingPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="press bg-card px-8 text-base shadow-soft"
+                className="press rounded-full bg-card px-8 text-base shadow-soft"
                 asChild
               >
                 <Link href="/signup">Sign up as a volunteer</Link>
@@ -139,62 +143,61 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          {/* Proof object: the product, resting on the patterned ground.
-              Deliberately static after its entrance — a continuously floating
-              card forces the text layer to re-rasterise every frame, which
-              reads as flicker (especially on Windows subpixel text). */}
+          {/* Proof object: the product, resting on the patterned ground like a
+              card pinned to a community notice-board. Deliberately static after
+              its entrance — a continuously floating card forces the text layer
+              to re-rasterise every frame, which reads as flicker (especially
+              on Windows subpixel text). */}
           <div className="animate-scale-in stagger-2 flex justify-center lg:justify-end">
             <div className="relative w-full max-w-md">
-              {/* garden sprigs peeking from behind the card corners — hidden
+              {/* one garden sprig peeking from behind the top corner — hidden
                   below sm so the 320px hero stays uncluttered */}
-              <GardenSprig variant="sun" className="absolute -left-10 -top-10 z-0 hidden h-24 w-24 sm:block" />
-              <GardenSprig variant="butterfly" className="absolute -bottom-9 -right-7 z-0 hidden h-20 w-20 sm:block" />
-              <div className="panel-raised relative z-10 rounded-xl p-6 sm:p-8">
-                <div className="pattern-dots pointer-events-none absolute inset-0 rounded-xl opacity-30" aria-hidden />
+              <GardenSprig variant="sun" className="absolute -left-11 -top-11 z-0 hidden h-24 w-24 sm:block" />
+              <div className="sticker panel-raised relative z-10 rounded-xl p-6 sm:p-8">
                 <div className="relative">
-                <div className="flex items-center justify-between border-b border-border/70 pb-4">
-                  <span className="eyebrow">Field overview</span>
-                  <span className="flex items-center gap-1.5 text-xs font-semibold text-leaf">
-                    <span
-                      className="animate-pulse-dot h-1.5 w-1.5 rounded-full bg-current text-leaf"
-                      aria-hidden
-                    />
-                    live
-                  </span>
-                </div>
-                <ul className="mt-5 divide-y divide-border/50">
-                  {[
-                    { k: "After-School Tutoring Program", v: "ongoing · 60 students", tone: "leaf" },
-                    { k: "River Clean-Up Drive", v: "upcoming · 3 km target", tone: "bright" },
-                    { k: "Tree Plantation Marathon", v: "completed · 1,000 saplings", tone: "muted" },
-                  ].map((row) => (
-                    <li
-                      key={row.k}
-                      className="flex min-h-[3rem] items-start gap-3 py-3 first:pt-0 last:pb-0"
-                    >
+                  <div className="flex items-center justify-between border-b border-border/70 pb-4">
+                    <span className="eyebrow">Field overview</span>
+                    <span className="flex items-center gap-1.5 text-xs font-semibold text-leaf">
                       <span
-                        className={
-                          row.tone === "leaf"
-                            ? "animate-pulse-dot mt-1 h-2.5 w-2.5 shrink-0 rounded-sm bg-leaf/25 text-leaf ring-1 ring-leaf/60"
-                            : row.tone === "bright"
-                              ? "mt-1 h-2.5 w-2.5 shrink-0 rounded-sm bg-leaf-bright/25 ring-1 ring-leaf-bright/60"
-                              : "mt-1 h-2.5 w-2.5 shrink-0 rounded-sm bg-muted ring-1 ring-border"
-                        }
+                        className="animate-heart h-2 w-2 rounded-full bg-current text-leaf"
                         aria-hidden
                       />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-foreground">{row.k}</p>
-                        <p className="mt-1 text-xs font-medium text-muted-foreground">
-                          {row.v}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-4 border-t border-border/60 pt-4 text-xs font-medium text-muted-foreground">
-                  hours · ratings · funds — one ledger
-                </p>
-              </div>
+                      live
+                    </span>
+                  </div>
+                  <ul className="mt-5 divide-y divide-border/50">
+                    {[
+                      { k: "After-School Tutoring Program", v: "ongoing · 60 students", tone: "leaf" },
+                      { k: "River Clean-Up Drive", v: "upcoming · 3 km target", tone: "bright" },
+                      { k: "Tree Plantation Marathon", v: "completed · 1,000 saplings", tone: "muted" },
+                    ].map((row) => (
+                      <li
+                        key={row.k}
+                        className="flex min-h-[3rem] items-start gap-3 py-3 first:pt-0 last:pb-0"
+                      >
+                        <span
+                          className={
+                            row.tone === "leaf"
+                              ? "mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-leaf/25 text-leaf ring-1 ring-leaf/60"
+                              : row.tone === "bright"
+                                ? "mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-leaf-bright/25 ring-1 ring-leaf-bright/60"
+                                : "mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-muted ring-1 ring-border"
+                          }
+                          aria-hidden
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-foreground">{row.k}</p>
+                          <p className="mt-1 text-xs font-medium text-muted-foreground">
+                            {row.v}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 border-t border-border/60 pt-4 text-xs font-medium text-muted-foreground">
+                    hours · ratings · funds — one ledger
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -222,45 +225,55 @@ export default async function LandingPage() {
         </section>
       ) : null}
 
-      {/* Stats — a growing bento band */}
-      <section className="relative overflow-hidden border-b border-border bg-tint/50">
-        <div className="pattern-seedling pointer-events-none absolute inset-0 opacity-40" aria-hidden />
-        <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-px sm:grid-cols-3 sm:divide-x sm:divide-border/70">
+      {/* Stats — the forest band: the page's exclamation point. Deep green,
+          paper numerals in the display serif, stitched seams between columns. */}
+      <section className="band-forest relative overflow-hidden" aria-label="Platform statistics">
+        <div className="pattern-seeds pointer-events-none absolute inset-0 opacity-60" aria-hidden />
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-3">
           {stats ? (
             [
-              { v: stats.campaigns, k: "campaigns run on Sanjivani", icon: Sprout },
-              { v: stats.volunteers, k: "volunteers building history", icon: Users },
-              { v: stats.ngos, k: "verified NGOs", icon: Landmark },
+              { v: stats.campaigns, k: "campaigns run on Sanjivani" },
+              { v: stats.volunteers, k: "volunteers building history" },
+              { v: stats.ngos, k: "verified NGOs" },
             ].map((s, i) => (
               <Reveal
                 key={s.k}
-                className="px-8 py-9 text-center sm:py-11"
+                className="relative px-8 py-11 text-center sm:py-14"
                 delay={i * 0.12}
               >
-                <s.icon className="mx-auto h-4 w-4 text-leaf" aria-hidden />
-                <p className="text-grow mt-3 font-display text-5xl font-medium leading-none tabular-nums">
+                {/* stitched seam between columns */}
+                {i > 0 ? (
+                  <span className="stitch-col absolute inset-y-8 left-0 hidden sm:block" aria-hidden />
+                ) : null}
+                {/* the flora each figure grew from — faint ink on the band */}
+                <FloraMark
+                  seed={s.k}
+                  className="pointer-events-none absolute -bottom-3 right-3 h-20 w-20 text-band-ink/15"
+                />
+                <p className="font-display text-5xl font-semibold leading-none text-band-ink tabular-nums sm:text-6xl">
                   <CountUp value={s.v} duration={1100} />
                 </p>
-                <p className="mt-2.5 text-sm font-medium text-muted-foreground">
-                  {s.k}
-                </p>
+                <p className="mt-3 text-sm font-medium text-band-ink-soft">{s.k}</p>
               </Reveal>
             ))
           ) : (
-            <p className="col-span-full px-8 py-10 text-center text-sm text-muted-foreground">
+            <p className="col-span-full px-8 py-12 text-center text-sm text-band-ink-soft">
               Stats are unavailable right now.
             </p>
           )}
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features — the first card spans wide as the editorial anchor */}
       <section className="relative overflow-hidden">
-        <div className="pattern-dots pointer-events-none absolute inset-0 opacity-[0.16]" aria-hidden />
+        <div className="pattern-dots pointer-events-none absolute inset-0 opacity-[0.14]" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <Reveal className="mx-auto max-w-2xl text-center">
-            <p className="eyebrow eyebrow-warm">The kit</p>
-            <h2 className="mt-3 font-display text-[clamp(2.2rem,4vw,3rem)] font-normal leading-[1.08] text-foreground">
+            <p className="kicker-chip">
+              <span className="leaf-tick" aria-hidden />
+              The kit
+            </p>
+            <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3rem)] font-semibold leading-[1.08] tracking-[-0.01em] text-foreground">
               Everything a small NGO actually needs
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground">
@@ -268,16 +281,38 @@ export default async function LandingPage() {
               nothing you have to babysit.
             </p>
           </Reveal>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 3) * 0.09}>
-                <Card className="interactive group h-full border-border bg-card shadow-soft">
-                  <CardContent className="p-6">
-                    <span className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-tint text-leaf transition-all duration-200 group-hover:scale-105 group-hover:bg-leaf group-hover:text-primary-foreground">
-                      <f.icon className="h-4.5 w-4.5" aria-hidden />
+              <Reveal
+                key={f.title}
+                delay={(i % 3) * 0.09}
+                className={i === 0 ? "lg:col-span-2" : undefined}
+              >
+                <Card
+                  className={`interactive group h-full border-border bg-card shadow-card ${i === 0 ? "rounded-xl p-2 sm:p-3" : ""}`}
+                >
+                  <CardContent className={`h-full ${i === 0 ? "flex flex-col gap-5 rounded-lg bg-tint/50 p-6 sm:flex-row sm:items-start sm:gap-7 sm:p-8" : "p-6"}`}>
+                    <span
+                      className={`flex shrink-0 items-center justify-center rounded-2xl bg-tint text-leaf transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-[8deg] group-hover:scale-[1.06] dark:bg-primary/20 dark:text-primary-bright ${
+                        i === 0 ? "h-14 w-14" : "mb-4 h-12 w-12"
+                      }`}
+                    >
+                      <f.icon className={i === 0 ? "h-6 w-6" : "h-5 w-5"} aria-hidden />
                     </span>
-                    <h3 className="text-base font-semibold text-foreground">{f.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.text}</p>
+                    <div>
+                      <h3 className={`font-semibold text-foreground ${i === 0 ? "text-lg" : "text-base"}`}>
+                        {f.title}
+                      </h3>
+                      <p className={`mt-2 leading-relaxed text-muted-foreground ${i === 0 ? "max-w-xl text-sm sm:text-base" : "text-sm"}`}>
+                        {f.text}
+                      </p>
+                      {i === 0 ? (
+                        <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-leaf">
+                          <Sprout className="h-4 w-4" aria-hidden />
+                          From first notice to final report — one thread
+                        </p>
+                      ) : null}
+                    </div>
                   </CardContent>
                 </Card>
               </Reveal>
@@ -286,17 +321,23 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* How it works — a growing timeline: each step plants the next stage.
+          The vine between nodes draws itself as the section scrolls in. */}
       <section className="relative overflow-hidden border-t border-border bg-tint/40">
-        <div className="pattern-rings pattern-drift-rings pointer-events-none absolute -left-52 bottom-[-180px] hidden h-[520px] w-[520px] opacity-50 lg:block" aria-hidden />
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <Reveal className="mx-auto max-w-2xl text-center">
-            <p className="eyebrow eyebrow-warm">How it works</p>
-            <h2 className="mt-3 font-display text-[clamp(2.2rem,4vw,3rem)] font-normal leading-[1.08] text-foreground">
+            <p className="kicker-chip">
+              <span className="leaf-tick" aria-hidden />
+              How it works
+            </p>
+            <h2 className="mt-5 font-display text-[clamp(2.1rem,4vw,3rem)] font-semibold leading-[1.08] tracking-[-0.01em] text-foreground">
               Two sides, one ledger
             </h2>
+            <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+              Like anything you grow, it starts small — a seed, a sprout, and then the whole garden.
+            </p>
           </Reveal>
-          <div className="mt-12 grid gap-4 md:grid-cols-2">
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
             {[
               {
                 title: "For NGOs",
@@ -317,18 +358,27 @@ export default async function LandingPage() {
                 ],
               },
             ].map((col, i) => (
-              <Reveal key={col.title} delay={i * 0.12} className="panel-raised rounded-xl p-8">
+              <Reveal key={col.title} delay={i * 0.12} className="panel-raised rounded-xl p-7 sm:p-8">
                 <h3 className="flex items-center gap-2.5 font-display text-xl font-medium text-leaf">
                   <Sprout className="h-4.5 w-4.5" aria-hidden />
                   {col.title}
                 </h3>
-                <ol className="mt-6 space-y-5">
+                <ol className="mt-7">
                   {col.steps.map((step, j) => (
-                    <li key={step} className="flex gap-4">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-tint text-xs font-semibold text-leaf">
-                        {j + 1}
+                    <li key={step} className="relative flex gap-5 pb-7 last:pb-0">
+                      {/* the vine connecting this node to the next */}
+                      {j < col.steps.length - 1 ? (
+                        <span
+                          className="absolute bottom-0 left-[22px] top-12 w-5"
+                          aria-hidden
+                        >
+                          <VineLine className="h-full w-full" />
+                        </span>
+                      ) : null}
+                      <span className="animate-sprout relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-primary/25 bg-tint shadow-soft" style={{ animationDelay: `${0.15 + j * 0.12}s` }}>
+                        <StepFlora stage={STAGES[j]} className="h-7 w-7" />
                       </span>
-                      <p className="text-sm leading-relaxed text-muted-foreground">{step}</p>
+                      <p className="pt-2.5 text-sm leading-relaxed text-muted-foreground">{step}</p>
                     </li>
                   ))}
                 </ol>
@@ -346,13 +396,13 @@ export default async function LandingPage() {
             <LogoMark detailed className="h-14 w-14" />
           </Reveal>
           <Reveal delay={0.1}>
-            <h2 className="mt-6 font-display text-[clamp(1.8rem,3vw,2.4rem)] font-normal text-foreground">
+            <h2 className="mt-6 font-display text-[clamp(1.8rem,3vw,2.4rem)] font-semibold tracking-[-0.01em] text-foreground">
               Start your first campaign today
             </h2>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
               Free and open-source. Set up in minutes, run it for years.
             </p>
-            <Button size="lg" className="group-cta press mt-7 gap-2 px-8 shadow-soft" asChild>
+            <Button size="lg" className="group-cta press mt-7 gap-2 rounded-full px-8 shadow-btn" asChild>
               <Link href="/signup">
                 Create your account <ArrowRight className="group-cta-arrow h-4 w-4" aria-hidden />
               </Link>

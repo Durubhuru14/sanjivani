@@ -153,10 +153,10 @@ export default function SignupPage() {
   return (
     <div className="relative mx-auto w-full max-w-2xl px-4 py-12 sm:py-16">
       <div className="pattern-dots pointer-events-none fixed inset-0 -z-10 opacity-[0.16]" aria-hidden />
-      <Card className="animate-scale-in w-full border-border bg-card shadow-lift">
+      <Card className="animate-scale-in w-full rounded-xl border-border bg-card shadow-lift">
         <CardHeader className="items-center text-center">
           <LogoMark detailed className="mx-auto mb-2 h-14 w-14" />
-          <CardTitle className="font-display text-3xl font-medium tracking-wide text-foreground">Create your account</CardTitle>
+          <CardTitle className="font-display text-3xl font-medium text-foreground">Create your account</CardTitle>
           <CardDescription>Choose how you want to use Sanjivani</CardDescription>
         </CardHeader>
         <CardContent>
@@ -185,14 +185,20 @@ export default function SignupPage() {
                 aria-checked={role === card.value}
                 onClick={() => setRole(card.value)}
                 className={cn(
-                  "relative h-full rounded-xl border-2 p-4 pb-5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "relative h-full rounded-xl border-2 p-4 pb-5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   role === card.value
                     ? "border-primary/70 bg-tint ring-1 ring-primary/30"
-                    : "border-border bg-card hover:border-primary/40"
+                    : "border-border bg-card hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-soft"
                 )}
               >
                 {role === card.value ? (
-                  <Check className="absolute right-3 top-3 h-4 w-4 text-primary" aria-hidden />
+                  <span
+                    key={`${card.value}-checked`}
+                    className="animate-bloom absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                    aria-hidden
+                  >
+                    <Check className="h-3 w-3" strokeWidth={3} />
+                  </span>
                 ) : null}
                 <card.icon
                   className={cn("h-5 w-5", role === card.value ? "text-leaf" : "text-muted-foreground")}
@@ -333,7 +339,7 @@ export default function SignupPage() {
               </Alert>
             )}
 
-            <div className="flex justify-end">
+            <div className="flex justify-center sm:justify-end">
               <Button type="submit" className="w-full sm:w-auto" disabled={busy || checking}>
                 {busy ? (
                   <>
@@ -355,7 +361,7 @@ export default function SignupPage() {
         </CardContent>
       </Card>
       {/* garden horizon grounding the signup card */}
-      <GardenBed className="mx-auto mt-10 w-full max-w-md" />
+      <GardenBed className="mx-auto mt-8 w-full max-w-xl" />
     </div>
   );
 }

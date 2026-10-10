@@ -51,9 +51,11 @@ export function Logo({ className, compact = false }: { className?: string; compa
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <LogoMark className={compact ? "h-7 w-7" : "h-8 w-8"} />
+      {/* wordmark sits out below 375px so the smallest phones keep the full
+          header on-screen — the leaf mark carries the brand on its own */}
       <span
         className={cn(
-          "font-display font-medium tracking-wide text-foreground leading-none",
+          "hidden min-[375px]:inline font-display font-medium tracking-wide text-foreground leading-none",
           compact ? "text-lg" : "text-xl"
         )}
       >
