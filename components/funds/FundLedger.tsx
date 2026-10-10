@@ -277,7 +277,7 @@ export function FundLedger({
         <CardContent>
           {allocations.length === 0 ? (
             <EmptyState
-              icon={Wallet}
+              mood="basket"
               title="No allocations yet"
               hint="Fund records will appear here once you allocate to team members."
             />

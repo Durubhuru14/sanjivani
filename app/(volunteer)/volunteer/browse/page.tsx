@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { Megaphone } from "lucide-react";
+
 import { EmptyState } from "@/components/EmptyState";
 import { PageHeader } from "@/components/PageHeader";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
@@ -66,7 +66,7 @@ export default async function BrowsePage({
 
       {campaigns.length === 0 ? (
         <EmptyState
-          icon={Megaphone}
+          mood="watering"
           title={q ? `No campaigns match “${q}”` : "No campaigns right now"}
           hint={
             q

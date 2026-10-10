@@ -23,7 +23,7 @@ export function RoomList({
   if (rooms.length === 0) {
     return (
       <EmptyState
-        icon={MessagesSquare}
+        mood="bird"
         title="No chat rooms yet"
         hint="Create a room and pick team members — each room stays private to its members."
       />

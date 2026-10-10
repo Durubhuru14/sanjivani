@@ -19,10 +19,13 @@ function StatusChip({
       href={href}
       aria-current={active ? "true" : undefined}
       className={cn(
-        "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-sm font-medium transition-colors",
+        "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 text-sm font-medium transition-all duration-200",
         active
           ? "border-primary/40 bg-primary/10 text-primary"
-          : "bg-card text-muted-foreground hover:text-foreground"
+          : "bg-card text-muted-foreground hover:border-primary/30 hover:text-foreground",
+        // zero-count facets stay reachable but recede — they are roads with
+        // nothing at the end of them today, not clutter to delete
+        !active && count === 0 && "opacity-50 hover:opacity-100"
       )}
     >
       {label}
@@ -75,7 +78,7 @@ export function AdminToolbar({
             <input type="hidden" name="status" value={status} />
           ) : null}
           <Search
-            className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
           <input
@@ -84,7 +87,7 @@ export function AdminToolbar({
             defaultValue={q}
             placeholder="Search…"
             aria-label="Search"
-            className="h-9 w-full rounded-lg border bg-card pl-8 pr-3 text-sm outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20"
+            className="h-9 w-full rounded-full border bg-card pl-9 pr-4 text-sm shadow-soft outline-none transition-colors placeholder:text-muted-foreground/70 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20"
           />
         </form>
         <p className="text-sm text-muted-foreground sm:ml-auto sm:text-right">
@@ -129,12 +132,12 @@ export function AdminPagination({
       {prev ? (
         <Link
           href={prev}
-          className="inline-flex h-9 items-center rounded-lg border bg-card px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex h-9 items-center rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground shadow-soft transition-colors hover:text-foreground"
         >
           ← Previous
         </Link>
       ) : (
-        <span className="inline-flex h-9 cursor-not-allowed items-center rounded-lg border px-3 text-sm text-muted-foreground/40">
+        <span className="inline-flex h-9 cursor-not-allowed items-center rounded-full border px-4 text-sm text-muted-foreground/40">
           ← Previous
         </span>
       )}
@@ -144,12 +147,12 @@ export function AdminPagination({
       {next ? (
         <Link
           href={next}
-          className="inline-flex h-9 items-center rounded-lg border bg-card px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex h-9 items-center rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground shadow-soft transition-colors hover:text-foreground"
         >
           Next →
         </Link>
       ) : (
-        <span className="inline-flex h-9 cursor-not-allowed items-center rounded-lg border px-3 text-sm text-muted-foreground/40">
+        <span className="inline-flex h-9 cursor-not-allowed items-center rounded-full border px-4 text-sm text-muted-foreground/40">
           Next →
         </span>
       )}

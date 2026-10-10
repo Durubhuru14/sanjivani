@@ -1,0 +1,18 @@
+import { chromium } from "@playwright/test";
+const BASE = "http://localhost:3000";
+const browser = await chromium.launch();
+const ctx = await browser.newContext();
+const page = await ctx.newPage();
+page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") console.log("CONSOLE:", m.text().slice(0, 300)); });
+page.on("response", (r) => { if (r.request().method() !== "GET") console.log("NET:", r.request().method(), r.url(), r.status()); });
+await page.goto(`${BASE}/login`, { waitUntil: "networkidle", timeout: 60000 });
+await page.waitForTimeout(1500);
+await page.getByLabel("Email").fill("admin@sanjivani.test");
+await page.getByLabel("Password").fill("Passw0rd!");
+await page.getByRole("button", { name: /log in/i }).click();
+await page.waitForTimeout(6000);
+console.log("URL now:", page.url());
+const toast = await page.locator("[data-sonner-toast], [role=status], ol li").allTextContents().catch(() => []);
+console.log("toasts:", toast.slice(0, 4));
+await page.screenshot({ path: "/home/z/my-project/scripts/qa/shots-ledger/debug-login.png" });
+await browser.close();

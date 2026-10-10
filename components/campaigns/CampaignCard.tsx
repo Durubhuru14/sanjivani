@@ -5,6 +5,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { StarsDisplay } from "@/components/StarsDisplay";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { UserAvatar } from "@/components/UserAvatar";
+import { CampaignFlora } from "@/components/GardenArt";
 import { formatDate } from "@/lib/format";
 import { budgetProgress, formatMoney, type BudgetState } from "@/lib/funds";
 import { Progress } from "@/components/ui/progress";
@@ -42,13 +43,13 @@ export function CampaignCard({
             className="h-36 w-full object-cover"
           />
         ) : (
+          /* deterministic botanical cover — same campaign, same flora, every
+             render (seeded by title) */
           <div
-            className="pattern-dots relative flex h-36 w-full select-none items-center justify-center border-b border-border/70 bg-tint/70"
+            className="relative h-36 w-full select-none overflow-hidden border-b border-border/70 bg-tint"
             aria-hidden
           >
-            <span className="text-4xl font-black tracking-tighter text-primary/30 drop-shadow-sm">
-              {campaign.title.slice(0, 2).toUpperCase()}
-            </span>
+            <CampaignFlora seed={campaign.title} className="absolute inset-0 h-full w-full" />
           </div>
         )}
         <CardContent className="flex flex-col gap-2.5 p-4">
@@ -60,7 +61,7 @@ export function CampaignCard({
               <StatusBadge status="public" />
             )}
           </div>
-          <h3 className="line-clamp-2 min-h-[2.5rem] text-base font-bold leading-snug group-hover:text-primary">
+          <h3 className="line-clamp-2 min-h-[2.5rem] text-base font-semibold leading-snug transition-colors group-hover:text-primary">
             {campaign.title}
           </h3>
           {ngo ? (
@@ -97,7 +98,7 @@ export function CampaignCard({
               <span className="shrink-0">
                 {formatMoney(budget.total - budget.remaining)} of {formatMoney(budget.total)} allocated
               </span>
-              <Progress value={budgetProgress(budget)} className="h-1.5 max-w-28 flex-1" aria-hidden />
+              <Progress value={budgetProgress(budget)} className="h-2.5 max-w-28 flex-1" aria-hidden />
             </div>
           ) : (
             <div className="h-[6px]" aria-hidden />

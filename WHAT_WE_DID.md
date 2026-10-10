@@ -756,6 +756,48 @@ Docker-free fallback (documented in the README's troubleshooting section); the
 screenshot/VLM audit harnesses were session tooling and stay out of the repo,
 per the §5904656 convention.
 
+## 11d. Final skin — "the hand-crafted ledger"
+
+The last visual round (three commits, one per §10 author) rebuilt the art
+direction on the same spec palette (#2E7D32 / #66BB6A / #E8F5E9 + terracotta
++ marigold) so the product reads as a humane, hand-crafted ledger rather
+than a futuristic SaaS:
+
+- **Design tokens** (`app/globals.css`): the beige ramp was spread so cards
+  separate from the paper ground (#f7f2e5 vs #fffdf7 with visible ink
+  borders); letterpress elevation tokens (a 1px paper-highlight edge under
+  soft warm shadows) swap per theme; a forest `--band` with stitched seams;
+  a rag-paper grain overlay (inline SVG turbulence, ~3%, print-hidden);
+  the dark-mode green lifted to 200/300 so it never reads olive.
+- **Motion vocabulary of care**: named keyframes — `sprout-in`, `bloom-pop`,
+  `bob`, `harvest`, `sway`, `breathe`, `heart-beat`, plus `swash`/`vine`
+  stroke-draws — all transform/opacity only, every one flattened by the
+  print and `prefers-reduced-motion` blocks.
+- **One illustration language** (`components/GardenArt.tsx`, volume II):
+  organic Béziers, tapered fills, deliberate asymmetry — `Swash`,
+  `StepFlora` (seed→sprout→plant→bloom), `SpotArt` empty-state vignettes,
+  `HandsSprout` (the "serving people" centerpiece on login), redrawn
+  `GardenBed`/`GardenSprig`, deterministic `CampaignFlora` covers, and
+  `FloraMark` line-art watermarks. The four demo campaign banners were
+  redrawn as botanical scenes on the tint ground.
+- **Surfaces**: pill buttons with pressed-into-paper states; cards at 18px
+  with baked letterpress; the landing stat band flips to deep forest with
+  paper numerals; how-it-works is now a growing timeline whose vine draws
+  in on scroll; auth brand panel carries the hands-and-sprout; dashboards
+  get seeded botanical watermarks in stat tiles and breathing vignettes in
+  empty states; the admin section nav inverts its active pill.
+- **A pre-existing 320px header overflow** (39px, present since the
+  responsive round but invisible to its measurement method) was found and
+  fixed: the logo wordmark yields below 375px and the auth links compact.
+
+Verification: `npm run build`, typecheck, and ESLint stay green; the
+`scripts/qa/ledger-shots.mjs` harness photographed public + all four role
+dashboards + dense directories at 320/375/425/768/1024/1280 in light and
+dark — **0 horizontal overflow anywhere** — and three VLM design-review
+rounds ended SHIP on every surface (final verdict: "premium, humane,
+$10k-quality"). Screenshot/VLM evidence lives in the workspace archive
+only, per convention.
+
 ## 12. Rule
 
 This file is updated alongside code changes. If a claim cannot be verified in the

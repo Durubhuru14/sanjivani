@@ -1,34 +1,41 @@
-import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SpotArt, type SpotMood } from "@/components/GardenArt";
 
-/** Canonical empty state: rounded-xl dashed panel, circular leaf icon chip,
- *  one bold line, one muted line, optional action. Same anatomy everywhere. */
+/** Canonical empty state: a quiet tinted panel with a hand-drawn botanical
+ *  vignette (potted sprout, basket, sleeping bird, or watering can — pick
+ *  with `mood`), one warm heading, one muted line, optional action.
+ *  Same anatomy everywhere. The vignette bobs once on entrance, then
+ *  breathes — an empty state should feel like a waiting room, not an error. */
 export function EmptyState({
-  icon: Icon,
+  mood = "sprout-pot",
   title,
   hint,
   action,
+  icon: _icon,
   className,
 }: {
-  icon: LucideIcon;
+  mood?: SpotMood;
   title: string;
   hint?: string;
   action?: React.ReactNode;
+  /** Legacy icon slot — kept for API compatibility, no longer rendered
+   *  (the vignette carries the symbolism now). */
+  icon?: React.ElementType;
   className?: string;
 }) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-md border border-dashed border-border/80 bg-tint/30 px-6 py-10 text-center",
+        "flex flex-col items-center justify-center rounded-lg border border-border/70 bg-tint/40 px-6 py-12 text-center",
         className
       )}
     >
-      <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-leaf/30 bg-tint text-leaf">
-        <Icon className="h-5 w-5" aria-hidden />
+      <span className="animate-bob block">
+        <SpotArt mood={mood} className="animate-breathe h-24 w-24" />
       </span>
-      <p className="text-sm font-semibold text-foreground">{title}</p>
-      {hint ? <p className="mt-1 max-w-sm text-sm text-muted-foreground">{hint}</p> : null}
-      {action ? <div className="mt-4">{action}</div> : null}
+      <p className="mt-4 text-sm font-semibold text-foreground">{title}</p>
+      {hint ? <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-muted-foreground">{hint}</p> : null}
+      {action ? <div className="mt-5">{action}</div> : null}
     </div>
   );
 }

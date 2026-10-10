@@ -97,7 +97,7 @@ export default async function AdminDashboardPage() {
         className="animate-fade-up"
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link href="/admin/ngos" className="animate-fade-up stagger-1">
           <StatCard
             label="NGOs"
@@ -164,7 +164,7 @@ export default async function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           {pendingNgos.length === 0 ? (
-            <EmptyState icon={Building2} title="No pending NGOs" hint="The verification queue is empty." />
+            <EmptyState mood="basket" title="No pending NGOs" hint="The verification queue is empty — nothing waiting to be gathered." />
           ) : (
             <ul className="divide-y rounded-xl border">
               {pendingNgos.map((n) => (
@@ -220,7 +220,7 @@ export default async function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           {pendingVols.length === 0 ? (
-            <EmptyState icon={HeartHandshake} title="No pending volunteers" />
+            <EmptyState mood="watering" title="No pending volunteers" hint="Nothing to verify right now — the garden is quiet." />
           ) : (
             <ul className="divide-y rounded-xl border">
               {pendingVols.map((v) => (
@@ -280,7 +280,7 @@ export default async function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           {openReports.length === 0 ? (
-            <EmptyState icon={Flag} title="No open reports" hint="A quiet platform is a happy platform." />
+            <EmptyState mood="bird" title="No open reports" hint="A quiet platform is a happy platform." />
           ) : (
             <ul className="space-y-3">
               {openReports.slice(0, 5).map((r) => (

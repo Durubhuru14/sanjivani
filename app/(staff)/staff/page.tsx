@@ -147,7 +147,7 @@ export default async function StaffDashboardPage() {
           <CardContent>
             {teams.length === 0 ? (
               <EmptyState
-                icon={CalendarCheck2}
+                mood="watering"
                 title="Not assigned to a team yet"
                 hint="Your NGO adds you to campaign teams from the campaign page."
               />
@@ -220,7 +220,7 @@ export default async function StaffDashboardPage() {
         <CardContent>
           {myFunds.length === 0 ? (
             <EmptyState
-              icon={IndianRupee}
+              mood="basket"
               title="No fund allocations yet"
               hint="Allocations for your work will appear here once the NGO records them."
             />

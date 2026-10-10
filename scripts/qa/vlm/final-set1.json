@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "1. **Image 1 (Desktop Hero):** SHIP\n2. **Image 2 (Mobile View):** SHIP\n3. **Image 3 (Login Page):** SHIP\n4. **Image 4 (Sign-up Page):** SHIP\n\n**Overall:** Yes — the design successfully merges a warm, tactile \"ledger\" aesthetic with modern UI polish, creating a premium, trustworthy, and deeply humane visual identity for an NGO platform.\n\n**Single worst remaining defect:** None; the skin is cohesive and production-ready across all viewports.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1791649320,
+  "id": "20261011002154ce7b5384ace645ab",
+  "model": "glm-5v-turbo",
+  "object": "chat.completion",
+  "request_id": "20261011002154ce7b5384ace645ab",
+  "usage": {
+    "completion_tokens": 116,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 14900,
+    "prompt_tokens_details": {
+      "cached_tokens": 2
+    },
+    "total_tokens": 15016
+  }
+}
