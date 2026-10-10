@@ -45,7 +45,12 @@ export function PageHeader({
           ) : null}
         </div>
         {action ? (
-          <div className="flex shrink-0 flex-wrap items-center gap-2">{action}</div>
+          // Mobile: actions claim the full row under the title (they wrap
+          // left-aligned instead of overflowing the 320px viewport); sm+
+          // keeps them flush right beside the title.
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:shrink-0">
+            {action}
+          </div>
         ) : null}
       </div>
     </div>

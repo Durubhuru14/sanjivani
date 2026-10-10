@@ -174,7 +174,7 @@ export default async function AdminVolunteerDetailPage({
               <ul className="divide-y rounded-xl border">
                 {teams.map((t) => (
                   <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <p className="truncate font-medium">{t.teams.campaigns.title}</p>
                       <p className="truncate text-sm text-muted-foreground">
                         {t.teams.name} · {orgOf(t.teams.campaigns.ngo) ?? "Unknown NGO"} ·{" "}
@@ -203,7 +203,7 @@ export default async function AdminVolunteerDetailPage({
               <ul className="divide-y rounded-xl border">
                 {apps.map((a) => (
                   <li key={a.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <p className="truncate font-medium">{a.campaign?.title ?? "Campaign unavailable"}</p>
                       <p className="truncate text-sm text-muted-foreground">
                         {a.campaign ? orgOf(a.campaign.ngo) ?? "Unknown NGO" : "—"} · applied{" "}
@@ -271,7 +271,7 @@ export default async function AdminVolunteerDetailPage({
               {reports.map((r) => (
                 <li key={r.id} className="rounded-xl border p-4">
                   <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <p className="font-semibold">
                         Reported by {r.reporter?.name ?? "an NGO"}
                         {r.campaign ? ` · ${r.campaign.title}` : ""}

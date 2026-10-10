@@ -155,7 +155,7 @@ export default async function VolunteerProfilePage() {
             <ul className="divide-y rounded-xl border">
               {history.map((h) => (
                 <li key={h.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <p className="truncate font-medium">{h.teams.campaigns.title}</p>
                     <p className="truncate text-sm text-muted-foreground">
                       {h.teams.campaigns.ngo?.org_name ?? "NGO"} · {h.member_type} ·{" "}

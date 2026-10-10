@@ -125,7 +125,7 @@ export function InviteVolunteersPanel({
                   className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border bg-card px-3 py-2.5"
                 >
                   <UserAvatar name={v.name} src={v.avatar_url} className="h-9 w-9 text-xs" />
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <p className="flex items-center gap-1.5 truncate font-medium">
                       {v.name ?? "Volunteer"}
                       {v.verification_status === "approved" ? (
@@ -140,7 +140,7 @@ export function InviteVolunteersPanel({
                       ))}
                     </div>
                   </div>
-                  <div className="ml-auto flex shrink-0 items-center gap-2">
+                  <div className="ml-auto flex flex-wrap items-center gap-2 sm:shrink-0">
                     {Number(v.avg_rating ?? 0) > 0 ? (
                       <StarsDisplay score={Number(v.avg_rating)} size="sm" />
                     ) : null}
@@ -183,7 +183,7 @@ export function InviteVolunteersPanel({
           <ul className="divide-y rounded-xl border">
             {invites.map((inv) => (
               <li key={inv.id} className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
-                <div className="min-w-0 flex-1">
+                <div className="row-body">
                   <p className="truncate font-medium">{inv.volunteer?.name ?? "Volunteer"}</p>
                   {(inv.volunteer?.volunteers?.skills ?? []).length > 0 ? (
                     <p className="truncate text-sm text-muted-foreground">
@@ -191,7 +191,7 @@ export function InviteVolunteersPanel({
                     </p>
                   ) : null}
                 </div>
-                <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:justify-start sm:shrink-0 sm:justify-end">
                   <StatusBadge status={inv.status} />
                 </div>
               </li>

@@ -64,9 +64,9 @@ export function CampaignCard({
             {campaign.title}
           </h3>
           {ngo ? (
-            <div className="flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
+            <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
               <UserAvatar name={ngo.org_name} src={ngo.logo_url} className="h-5 w-5 shrink-0 text-[9px]" />
-              <span className="truncate font-medium text-foreground/80">{ngo.org_name}</span>
+              <span className="row-body break-words font-medium text-foreground/80">{ngo.org_name}</span>
               {ngo.verification_status === "approved" ? <VerifiedBadge verified className="scale-90" /> : null}
               {Number(ngo.avg_rating) > 0 ? (
                 <StarsDisplay score={Number(ngo.avg_rating)} size="sm" className="scale-90 origin-left" />

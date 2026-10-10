@@ -111,7 +111,7 @@ export default async function AdminStaffPage({
                     src={s.profile?.avatar_url}
                     className="h-9 w-9 text-sm"
                   />
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <div className="flex flex-wrap items-center gap-2">
                       {s.profile ? (
                         <Link
@@ -141,7 +141,7 @@ export default async function AdminStaffPage({
                       · invited {formatDate(s.created_at)}
                     </p>
                   </div>
-                  <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                  <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:justify-start sm:justify-end">
                     {s.profile ? (
                       <SuspendToggle
                         profileId={s.profile.id}

@@ -112,7 +112,7 @@ export default async function VolunteerInvitesPage() {
             <ul className="divide-y rounded-xl border">
               {answered.map((inv) => (
                 <li key={inv.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     {inv.campaign?.id ? (
                       <Link
                         href={`/volunteer/campaigns/${inv.campaign.id}`}

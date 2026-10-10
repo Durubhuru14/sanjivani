@@ -155,9 +155,9 @@ export default async function StaffDashboardPage() {
               <ul className="divide-y rounded-xl border">
                 {teams.map((t) => (
                   <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <p className="truncate font-medium">{t.teams.campaigns.title}</p>
-                      <p className="truncate text-sm text-muted-foreground tabular-nums">
+                      <p className="break-words text-sm text-muted-foreground tabular-nums">
                         {t.teams.name} · {formatDate(t.teams.campaigns.start_date)}
                         {t.teams.campaigns.status === "completed" &&
                         Number(t.hours_logged) > 0
@@ -191,14 +191,14 @@ export default async function StaffDashboardPage() {
               <ul className="divide-y rounded-xl border">
                 {roomRows.map((r) => (
                   <li key={r.room_id} className="flex items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <Link
                         href={`/staff/chat/${r.room_id}`}
                         className="truncate font-medium hover:text-primary hover:underline"
                       >
                         {r.rooms.name}
                       </Link>
-                      <p className="truncate text-sm text-muted-foreground">
+                      <p className="break-words text-sm text-muted-foreground">
                         {r.rooms.campaigns.title}
                       </p>
                     </div>
@@ -228,9 +228,9 @@ export default async function StaffDashboardPage() {
             <ul className="divide-y rounded-xl border">
               {myFunds.map((f) => (
                 <li key={f.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <p className="truncate font-semibold tabular-nums">{formatMoney(Number(f.amount))}</p>
-                    <p className="truncate text-sm text-muted-foreground">
+                    <p className="break-words text-sm text-muted-foreground">
                       {f.campaign?.title ?? "Campaign"}
                     </p>
                   </div>

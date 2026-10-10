@@ -174,6 +174,18 @@
     @apply font-mono text-[0.6875rem] font-medium uppercase tracking-[0.18em] text-muted-foreground;
   }
 
+  /* Primary text block of a flex-wrap list row (avatar/name/meta + trailing
+     action cluster). Contract: flex-1 alone has a 0% basis, so a shrink-0
+     action cluster on a narrow (320px) viewport starves the text to slivers
+     (observed 20px-wide columns wrapping two letters per line). The 8rem
+     minimum hypothetical width forces the cluster to wrap below the text
+     instead — at sm+ widths the row never notices. Trailing clusters pair
+     with this as `sm:shrink-0` so they can compress (and wrap internally)
+     when they alone are wider than the row. */
+  .row-body {
+    @apply min-w-32 flex-1;
+  }
+
   /* ---- Patterns (botanical, quiet, var-driven) ------------------- */
 
   /* fine hairline grid — hero ground, section bands */

@@ -196,7 +196,7 @@ export default async function NgoDashboardPage() {
                   key={app.id}
                   className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3"
                 >
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <p className="truncate font-semibold">{app.volunteer?.name ?? "Volunteer"}</p>
                     <p className="break-words text-sm text-muted-foreground">
                       applied to{" "}
@@ -209,7 +209,7 @@ export default async function NgoDashboardPage() {
                       · {formatDate(app.created_at)}
                     </p>
                   </div>
-                  <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                  <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:justify-start sm:shrink-0 sm:justify-end">
                     <StatusBadge status={app.campaign?.status} />
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/ngo/campaigns/${app.campaign?.id}`}>Review</Link>
@@ -245,7 +245,7 @@ export default async function NgoDashboardPage() {
               {filedReports.map((r) => (
                 <li key={r.id} className="rounded-xl border p-4">
                   <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-                    <p className="min-w-0 flex-1 truncate font-semibold">
+                    <p className="row-body truncate font-semibold">
                       {r.volunteer?.name ?? "Volunteer"}
                       {r.campaign ? (
                         <span className="font-normal text-muted-foreground"> · {r.campaign.title}</span>

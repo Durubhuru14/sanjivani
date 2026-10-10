@@ -86,7 +86,7 @@ export function InviteStaffForm() {
         )}
       </div>
       <div className="flex items-end justify-end">
-        <Button type="submit" className="gap-2" disabled={busy}>
+        <Button type="submit" className="w-full gap-2 sm:w-auto" disabled={busy}>
           {busy ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           ) : (

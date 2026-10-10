@@ -217,7 +217,7 @@ export default async function VolunteerDashboardPage() {
               <ul className="divide-y rounded-xl border">
                 {teamRows.slice(0, 6).map((t) => (
                   <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <Link
                         href={`/volunteer/campaigns/${t.teams.campaign_id}`}
                         className="truncate font-medium hover:text-primary hover:underline"
@@ -263,7 +263,7 @@ export default async function VolunteerDashboardPage() {
               <ul className="divide-y rounded-xl border">
                 {apps.slice(0, 6).map((a) => (
                   <li key={a.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       {a.campaign?.id ? (
                         <Link
                           href={`/volunteer/campaigns/${a.campaign.id}`}
@@ -307,7 +307,7 @@ export default async function VolunteerDashboardPage() {
               <ul className="divide-y rounded-xl border">
                 {roomRows.map((r) => (
                   <li key={r.room_id} className="flex items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <Link
                         href={`/volunteer/chat/${r.room_id}`}
                         className="truncate font-medium hover:text-primary hover:underline"
@@ -344,7 +344,7 @@ export default async function VolunteerDashboardPage() {
               <ul className="divide-y rounded-xl border">
                 {myFunds.map((f) => (
                   <li key={f.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <p className="truncate font-semibold tabular-nums">{formatMoney(Number(f.amount))}</p>
                       <p className="truncate text-sm text-muted-foreground">
                         {f.campaign?.title ?? "Campaign"}

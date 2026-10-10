@@ -292,13 +292,13 @@ export function CampaignForm({
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
+      <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
         {mode === "create" ? (
-          <Button type="button" variant="outline" asChild>
+          <Button type="button" variant="outline" asChild className="sm:min-w-28">
             <Link href="/ngo/campaigns">Cancel</Link>
           </Button>
         ) : null}
-        <Button type="submit" disabled={busy || pending} className="gap-2">
+        <Button type="submit" disabled={busy || pending} className="gap-2 sm:min-w-36">
           {busy || pending ? (
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
           ) : (

@@ -93,6 +93,16 @@ supabase stop --no-backup  # stop AND wipe local data volumes (full clean slate)
 > WSL 2 — the installer enables it and asks for one reboot. After that,
 > everything above works in PowerShell exactly as written.
 
+> **No Docker at all? (experimental)** `scripts/mock-supabase.mjs` is a
+> Node-only stand-in backend: it serves the exact `seed.sql` dataset (same 12
+> accounts, password `Passw0rd!`) with the auth + PostgREST features the app
+> uses — enough to click through every screen and even run the full e2e suite
+> (`bash scripts/e2e-run.sh`). Point `.env.local` at `http://127.0.0.1:54321`
+> with any non-empty key values, start it with `node scripts/mock-supabase.mjs`,
+> and restart it to reset the data. **It is a dev/preview aid, not a backend**:
+> no RLS, no triggers, no realtime, no storage — for anything real, use the
+> Supabase CLI above.
+
 ## Requirements & dependency health
 
 **Node.js 20.19+ (22.13+ recommended)**, plus the

@@ -170,7 +170,7 @@ export default async function AdminDashboardPage() {
               {pendingNgos.map((n) => (
                 <li key={n.profile_id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                   <UserAvatar name={n.org_name} src={n.logo_url} className="h-9 w-9 text-sm" />
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <Link
                       href={`/admin/ngos/${n.profile_id}`}
                       className="font-semibold hover:text-primary hover:underline"
@@ -230,7 +230,7 @@ export default async function AdminDashboardPage() {
                     src={v.profile?.avatar_url}
                     className="h-9 w-9 text-sm"
                   />
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <Link
                       href={`/admin/volunteers/${v.profile_id}`}
                       className="font-semibold hover:text-primary hover:underline"
@@ -286,7 +286,7 @@ export default async function AdminDashboardPage() {
               {openReports.slice(0, 5).map((r) => (
                 <li key={r.id} className="rounded-xl border p-4">
                   <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <p className="font-semibold">
                         <Link
                           href={`/admin/volunteers/${r.volunteer_id}`}
@@ -301,14 +301,14 @@ export default async function AdminDashboardPage() {
                       </p>
                       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{r.reason}</p>
                     </div>
-                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
                       {r.volunteer?.suspended ? <StatusBadge status="suspended" /> : null}
                       <StatusBadge status={r.status} />
                     </div>
                   </div>
                   <div className="mt-3 flex min-h-8 flex-wrap items-center gap-x-4 gap-y-2">
                     <p className="text-xs text-muted-foreground">{formatDateTime(r.created_at)}</p>
-                    <div className="ml-auto flex min-w-[12rem] flex-wrap items-center justify-end gap-2">
+                    <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:[&>button]:w-full sm:shrink-0 sm:justify-end">
                       <SuspendToggle
                         profileId={r.volunteer_id}
                         suspended={Boolean(r.volunteer?.suspended)}
@@ -349,7 +349,7 @@ export default async function AdminDashboardPage() {
             <ul className="divide-y rounded-xl border">
               {suspendedUsers.map((p) => (
                 <li key={p.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <p className="font-semibold">{p.name ?? p.id.slice(0, 8)}</p>
                     <p className="text-sm capitalize text-muted-foreground">{p.role}</p>
                   </div>

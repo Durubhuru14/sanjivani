@@ -111,7 +111,7 @@ export default async function AdminVolunteersPage({
                     src={v.profile?.avatar_url}
                     className="h-9 w-9 text-sm"
                   />
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
                         href={`/admin/volunteers/${v.profile_id}`}

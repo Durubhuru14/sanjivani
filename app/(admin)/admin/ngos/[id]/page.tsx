@@ -179,9 +179,9 @@ export default async function AdminNgoDetailPage({
                 const utilisation = total > 0 ? Math.round((allocated / total) * 100) : 0;
                 return (
                   <li key={c.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate font-semibold" title={c.title}>{c.title}</p>
+                        <p className="line-clamp-2 font-semibold" title={c.title}>{c.title}</p>
                         <StatusBadge status={c.status} />
                         <StatusBadge status={c.type} />
                       </div>
@@ -190,7 +190,9 @@ export default async function AdminNgoDetailPage({
                       </p>
                       <p className="mt-0.5 text-sm text-muted-foreground">
                         {teamSize} member{teamSize === 1 ? "" : "s"} · {c.applications?.length ?? 0} application
-                        {(c.applications?.length ?? 0) === 1 ? "" : "s"} · budget {rs(allocated)} of {rs(total)} ({utilisation}% used)
+                        {(c.applications?.length ?? 0) === 1 ? "" : "s"} · budget{" "}
+                        <span className="whitespace-nowrap">{rs(allocated)}</span> of{" "}
+                        <span className="whitespace-nowrap">{rs(total)}</span> ({utilisation}% used)
                       </p>
                     </div>
                   </li>
@@ -223,7 +225,7 @@ export default async function AdminNgoDetailPage({
                     src={s.profile?.avatar_url}
                     className="h-9 w-9 text-sm"
                   />
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-semibold">{s.profile?.name ?? s.invited_name ?? s.invited_email}</p>
                       <StatusBadge status={s.status} />
@@ -231,7 +233,7 @@ export default async function AdminNgoDetailPage({
                     </div>
                     <p className="mt-0.5 text-sm text-muted-foreground">{s.invited_email}</p>
                   </div>
-                  <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+                  <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:justify-start sm:justify-end">
                     {s.profile ? (
                       <SuspendToggle
                         profileId={s.profile.id}

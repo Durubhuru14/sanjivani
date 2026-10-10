@@ -24,13 +24,17 @@ export function StatCard({
 
   return (
     <Card className={cn("interactive h-full border-border bg-card", className)}>
-      <CardContent className="flex h-full flex-col p-5">
-        <div className="flex items-center justify-between gap-3 border-b border-border/70 pb-3">
-          <p className="eyebrow truncate" title={label}>
+      {/* Mobile-compact paddings/icon/label so two-up grids keep readable
+          labels down to 320px; sm+ restores the roomier rhythm. The label
+          wraps (leading-snug) instead of truncating — a two-line eyebrow
+          reads better than "CAMPA…". */}
+      <CardContent className="flex h-full flex-col p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-2 border-b border-border/70 pb-3 sm:gap-3">
+          <p className="eyebrow leading-snug break-words" title={label}>
             {label}
           </p>
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-tint text-leaf transition-colors">
-            <Icon className="h-3.5 w-3.5" aria-hidden />
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-tint text-leaf transition-colors sm:h-7 sm:w-7">
+            <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden />
           </span>
         </div>
         <div className="mt-3 flex flex-1 flex-col justify-end">

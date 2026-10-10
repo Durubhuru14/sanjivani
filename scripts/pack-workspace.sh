@@ -26,6 +26,9 @@ rsync -a \
   --exclude '.wsstage' \
   --exclude '.zipstage' \
   --exclude 'test-results' \
+  --exclude '.audit/shots' \
+  --exclude 'tsconfig.tsbuildinfo' \
+  --exclude 'next-env.d.ts' \
   --exclude '*.log' \
   ./ .wsstage/workspace/
 

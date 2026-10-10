@@ -83,7 +83,7 @@ export function AppNavbar({ profile, email }: { profile: Profile; email?: string
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
           <NotificationsBell />
           <UserMenu profile={profile} email={email} />
 

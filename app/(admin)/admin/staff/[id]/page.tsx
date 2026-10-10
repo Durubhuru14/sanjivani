@@ -176,7 +176,7 @@ export default async function AdminStaffDetailPage({
               <ul className="divide-y rounded-xl border">
                 {teams.map((t) => (
                   <li key={t.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <p className="truncate font-medium">{t.teams.campaigns.title}</p>
                       <p className="truncate text-sm text-muted-foreground">
                         {t.teams.name} · {orgOf(t.teams.campaigns.ngo) ?? "Unknown NGO"} ·{" "}

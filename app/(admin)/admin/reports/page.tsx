@@ -94,7 +94,7 @@ export default async function AdminReportsPage({
               {pageRows.map((r) => (
                 <li key={r.id} className="rounded-xl border p-4">
                   <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <p className="font-semibold">
                         <Link
                           href={`/admin/volunteers/${r.volunteer_id}`}
@@ -109,7 +109,7 @@ export default async function AdminReportsPage({
                       </p>
                       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{r.reason}</p>
                     </div>
-                    <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
                       {r.volunteer?.suspended ? <StatusBadge status="suspended" /> : null}
                       <StatusBadge status={r.status} />
                     </div>
@@ -117,7 +117,7 @@ export default async function AdminReportsPage({
                   <div className="mt-3 flex min-h-8 flex-wrap items-center gap-x-4 gap-y-2">
                     <p className="text-xs text-muted-foreground">{formatDateTime(r.created_at)}</p>
                     {r.status === "open" ? (
-                      <div className="ml-auto flex min-w-[12rem] flex-wrap items-center justify-end gap-2">
+                      <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:[&>button]:w-full sm:shrink-0 sm:justify-end">
                         <SuspendToggle
                           profileId={r.volunteer_id}
                           suspended={Boolean(r.volunteer?.suspended)}

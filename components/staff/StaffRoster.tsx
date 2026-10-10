@@ -38,7 +38,7 @@ export function StaffRoster({ staff }: { staff: NgoStaff[] }) {
                   src={member.profile?.avatar_url}
                   className="h-9 w-9 text-xs"
                 />
-                <div className="min-w-0 flex-1">
+                <div className="row-body">
                   <p className="truncate font-semibold">
                     {member.invited_name ?? member.profile?.name ?? "Staff member"}
                   </p>
@@ -47,7 +47,7 @@ export function StaffRoster({ staff }: { staff: NgoStaff[] }) {
                     <p className="text-xs italic text-muted-foreground">Not yet claimed</p>
                   ) : null}
                 </div>
-                <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:justify-start sm:shrink-0 sm:justify-end">
                   <StatusBadge status={member.status} />
                   <span className="whitespace-nowrap text-xs text-muted-foreground">
                     {formatDateTime(member.created_at)}

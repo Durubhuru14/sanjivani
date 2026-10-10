@@ -1,79 +1,29 @@
-# dependencies
-node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# supabase cli local state
-supabase/.temp/
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-*.log
-
-# env files (can opt-in for committing if needed)
-.env*
-!.env.example
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# local build / history tooling (not part of the product)
-scripts/build-history.py
-scripts/revise-history.py
-scripts/verify-*.sh
-scripts/ui-walk*.sh
-scripts/vlm-audit.sh
-scripts/remove-dead-symbols.py
-.history-final/
-.history-stage/
-
-# local QA / audit tooling from the review rounds (kept out of the deliverable)
-scripts/qa/
-scripts/ux-audit/
-scripts/pack-deliverable.sh
-
-# local sandbox / environment-only artifacts (not part of the project)
-.zscripts/
-.claude
-.z-ai-config
-Caddyfile
 skills/
-input_zip/
-tool-results/
+node_modules/
+
+# local env / secrets — never ship
+.env
+.env.local
+
+# build & test artifacts
+.next/
+test-results/
+playwright-report/
 download/
-upload/
+
+# responsive-audit session tooling (kept out of the shipped repo, like the
+# QA suites in 5904656; the durable pieces — mock-supabase + e2e-run — stay tracked)
+.audit/
+scripts/ui-audit.mjs
+scripts/audit-run.sh
+scripts/vlm-review.mjs
+scripts/vlm-retry.mjs
+scripts/crop-shot.py
+scripts/debug-*.mjs
+
+# generated
+next-env.d.ts
+tsconfig.tsbuildinfo
+tool-results/
 worklog.md
-db/
-test
-prompt
-local-*
-sandbox/
-
-# playwright
-/test-results/
-/playwright/.cache/
-
-# uploaded sources (kept out of the repo)
-/uploaded_code/
-*.tar
-*.zip
+scripts/debug-run.sh

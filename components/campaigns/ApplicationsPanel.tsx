@@ -86,7 +86,7 @@ export function ApplicationsPanel({
               className="flex min-h-16 flex-wrap items-center gap-3 px-4 py-3"
             >
               <UserAvatar name={vol?.name} src={vol?.avatar_url} className="h-9 w-9 text-xs" />
-              <div className="min-w-0 flex-1">
+              <div className="row-body">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="truncate font-semibold">{vol?.name ?? "Volunteer"}</p>
                   {vol?.volunteers?.verification_status === "approved" ? (

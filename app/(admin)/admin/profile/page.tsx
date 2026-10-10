@@ -30,7 +30,8 @@ export default async function AdminProfilePage() {
         <CardHeader>
           <CardTitle>Details</CardTitle>
           <CardDescription>
-            Your email ({user.email ?? "—"}) is fixed to the admin account. Only you can edit these.
+            Your email <span className="break-all">({user.email ?? "—"})</span> is fixed to the admin account.
+            Only you can edit these.
           </CardDescription>
         </CardHeader>
         <CardContent>

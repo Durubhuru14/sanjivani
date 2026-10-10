@@ -688,6 +688,74 @@ platform-layer requirements the CLI provides out of the box (service_role
 BYPASSRLS, auth-schema EXECUTE grants for API roles) — documented in the
 harness scripts, no app change needed.
 
+## 11c. Responsive polish round — every viewport down to 320px
+
+The final UI/UX request: make the platform "feel finished on every viewport",
+especially the admin dashboard on small phones. The sandbox for this round had
+no Docker and no Postgres, so a **Node-only mock Supabase backend**
+(`scripts/mock-supabase.mjs`) was built first: it serves the exact `seed.sql`
+dataset (12 accounts, password `Passw0rd!`) through a GoTrue-compatible auth
+subset and the PostgREST features the app actually uses (FK-hinted and
+column-shorthand embeds, `eq/neq/in/is/ilike`, `or=()`, `order`, `limit`,
+`Range`, `count=exact`, single/maybeSingle, insert/update/upsert/delete, and
+the `volunteer_total_hours` RPC). With `.env.local` pointed at it, the whole
+app runs — and the **entire 14-spec e2e suite passes 14/14 against the mock**,
+so the round's UI changes are verified against every critical flow, not just
+screenshots (`bash scripts/e2e-run.sh` reproduces this).
+
+**The audit**: a Playwright harness drove real Chromium through 32 pages
+across all five roles plus the public pages, at 320 / 375 / 414 / 768 / 1024 /
+1440 px — 192 full-page screenshots with programmatic horizontal-overflow
+detection (scrollWidth vs viewport, plus the offending elements), then
+screenshot review by a vision model, with every VLM claim verified by
+pixel measurement before acting on it (several "touching the edge" /
+"zero gap" reports measured 16–40 px of real inset and were discarded as
+model bias).
+
+**Findings and fixes** (all verified by a clean re-audit — 192/192 page-loads,
+zero overflow):
+
+1. **List rows starved their text at 320px** (the systemic bug, worst on the
+   NGO dashboard's application queue where meta text wrapped 2–3 characters
+   per line): a `flex-1` text block has a 0% flex basis, so a `shrink-0`
+   action cluster beside it took all but ~20px of the row. Fixed with a
+   documented `.row-body` utility (`min-w-32 flex-1`, `app/globals.css`):
+   the text block now demands an 8rem minimum, which pushes the cluster to
+   wrap below it on narrow screens; clusters pair with `sm:shrink-0` so they
+   can compress and wrap internally when alone on a row. Applied across every
+   admin directory/detail list, the NGO dashboards, staff/volunteer lists,
+   chat room lists, staff roster, team/application/invite panels, and the
+   volunteer profile history — ~30 call sites.
+2. **Page-header action rows overflowed 320px** (admin NGO detail's
+   Approve/Reject/Suspend measured 362px wide): actions now claim the full
+   row width under the title on mobile (`w-full sm:w-auto sm:shrink-0`).
+3. **Report-card action buttons stacked ragged-right**: on mobile the three
+   buttons are now full-width stacked (`max-sm:[&>button]:w-full`) and row
+   clusters left-align under the text (`max-sm:justify-start sm:justify-end`).
+4. **Admin section nav clipped its last pill**: the scrollable pill bar now
+   hides its scrollbar and fades its edges via scroll-state-driven CSS masks,
+   so overflow reads as "keep scrolling" instead of "broken".
+5. **Stat tiles truncated labels to "CAMPA…"** on two-up mobile grids:
+   StatCard got mobile-compact padding/icon/label sizes and the eyebrow label
+   wraps (`leading-snug break-words`) instead of truncating.
+6. **Filter chips wrapped unevenly**: the directory toolbar chips scroll as a
+   single row on mobile (`overflow-x-auto` + hidden scrollbar) and wrap at
+   `sm+`.
+7. **Assorted**: notifications popover clamped to the viewport
+   (`max-w-[calc(100vw-1.5rem)]`), campaign titles in admin lists wrap to two
+   lines instead of hard truncation, money amounts stopped breaking from
+   their currency (`whitespace-nowrap`), campaign-card NGO names wrap instead
+   of truncating to one letter, the campaign form's footer buttons stack
+   full-width on mobile, the staff invite button spans the form on mobile,
+   admin emails `break-all`, and the navbar right cluster gained `sm:gap-2`.
+
+Verification: the re-audit reports **0 overflow issues across 192 page-loads**;
+typecheck, ESLint, 62/62 unit tests, the production build, and the 14/14 e2e
+suite all stay green. The mock backend ships in `scripts/` as an experimental
+Docker-free fallback (documented in the README's troubleshooting section); the
+screenshot/VLM audit harnesses were session tooling and stay out of the repo,
+per the §5904656 convention.
+
 ## 12. Rule
 
 This file is updated alongside code changes. If a claim cannot be verified in the

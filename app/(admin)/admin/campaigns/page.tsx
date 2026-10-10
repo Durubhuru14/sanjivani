@@ -109,9 +109,9 @@ export default async function AdminCampaignsPage({
                 const ownerSuspended = Boolean(c.ngo?.profile?.suspended);
                 return (
                   <li key={c.id} className="flex flex-wrap items-center gap-3 px-1 py-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="row-body">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate font-semibold" title={c.title}>
+                        <p className="line-clamp-2 font-semibold" title={c.title}>
                           {c.title}
                         </p>
                         <StatusBadge status={c.status} />
@@ -125,11 +125,12 @@ export default async function AdminCampaignsPage({
                       <p className="mt-0.5 text-sm text-muted-foreground">
                         {teamSize} member{teamSize === 1 ? "" : "s"} ·{" "}
                         {c.applications?.length ?? 0} application
-                        {(c.applications?.length ?? 0) === 1 ? "" : "s"} · budget {rs(allocated)}{" "}
-                        of {rs(total)} ({utilisation}% used)
+                        {(c.applications?.length ?? 0) === 1 ? "" : "s"} · budget{" "}
+                        <span className="whitespace-nowrap">{rs(allocated)}</span> of{" "}
+                        <span className="whitespace-nowrap">{rs(total)}</span> ({utilisation}% used)
                       </p>
                     </div>
-                    <div className="ml-auto flex shrink-0 items-center">
+                    <div className="ml-auto flex items-center sm:shrink-0 max-sm:ml-0">
                       {c.ngo_id ? (
                         <Link
                           href={`/admin/ngos/${c.ngo_id}`}

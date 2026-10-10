@@ -111,7 +111,7 @@ export default async function AdminNgosPage({
               {pageRows.map((n) => (
                 <li key={n.profile_id} className="flex flex-wrap items-center gap-3 px-1 py-3">
                   <UserAvatar name={n.org_name} src={n.logo_url} className="h-9 w-9 text-sm" />
-                  <div className="min-w-0 flex-1">
+                  <div className="row-body">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
                         href={`/admin/ngos/${n.profile_id}`}

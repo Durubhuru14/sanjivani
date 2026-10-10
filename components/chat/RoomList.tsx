@@ -38,7 +38,7 @@ export function RoomList({
         >
           <Link
             href={`${basePath}${room.id}`}
-            className="group flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group flex row-body items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-leaf/25 bg-tint text-leaf">
               <MessagesSquare className="h-4 w-4" aria-hidden />
@@ -47,7 +47,7 @@ export function RoomList({
               {room.name}
             </span>
           </Link>
-          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:justify-start sm:shrink-0 sm:justify-end">
             <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
               <UserRound className="h-3 w-3" aria-hidden />
               {room.members?.length ?? 0}

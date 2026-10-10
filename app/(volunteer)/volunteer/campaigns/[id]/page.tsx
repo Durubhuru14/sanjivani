@@ -210,7 +210,7 @@ export default async function VolunteerCampaignDetailPage({
                             {initials(m.profile?.name)}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0 flex-1">
+                        <div className="row-body">
                           <p className="truncate font-medium">{m.profile?.name ?? "Member"}</p>
                           <Badge variant="outline" className="font-normal capitalize">
                             {m.member_type}
@@ -245,11 +245,11 @@ export default async function VolunteerCampaignDetailPage({
                       <li key={f.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                         <p className="shrink-0 font-semibold tabular-nums">{formatMoney(Number(f.amount))}</p>
                         {f.note ? (
-                          <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
+                          <p className="row-body truncate text-sm text-muted-foreground">
                             {f.note}
                           </p>
                         ) : (
-                          <span className="min-w-0 flex-1" aria-hidden />
+                          <span className="row-body" aria-hidden />
                         )}
                         <StatusBadge status={f.status} />
                       </li>

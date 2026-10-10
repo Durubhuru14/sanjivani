@@ -179,10 +179,10 @@ export function TeamPanel({
                         src={m.profile?.avatar_url}
                         className="h-9 w-9 text-xs"
                       />
-                      <div className="min-w-0 flex-1">
+                      <div className="row-body">
                         <p className="truncate font-medium">{m.profile?.name ?? "Member"}</p>
                       </div>
-                      <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-2">
+                      <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:justify-start sm:shrink-0 sm:justify-end">
                         <Badge variant="outline" className="font-normal capitalize">
                           {m.member_type}
                         </Badge>

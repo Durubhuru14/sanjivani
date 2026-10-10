@@ -91,7 +91,7 @@ export function AdminToolbar({
           {q || (status && status !== "all") ? `${shown} of ${total} shown` : `${total} total`}
         </p>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex items-center gap-2 overflow-x-auto sm:flex-wrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {all.map((s) => (
           <StatusChip
             key={s.value}
