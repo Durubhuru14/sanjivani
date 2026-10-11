@@ -30,8 +30,8 @@ export function EmptyState({
         className
       )}
     >
-      <span className="animate-bob block">
-        <SpotArt mood={mood} className="animate-breathe h-24 w-24" />
+      <span className="animate-bob block h-28 w-28">
+        <SpotArt mood={mood} className="animate-breathe h-full w-full" />
       </span>
       <p className="mt-4 text-sm font-semibold text-foreground">{title}</p>
       {hint ? <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-muted-foreground">{hint}</p> : null}
