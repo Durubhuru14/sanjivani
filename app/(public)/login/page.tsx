@@ -160,7 +160,8 @@ export default function LoginPage() {
           <p className="animate-fade-up stagger-2 mt-4 font-display text-base italic leading-relaxed text-muted-foreground">
             Built for the people who show up — so the paperwork never gets in their way.
           </p>
-          <HandsSprout className="animate-sprout stagger-2 mx-auto my-8 h-64 w-80" />
+          {/* people showing up for the work — Storyset scene on the warm paper */}
+          <HandsSprout className="animate-sprout stagger-2 mx-auto my-8 h-72 w-72 max-w-full" />
           <ul className="space-y-3.5">
             {[
               { title: "Campaigns & teams", text: "Applications, rosters, and hours in one place." },

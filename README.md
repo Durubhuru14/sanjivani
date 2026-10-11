@@ -130,7 +130,7 @@ for bun — and pin a tree that installs with **zero engine warnings** on Node 2
 | Layer | Technology |
 |---|---|
 | Frontend | Next.js 16 (App Router, Turbopack) + TypeScript 5 + Tailwind CSS 4 |
-| UI | shadcn/ui (New York) + Lucide icons, **Sanjivani green design system** (spec §3) with light + dark themes and botanical patterns |
+| UI | shadcn/ui (New York) + Lucide icons + Storyset scene illustrations (attribution in `public/illustrations/CREDITS.md`), **Sanjivani green design system** (spec §3) with light + dark themes and botanical patterns |
 | Backend | Next.js API routes + server actions (most access via the Supabase client + RLS) |
 | Database | Supabase (Postgres) — migrations, triggers, RLS, realtime, storage |
 | Auth | Supabase Auth (email + password) |

@@ -21,19 +21,19 @@ const ROLE_CARDS: Array<{ value: Role; title: string; hint: string; icon: typeof
   {
     value: "ngo",
     title: "I'm an NGO",
-    hint: "Run campaigns, manage staff and volunteers, track funds",
+    hint: "Run campaigns, teams, and funds",
     icon: Building2,
   },
   {
     value: "volunteer",
     title: "I'm a volunteer",
-    hint: "Find campaigns, join teams, build a verified history",
+    hint: "Join teams and build your history",
     icon: HeartHandshake,
   },
   {
     value: "staff",
     title: "I have a staff invite",
-    hint: "Your NGO invited you by email — claim it here",
+    hint: "Claim your NGO's email invite",
     icon: UserCog,
   },
 ];

@@ -27,3 +27,27 @@ tsconfig.tsbuildinfo
 tool-results/
 worklog.md
 scripts/debug-run.sh
+
+# stray dev-server log
+dev.log
+
+# session/QA tooling — untracked from the tree (history keeps them); shipped
+# separately in the workspace archive, never needed to run or push the app
+# (WHAT_WE_DID.md stays tracked — it is the user-facing build narrative)
+scripts/qa/
+scripts/ux-audit/
+scripts/check-engines.mjs
+scripts/fetch-fonts.py
+scripts/fetch-illustrations.sh
+scripts/gen-banners.py
+scripts/gen-demo-media.py
+scripts/generate-icon.mjs
+scripts/make-icon.mjs
+scripts/pack-*.sh
+scripts/qa-stack.sh
+scripts/recolor-illustrations.py
+scripts/validate-sql.py
+
+# packing scratch (scripts/pack-final.sh)
+.packstage/
+.ghcheck/

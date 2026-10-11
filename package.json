@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "db:reset": "supabase db reset"
+    "db:reset": "supabase db reset",
+    "demo": "node scripts/demo.mjs"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.24",

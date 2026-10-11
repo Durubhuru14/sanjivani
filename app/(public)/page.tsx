@@ -299,7 +299,7 @@ export default async function LandingPage() {
                     >
                       <f.icon className={i === 0 ? "h-6 w-6" : "h-5 w-5"} aria-hidden />
                     </span>
-                    <div>
+                    <div className={i === 0 ? "min-w-0 flex-1" : undefined}>
                       <h3 className={`font-semibold text-foreground ${i === 0 ? "text-lg" : "text-base"}`}>
                         {f.title}
                       </h3>
@@ -313,6 +313,22 @@ export default async function LandingPage() {
                         </p>
                       ) : null}
                     </div>
+                    {i === 0 ? (
+                      /* hands in the soil — the human side of every campaign */
+                      <span
+                        className="animate-breathe hidden shrink-0 self-center lg:block"
+                        aria-hidden
+                      >
+                        <img
+                          src="/illustrations/human/taking-care-of-plants.svg"
+                          alt=""
+                          draggable={false}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-44 w-44 object-contain"
+                        />
+                      </span>
+                    ) : null}
                   </CardContent>
                 </Card>
               </Reveal>
