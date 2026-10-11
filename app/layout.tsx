@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { RejectionSafetyNet } from "@/components/RejectionSafetyNet";
+import { Analytics } from "@vercel/analytics/next";
 
 /**
  * Sanjivani type system (warm-community identity):
@@ -87,6 +88,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <RejectionSafetyNet />
+        <Analytics />
       </body>
     </html>
   );
